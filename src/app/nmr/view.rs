@@ -41,9 +41,9 @@ impl App {
         // Inspector selection is global; prediction mode/results belong to a
         // document. Never instantiate a second panel for a floating document.
         column![
-            text(DOCKED_TITLE).size(14),
+            text(reshiki::i18n::t(DOCKED_TITLE)).size(14),
             text(if self.tab.nmr.open {
-                "Results are in the floating palette."
+                reshiki::i18n::t("Results are in the floating palette.")
             } else {
                 EMPTY_STATE
             })
@@ -128,7 +128,8 @@ impl App {
         let state = &self.tab.nmr;
         let mut body = column![].spacing(8);
         if state.job.pending.is_some() {
-            body = body.push(text("Calculating from the molecular graph…").size(12));
+            body =
+                body.push(text(reshiki::i18n::t("Calculating from the molecular graph…")).size(12));
         }
         if let Some(notice) = &state.job.notice {
             body = body.push(text(notice).size(12));
@@ -148,7 +149,11 @@ impl App {
                 &self.tab.selected,
             ));
         } else if state.job.pending.is_none() && state.job.notice.is_none() {
-            body = body.push(text(EMPTY_STATE).size(12).style(muted_text));
+            body = body.push(
+                text(reshiki::i18n::t(EMPTY_STATE))
+                    .size(12)
+                    .style(muted_text),
+            );
         }
         if reported(state) {
             body = details_section(body, state, placement);
@@ -174,7 +179,7 @@ fn title_bar(state: &State, placement: Placement) -> Row<'_, Message> {
     match placement {
         Placement::Floating => row![
             text("⠿").size(15).style(muted_text),
-            text(FLOATING_TITLE).size(14),
+            text(reshiki::i18n::t(FLOATING_TITLE)).size(14),
             Space::new().width(Length::Fill),
             named_command(
                 "nmr.mode",
@@ -196,7 +201,7 @@ fn title_bar(state: &State, placement: Placement) -> Row<'_, Message> {
             close,
         ],
         Placement::Docked => row![
-            text(DOCKED_TITLE).size(14),
+            text(reshiki::i18n::t(DOCKED_TITLE)).size(14),
             Space::new().width(Length::Fill),
             named_command(
                 "nmr.mode",
@@ -261,7 +266,7 @@ fn label_controls(state: &State) -> Element<'_, Message> {
         "nmr.labels",
         "Show NMR assignment labels on the drawing",
         checkbox(state.labels.visible)
-            .label("Show labels")
+            .label(reshiki::i18n::t("Show labels"))
             .size(15)
             .text_size(12)
             .spacing(7)
@@ -293,14 +298,14 @@ fn label_controls(state: &State) -> Element<'_, Message> {
     let toggle_menu = Message::Nmr(Action::LabelMenu(!state.labels.menu));
     let anchor = crate::app::popover::choice_anchor(
         "nmr.labels.mode",
-        "NMR assignment label format".into(),
-        label_mode_name(state.labels.mode).into(),
+        reshiki::i18n::t("NMR assignment label format").into(),
+        reshiki::i18n::t(label_mode_name(state.labels.mode)).into(),
         12.,
         [5, 7],
         state.labels.menu,
         toggle_menu.clone(),
     )
-    .value(label_mode_name(state.labels.mode))
+    .value(reshiki::i18n::t(label_mode_name(state.labels.mode)))
     .width(132)
     .on_press_maybe(state.labels.visible.then_some(toggle_menu));
     let popup = state.labels.menu.then(|| {
@@ -313,7 +318,7 @@ fn label_controls(state: &State) -> Element<'_, Message> {
             reshiki::accessibility::button(
                 id,
                 "Choose NMR assignment label format",
-                text(label).size(12),
+                text(reshiki::i18n::t(label)).size(12),
             )
             .checked(state.labels.mode == mode)
             .padding([6, 10])
@@ -347,7 +352,11 @@ fn plot_section<'a>(
     selected: &'a [u64],
 ) -> Column<'a, Message> {
     if state.plot {
-        body = body.push(text("Predicted shifts").size(12).style(muted_text));
+        body = body.push(
+            text(reshiki::i18n::t("Predicted shifts"))
+                .size(12)
+                .style(muted_text),
+        );
         body = if presentation.map_or_else(
             || report.rows.iter().any(engine::Row::has_statistics),
             |presentation| presentation.supported_count > 0,
@@ -355,7 +364,7 @@ fn plot_section<'a>(
             body.push(plot::view_with_presentation(report, selected, presentation))
         } else {
             body.push(
-                text("No supported shifts to plot")
+                text(reshiki::i18n::t("No supported shifts to plot"))
                     .size(11)
                     .style(muted_text),
             )
@@ -374,7 +383,7 @@ fn results_table<'a>(
     let mut table = column![
         container(
             row![
-                text("Atom").size(12).width(Length::Fill),
+                text(reshiki::i18n::t("Atom")).size(12).width(Length::Fill),
                 text("δ / ppm").size(12).width(72).align_x(Alignment::End),
             ]
             .spacing(8)
@@ -598,7 +607,7 @@ fn named_command<'a>(
     enabled: bool,
 ) -> reshiki::accessibility::Button<'a, Message> {
     let message = Message::Nmr(action);
-    reshiki::accessibility::button(id, name, text(label).size(12))
+    reshiki::accessibility::button(id, name, text(reshiki::i18n::t(label)).size(12))
         .padding([5, 7])
         .on_press_maybe(enabled.then_some(message))
         .style(quiet)
@@ -632,9 +641,9 @@ pub(super) fn site_description(nucleus: Nucleus, row: &engine::Row, label: &str)
 
 fn label_mode_name(mode: LabelMode) -> &'static str {
     match mode {
-        LabelMode::Atom => "Atom numbers",
+        LabelMode::Atom => reshiki::i18n::t("Atom numbers"),
         LabelMode::Shift => "ppm",
-        LabelMode::Both => "Both",
+        LabelMode::Both => reshiki::i18n::t("Both"),
     }
 }
 struct Provenance<'a> {
@@ -684,7 +693,7 @@ pub(super) fn panel_description(state: &State) -> String {
             report.rows.len(),
         )
     } else {
-        "No prediction result".into()
+        reshiki::i18n::t("No prediction result").into()
     };
     let source = provenance(state.job.result.as_deref());
     format!(

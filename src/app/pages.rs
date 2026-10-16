@@ -14,7 +14,7 @@ fn print() -> Message {
 }
 
 fn command(label: &'static str) -> iced::widget::Button<'static, Message> {
-    iced::widget::button(text(label).size(12))
+    iced::widget::button(text(reshiki::i18n::t(label)).size(12))
         .padding([8, 10])
         .style(super::workspace::control(false))
 }
@@ -102,7 +102,10 @@ impl Editor {
             s.trim()
                 .parse::<f32>()
                 .map(|n| n * 72. / 25.4)
-                .map_err(|_| "Enter paper dimensions and margins in millimetres.".to_string())
+                .map_err(|_| {
+                    reshiki::i18n::t("Enter paper dimensions and margins in millimetres.")
+                        .to_string()
+                })
         };
         let mut layout = self.layout.clone();
         // Keep standard paper dimensions exact despite rounded display values.
@@ -119,16 +122,15 @@ impl Editor {
         layout.margins.right = dimension(&self.right, layout.margins.right)?;
         layout.margins.bottom = dimension(&self.bottom, layout.margins.bottom)?;
         layout.margins.left = dimension(&self.left, layout.margins.left)?;
-        layout.columns = self
-            .columns
-            .trim()
-            .parse()
-            .map_err(|_| "Enter a whole number of page columns.".to_string())?;
+        layout.columns =
+            self.columns.trim().parse().map_err(|_| {
+                reshiki::i18n::t("Enter a whole number of page columns.").to_string()
+            })?;
         layout.rows = self
             .rows
             .trim()
             .parse()
-            .map_err(|_| "Enter a whole number of page rows.".to_string())?;
+            .map_err(|_| reshiki::i18n::t("Enter a whole number of page rows.").to_string())?;
         layout.validate()?;
         Ok(layout)
     }
@@ -138,7 +140,10 @@ impl App {
         let mut snapshot = self.tab.doc.clone();
         if let Some(editor) = &self.tab.pages.editor {
             if editor.epoch != self.tab.file_epoch || editor.original != self.tab.doc.page_layout {
-                return Err("Reopen Page setup before printing changed page settings.".into());
+                return Err(reshiki::i18n::t(
+                    "Reopen Page setup before printing changed page settings.",
+                )
+                .into());
             }
             snapshot.page_layout = Some(editor.candidate()?);
         }
@@ -249,7 +254,9 @@ impl App {
                     || editor.original != self.tab.doc.page_layout
                 {
                     self.error = true;
-                    self.status = "Page settings changed. Reopen Page setup to continue.".into();
+                    self.status =
+                        reshiki::i18n::t("Page settings changed. Reopen Page setup to continue.")
+                            .into();
                     return Task::none();
                 }
                 match editor.candidate() {
@@ -270,8 +277,10 @@ impl App {
                                 .unwrap_or(0),
                         );
                         self.fit_pages(Some(self.tab.pages.active));
-                        self.status =
-                            "Page setup applied · Drawing scale and positions preserved".into();
+                        self.status = reshiki::i18n::t(
+                            "Page setup applied · Drawing scale and positions preserved",
+                        )
+                        .into();
                     }
                     Err(error) => {
                         self.error = true;
@@ -286,8 +295,10 @@ impl App {
                 self.tab.pages = State::default();
                 self.inspector_tab = InspectorTab::Export;
                 self.fit();
-                self.status =
-                    "Returned to an unbounded canvas · Undo restores the page layout".into();
+                self.status = reshiki::i18n::t(
+                    "Returned to an unbounded canvas · Undo restores the page layout",
+                )
+                .into();
             }
             Action::Fit(index) => self.fit_pages(index),
             Action::Navigate(index) => self.fit_pages(Some(index)),
@@ -305,8 +316,10 @@ impl App {
                     Ok(()) => {
                         self.changed(before);
                         self.fit_pages(Some(self.tab.pages.active));
-                        self.status =
-                            "Centered on page · Drawing size preserved · Undo is available".into();
+                        self.status = reshiki::i18n::t(
+                            "Centered on page · Drawing size preserved · Undo is available",
+                        )
+                        .into();
                     }
                     Err(error) => {
                         self.error = true;
@@ -321,7 +334,7 @@ impl App {
         Task::none()
     }
     fn pages_overview(&self) -> Element<'_, Message> {
-        let mut body = column![text("Publication pages").size(17)].spacing(14);
+        let mut body = column![text(reshiki::i18n::t("Publication pages")).size(17)].spacing(14);
         if let Some(layout) = &self.tab.doc.page_layout {
             let active = self.tab.pages.active.min(layout.count().saturating_sub(1));
             body = body
@@ -375,9 +388,9 @@ impl App {
                     .style(button::text),
                 )
                 .push(
-                    text(
+                    text(reshiki::i18n::t(
                         "Centering keeps whole molecules together and preserves the drawing scale.",
-                    )
+                    ))
                     .size(11)
                     .style(super::workspace::muted_text),
                 )
@@ -402,10 +415,10 @@ impl App {
                 body = body.push(text(format!("{overflow} items cross a page edge or sit outside the pages. PDF pages clip at paper edges.")).size(11).style(crate::appearance::text_color(iced::Color::from_rgb8(168,91,36))));
             }
             body = body.push(horizontal_line())
-                .push(text("Margins are guides and do not print. Use cropped drawing exports for figures that will be placed in another document.").size(11).style(super::workspace::muted_text))
+                .push(text(reshiki::i18n::t("Margins are guides and do not print. Use cropped drawing exports for figures that will be placed in another document.")).size(11).style(super::workspace::muted_text))
                 .push(command("Remove page layout").on_press(Message::Pages(Action::Remove)).style(button::text));
         } else {
-            body = body.push(text("Choose a paper size and margins to prepare a publication or a multipage PDF.").size(12))
+            body = body.push(text(reshiki::i18n::t("Choose a paper size and margins to prepare a publication or a multipage PDF.")).size(12))
                 .push(command("Set up pages…").on_press(Message::Pages(Action::Open)));
         }
         body.into()
@@ -422,7 +435,9 @@ impl App {
         };
         let input = |label: &'static str, value: &str, field| {
             column![
-                text(label).size(11).style(super::workspace::muted_text),
+                text(reshiki::i18n::t(label))
+                    .size(11)
+                    .style(super::workspace::muted_text),
                 crate::appearance::text_input("", value)
                     .on_input(move |v| Message::Pages(Action::Input(field, v)))
                     .on_submit(Message::Pages(Action::Apply))
@@ -440,16 +455,16 @@ impl App {
             > candidate.as_ref().unwrap_or(&editor.layout).height_pt;
         let mut body = column![
             row![
-                text("Publication pages").size(17),
+                text(reshiki::i18n::t("Publication pages")).size(17),
                 command("×")
                     .style(button::text)
                     .on_press(Message::Pages(Action::Cancel))
             ]
             .spacing(5),
-            text("Physical size · Document drawing scale")
+            text(reshiki::i18n::t("Physical size · Document drawing scale"))
                 .size(11)
                 .style(super::workspace::muted_text),
-            text("Canvas theme").size(11),
+            text(reshiki::i18n::t("Canvas theme")).size(11),
             crate::appearance::pick_list(
                 self.theme_choices().0,
                 Some(self.theme_choices().1),
@@ -457,7 +472,10 @@ impl App {
             )
             .width(Length::Fill)
             .text_size(12),
-            text("Canvas brightness · copies have transparent backgrounds").size(11),
+            text(reshiki::i18n::t(
+                "Canvas brightness · copies have transparent backgrounds"
+            ))
+            .size(11),
             crate::appearance::pick_list(
                 reshiki::canvas_theme::CanvasTheme::ALL,
                 Some(self.tab.doc.canvas_theme),
@@ -480,27 +498,34 @@ impl App {
             ]
             .spacing(4),
             row![
-                input("Width (mm)", &editor.width, Field::Width),
-                input("Height (mm)", &editor.height, Field::Height)
+                input(reshiki::i18n::t("Width (mm)"), &editor.width, Field::Width),
+                input(
+                    reshiki::i18n::t("Height (mm)"),
+                    &editor.height,
+                    Field::Height
+                )
             ]
             .spacing(8),
             horizontal_line(),
-            text("Margins (mm)").size(12),
+            text(reshiki::i18n::t("Margins (mm)")).size(12),
             row![
-                input("Top", &editor.top, Field::Top),
-                input("Bottom", &editor.bottom, Field::Bottom)
+                input(reshiki::i18n::t("Top"), &editor.top, Field::Top),
+                input(reshiki::i18n::t("Bottom"), &editor.bottom, Field::Bottom)
             ]
             .spacing(8),
             row![
-                input("Left", &editor.left, Field::Left),
-                input("Right", &editor.right, Field::Right)
+                input(reshiki::i18n::t("Left"), &editor.left, Field::Left),
+                input(reshiki::i18n::t("Right"), &editor.right, Field::Right)
             ]
             .spacing(8),
             horizontal_line(),
-            text("Page grid · read left to right, then down").size(11),
+            text(reshiki::i18n::t(
+                "Page grid · read left to right, then down"
+            ))
+            .size(11),
             row![
-                input("Columns", &editor.columns, Field::Columns),
-                input("Rows", &editor.rows, Field::Rows)
+                input(reshiki::i18n::t("Columns"), &editor.columns, Field::Columns),
+                input(reshiki::i18n::t("Rows"), &editor.rows, Field::Rows)
             ]
             .spacing(8),
             command("Apply page setup")
@@ -578,7 +603,7 @@ impl App {
                     .style(button::text),
             );
         }
-        body.push(text("Page setup does not move or resize objects. Margin guides do not appear in exports. Drawing exports remain cropped to the artwork.").size(11).style(super::workspace::muted_text)).into()
+        body.push(text(reshiki::i18n::t("Page setup does not move or resize objects. Margin guides do not appear in exports. Drawing exports remain cropped to the artwork.")).size(11).style(super::workspace::muted_text)).into()
     }
 }
 
