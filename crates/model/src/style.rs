@@ -144,6 +144,9 @@ pub fn styled_text_width(text: &str, size: f32, style: &crate::typography::TextS
 const SANS_FALLBACKS: &[&str] = &[
     "Hiragino Sans",
     "Hiragino Kaku Gothic ProN",
+    // Simplified-Chinese UI coverage before the Japanese faces, whose JIS
+    // glyph sets miss many simplified characters.
+    "Microsoft YaHei",
     "Yu Gothic",
     "Meiryo",
     "Noto Sans CJK JP",

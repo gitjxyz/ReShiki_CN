@@ -2192,41 +2192,41 @@ impl App {
                 .width(132),
                 hover_hint(
                     checkbox(self.appearance.arrange_controls)
-                        .label("Arrange controls")
+                        .label(crate::i18n::t("Arrange controls"))
                         .on_toggle(|visible| Message::ObjectToolbar(
                             super::object_toolbar::Action::Visible(visible)
                         ))
                         .size(14)
                         .text_size(12),
-                    "Align, distribute, order, flip and rotate at the right end of the Select row",
+                    crate::i18n::t("Align, distribute, order, flip and rotate at the right end of the Select row"),
                     tooltip::Position::Top,
                 ),
                 checkbox(self.grid)
-                    .label("Grid")
+                    .label(crate::i18n::t("Grid"))
                     .on_toggle(|_| Message::View(super::view_settings::Action::Grid))
                     .size(14)
                     .text_size(12),
                 hover_hint(
                     checkbox(self.appearance.smart_guides)
-                        .label("Smart guides")
+                        .label(crate::i18n::t("Smart guides"))
                         .on_toggle(|on| Message::View(super::view_settings::Action::SmartGuides(on)))
                         .size(14)
                         .text_size(12),
-                    "Snap dragged objects to other objects' edges, centers and equal gaps · Hold Option/Alt to move freely",
+                    crate::i18n::t("Snap dragged objects to other objects' edges, centers and equal gaps · Hold Option/Alt to move freely"),
                     tooltip::Position::Top,
                 ),
                 checkbox(self.guides.rulers)
-                    .label("Rulers")
+                    .label(crate::i18n::t("Rulers"))
                     .on_toggle(|on| Message::View(super::view_settings::Action::Rulers(on)))
                     .size(14)
                     .text_size(12),
                 checkbox(self.guides.crosshair)
-                    .label("Crosshair")
+                    .label(crate::i18n::t("Crosshair"))
                     .on_toggle(|on| Message::View(super::view_settings::Action::Crosshair(on)))
                     .size(14)
                     .text_size(12),
                 divider(),
-                text("Units").size(12).style(muted_text),
+                text(crate::i18n::t("Units")).size(12).style(muted_text),
                 crate::appearance::pick_list(
                     crate::canvas::guides::Unit::ALL,
                     Some(self.guides.unit),
@@ -2235,9 +2235,19 @@ impl App {
                 .text_size(12)
                 .padding(5)
                 .width(68),
-                command("Page setup…", Message::Pages(super::pages::Action::Show)),
+                divider(),
+                text(crate::i18n::t("Language")).size(12).style(muted_text),
+                crate::appearance::pick_list(
+                    crate::i18n::Language::ALL,
+                    Some(self.language),
+                    |language| Message::View(super::view_settings::Action::Language(language))
+                )
+                .text_size(12)
+                .padding(5)
+                .width(110),
+                command(crate::i18n::t("Page setup…"), Message::Pages(super::pages::Action::Show)),
                 Space::new().width(Length::Fill),
-                command("Done", Message::View(super::view_settings::Action::Toggle)),
+                command(crate::i18n::t("Done"), Message::View(super::view_settings::Action::Toggle)),
             ]
             .spacing(10)
             .align_y(Alignment::Center),

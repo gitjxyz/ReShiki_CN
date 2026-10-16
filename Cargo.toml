@@ -86,6 +86,8 @@ iced = { version = "0.14", default-features = false, features = [
 ] }
 serde = { version = "1", features = ["derive", "rc"] }
 serde_json = { version = "1", features = ["float_roundtrip"] }
+# Interface-language detection; already in the dependency tree through Iced.
+sys-locale = "0.3"
 base64 = "0.22"
 tokio = { version = "1", features = [
   "process",
