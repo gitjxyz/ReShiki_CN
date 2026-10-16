@@ -2609,6 +2609,7 @@ pub(super) fn hover_hint<'a>(
     position: tooltip::Position,
 ) -> tooltip::Tooltip<'a, Message> {
     let label = label.into();
+    let label = reshiki::i18n::t(&label).to_owned();
     // Key symbols, as in "Redo · ⇧⌘Z", use the shortcut font.
     let label: Element<'a, Message> = if label.contains(super::shortcuts::symbol) {
         rich_text(super::shortcuts::spans(&label)).size(12).into()
@@ -2641,7 +2642,7 @@ pub(super) fn keyed_text<'a>(
     keys: Option<String>,
     detail: &str,
 ) -> Element<'a, Message> {
-    let mut spans: Vec<text::Span<'a>> = vec![span(title.to_owned())];
+    let mut spans: Vec<text::Span<'a>> = vec![span(reshiki::i18n::t(title).to_owned())];
     if let Some(keys) = keys {
         spans.push(span(" · "));
         spans.extend(super::shortcuts::spans(&keys));
@@ -2726,7 +2727,7 @@ pub(super) fn accessible_unit_field<'a>(
 }
 
 pub(super) fn command(label: &str, message: Message) -> button::Button<'_, Message> {
-    button(text(label).size(12))
+    button(text(reshiki::i18n::t(label)).size(12))
         .padding([7, 9])
         .on_press(message)
         .style(control(false))
@@ -2770,6 +2771,7 @@ pub(super) fn accessible_checkbox<'a>(
 }
 /// `title · keys` with the shortcut of `message`, for plain-text hints.
 pub(super) fn keyed(title: &str, message: &Message) -> String {
+    let title = reshiki::i18n::t(title);
     match super::shortcuts::label(message) {
         Some(keys) => format!("{title} · {keys}"),
         None => title.to_owned(),
@@ -3015,12 +3017,15 @@ fn tip(_: &Theme) -> container::Style {
 }
 /// The context row's tool name and the short form a short row uses.
 fn tool_name(tool: Tool) -> (&'static str, &'static str) {
+    let t = reshiki::i18n::t;
     let name = match tool {
-        Tool::Select => return ("Select / move", "Select"),
-        Tool::Lasso => return ("Lasso select", "Lasso"),
-        Tool::Chain(reshiki::chains::ChainMode::Straight) => return ("Straight chain", "Chain"),
+        Tool::Select => return (t("Select / move"), t("Select")),
+        Tool::Lasso => return (t("Lasso select"), t("Lasso")),
+        Tool::Chain(reshiki::chains::ChainMode::Straight) => {
+            return (t("Straight chain"), t("Chain"));
+        }
         // "Max atoms" beside it still marks the snaking mode.
-        Tool::Chain(_) => return ("Snaking chain", "Chain"),
+        Tool::Chain(_) => return (t("Snaking chain"), t("Chain")),
         Tool::Tilt => "3D tilt",
         Tool::StretchBond { .. } => "Stretch bond",
         Tool::Atom => "Atom label",
@@ -3034,7 +3039,7 @@ fn tool_name(tool: Tool) -> (&'static str, &'static str) {
         Tool::Graphic(_) => "Drawing object",
         Tool::EditPoints => "Edit points",
     };
-    (name, name)
+    (t(name), t(name))
 }
 
 #[cfg(test)]
