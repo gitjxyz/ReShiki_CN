@@ -448,7 +448,7 @@ impl App {
         let summary = summary.into();
         let mut heading = column![
             row![
-                text(title).size(13).width(Length::Fill),
+                text(reshiki::i18n::t(title)).size(13).width(Length::Fill),
                 text(if expanded { "−" } else { "+" })
                     .size(16)
                     .style(muted_text)
@@ -457,7 +457,11 @@ impl App {
         ]
         .spacing(3);
         if !summary.is_empty() {
-            heading = heading.push(text(summary).size(11).style(muted_text));
+            heading = heading.push(
+                text(reshiki::i18n::t(summary.as_str()).to_owned())
+                    .size(11)
+                    .style(muted_text),
+            );
         }
         let mut body = column![
             reshiki::accessibility::button(
@@ -491,9 +495,11 @@ impl App {
         if self.tab.optimization.is_some() {
             return column![
                 card(container(self.optimization_panel()).padding(12)),
-                text("Apply or cancel the preview to edit other properties.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Apply or cancel the preview to edit other properties."
+                ))
+                .size(11)
+                .style(muted_text),
             ]
             .spacing(10)
             .into();
@@ -506,9 +512,9 @@ impl App {
         let mut body = column![
             text(if self.tab.selected.is_empty() {
                 if self.tool.selects() {
-                    "Select an object to edit its properties."
+                    reshiki::i18n::t("Select an object to edit its properties.")
                 } else {
-                    "Settings apply to the next object you draw."
+                    reshiki::i18n::t("Settings apply to the next object you draw.")
                 }
                 .into()
             } else {
@@ -560,7 +566,7 @@ impl App {
                             details,
                             tooltip::Position::Left,
                         ),
-                        text("Click to place · Click a bond to fuse.")
+                        text(reshiki::i18n::t("Click to place · Click a bond to fuse."))
                             .size(11)
                             .style(muted_text),
                     ]
@@ -758,9 +764,11 @@ impl App {
                 .any(|b| ids.contains(&b.a) != ids.contains(&b.b))
         {
             body = body.push(
-                text("Selected fragment: implicit hydrogens are recalculated at cut bonds.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Selected fragment: implicit hydrogens are recalculated at cut bonds.",
+                ))
+                .size(11)
+                .style(muted_text),
             );
         }
         if let Some(a) = self.property_analysis() {
@@ -783,10 +791,10 @@ impl App {
                 );
             }
             body = body
-                .push(text("Canonical SMILES").size(12))
+                .push(text(reshiki::i18n::t("Canonical SMILES")).size(12))
                 .push(
                     text(if a.smiles.is_empty() {
-                        "SMILES cannot represent these hydrogen or partial bonds."
+                        reshiki::i18n::t("SMILES cannot represent these hydrogen or partial bonds.")
                     } else {
                         &a.smiles
                     })
@@ -798,7 +806,7 @@ impl App {
                         .on_press_maybe((!a.smiles.is_empty()).then_some(Message::CopySmiles)),
                 );
         } else if atoms == 0 {
-            return body.push(text(if key.is_some() { "Select atoms or bonds to calculate their properties. Clear the selection to use the whole drawing." } else { "Draw or import a molecule to calculate its properties." }).size(12).style(muted_text)).into();
+            return body.push(text(if key.is_some() { reshiki::i18n::t("Select atoms or bonds to calculate their properties. Clear the selection to use the whole drawing.") } else { reshiki::i18n::t("Draw or import a molecule to calculate its properties.") }).size(12).style(muted_text)).into();
         } else if let Some((_, Err(error))) = self
             .tab
             .inspector_ui
@@ -814,9 +822,9 @@ impl App {
         } else {
             body = body.push(
                 text(if key.is_some() {
-                    "Calculating selection…"
+                    reshiki::i18n::t("Calculating selection…")
                 } else {
-                    "Calculating molecular properties…"
+                    reshiki::i18n::t("Calculating molecular properties…")
                 })
                 .size(12)
                 .style(muted_text),
@@ -826,7 +834,7 @@ impl App {
             reshiki::accessibility::button(
                 "nmr.open",
                 "Predict NMR shifts for the selected molecule",
-                text("Predict NMR…").size(12),
+                text(reshiki::i18n::t("Predict NMR…")).size(12),
             )
             .padding([7, 9])
             .on_press(Message::Nmr(super::nmr::Action::Open))
@@ -932,7 +940,7 @@ impl App {
         };
         let kind = |kind| Message::InspectorAction(Action::Attachment(kind));
         column![
-            text("Attachment points").size(11).style(muted_text),
+            text(reshiki::i18n::t("Attachment points")).size(11).style(muted_text),
             row![
                 item(
                     "Add centroid",
@@ -1057,7 +1065,7 @@ impl App {
         ));
         body.push(
             button(
-                text("Delete selection")
+                text(reshiki::i18n::t("Delete selection"))
                     .size(12)
                     .style(crate::appearance::text_color(Color::from_rgb8(174, 57, 52))),
             )
@@ -1077,7 +1085,7 @@ impl App {
         let preset =
             BondPreset::of(first).filter(|p| bonds.iter().all(|b| BondPreset::of(b) == Some(*p)));
         let mut controls = column![
-            text("Style").size(11).style(muted_text),
+            text(reshiki::i18n::t("Style")).size(11).style(muted_text),
             crate::appearance::pick_list(BondPreset::ALL, preset, Message::ApplyBondPreset)
                 .placeholder("Mixed bond styles")
                 .text_size(12)
@@ -1097,7 +1105,11 @@ impl App {
                         .all(|b| b.double_position == *p)
                 });
             controls = controls
-                .push(text("Second line placement").size(11).style(muted_text))
+                .push(
+                    text(reshiki::i18n::t("Second line placement"))
+                        .size(11)
+                        .style(muted_text),
+                )
                 .push(
                     crate::appearance::pick_list(
                         DoublePosition::ALL,
@@ -1111,7 +1123,7 @@ impl App {
                 );
         }
         controls = controls
-            .push(text("Color").size(11).style(muted_text))
+            .push(text(reshiki::i18n::t("Color")).size(11).style(muted_text))
             .push(
                 row![
                     crate::appearance::text_input("#000000", &self.tab.bond_color_input)
@@ -1164,7 +1176,9 @@ impl App {
             .then_some(count);
         let mut controls = column![
             row![
-                text("Charge").size(12).width(Length::Fill),
+                text(reshiki::i18n::t("Charge"))
+                    .size(12)
+                    .width(Length::Fill),
                 command("−", Message::Charge(-1)),
                 command("+", Message::Charge(1))
             ]
@@ -1180,7 +1194,9 @@ impl App {
             ]
             .spacing(6),
             row![
-                text("Unpaired electrons").size(11).width(Length::Fill),
+                text(reshiki::i18n::t("Unpaired electrons"))
+                    .size(11)
+                    .width(Length::Fill),
                 crate::appearance::pick_list([0u8, 1, 2], count, Message::AtomRadical)
                     .placeholder("Mixed")
                     .text_size(12)
@@ -1197,11 +1213,15 @@ impl App {
                     row![
                         text(match mark.kind {
                             reshiki::scientific::MarkKind::Charge => "Charge",
-                            reshiki::scientific::MarkKind::CircledCharge => "Circled charge",
-                            reshiki::scientific::MarkKind::Radical => "Radical",
-                            reshiki::scientific::MarkKind::RadicalIon => "Radical ion",
-                            reshiki::scientific::MarkKind::LonePair => "Lone pair",
-                            reshiki::scientific::MarkKind::LonePairBar => "Lone pair bar",
+                            reshiki::scientific::MarkKind::CircledCharge =>
+                                reshiki::i18n::t("Circled charge"),
+                            reshiki::scientific::MarkKind::Radical => reshiki::i18n::t("Radical"),
+                            reshiki::scientific::MarkKind::RadicalIon =>
+                                reshiki::i18n::t("Radical ion"),
+                            reshiki::scientific::MarkKind::LonePair =>
+                                reshiki::i18n::t("Lone pair"),
+                            reshiki::scientific::MarkKind::LonePairBar =>
+                                reshiki::i18n::t("Lone pair bar"),
                         })
                         .size(11)
                         .width(Length::Fill),
@@ -1267,7 +1287,7 @@ impl App {
                 .all(|g| g.integral);
             grouping = grouping.push(hover_hint(
                 checkbox(integral)
-                    .label("Integral group")
+                    .label(reshiki::i18n::t("Integral group"))
                     .size(14)
                     .text_size(12)
                     .on_toggle(Message::IntegralGroup),
@@ -1384,7 +1404,7 @@ impl App {
                 "export-figure",
                 format!("Export {figure} figure"),
                 text(if self.figure_exporting {
-                    "Exporting…".into()
+                    reshiki::i18n::t("Exporting……").into()
                 } else {
                     format!("Export {figure}…")
                 })
@@ -1413,17 +1433,17 @@ impl App {
                 )
                 .push(
                     text(if self.tab.selected.is_empty() {
-                        "Copy image uses the full drawing."
+                        reshiki::i18n::t("Copy image uses the full drawing.")
                     } else {
-                        "Copy image uses the selected objects."
+                        reshiki::i18n::t("Copy image uses the selected objects.")
                     })
                     .size(11)
                     .style(muted_text),
                 );
         }
         let mut body = column![
-            text("Export").size(18),
-            text("File exports use the full drawing.")
+            text(reshiki::i18n::t("Export")).size(18),
+            text(reshiki::i18n::t("File exports use the full drawing."))
                 .size(12)
                 .style(muted_text),
             self.inspector_section(
