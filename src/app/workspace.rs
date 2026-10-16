@@ -2192,41 +2192,41 @@ impl App {
                 .width(132),
                 hover_hint(
                     checkbox(self.appearance.arrange_controls)
-                        .label(crate::i18n::t("Arrange controls"))
+                        .label(reshiki::i18n::t("Arrange controls"))
                         .on_toggle(|visible| Message::ObjectToolbar(
                             super::object_toolbar::Action::Visible(visible)
                         ))
                         .size(14)
                         .text_size(12),
-                    crate::i18n::t("Align, distribute, order, flip and rotate at the right end of the Select row"),
+                    reshiki::i18n::t("Align, distribute, order, flip and rotate at the right end of the Select row"),
                     tooltip::Position::Top,
                 ),
                 checkbox(self.grid)
-                    .label(crate::i18n::t("Grid"))
+                    .label(reshiki::i18n::t("Grid"))
                     .on_toggle(|_| Message::View(super::view_settings::Action::Grid))
                     .size(14)
                     .text_size(12),
                 hover_hint(
                     checkbox(self.appearance.smart_guides)
-                        .label(crate::i18n::t("Smart guides"))
+                        .label(reshiki::i18n::t("Smart guides"))
                         .on_toggle(|on| Message::View(super::view_settings::Action::SmartGuides(on)))
                         .size(14)
                         .text_size(12),
-                    crate::i18n::t("Snap dragged objects to other objects' edges, centers and equal gaps · Hold Option/Alt to move freely"),
+                    reshiki::i18n::t("Snap dragged objects to other objects' edges, centers and equal gaps · Hold Option/Alt to move freely"),
                     tooltip::Position::Top,
                 ),
                 checkbox(self.guides.rulers)
-                    .label(crate::i18n::t("Rulers"))
+                    .label(reshiki::i18n::t("Rulers"))
                     .on_toggle(|on| Message::View(super::view_settings::Action::Rulers(on)))
                     .size(14)
                     .text_size(12),
                 checkbox(self.guides.crosshair)
-                    .label(crate::i18n::t("Crosshair"))
+                    .label(reshiki::i18n::t("Crosshair"))
                     .on_toggle(|on| Message::View(super::view_settings::Action::Crosshair(on)))
                     .size(14)
                     .text_size(12),
                 divider(),
-                text(crate::i18n::t("Units")).size(12).style(muted_text),
+                text(reshiki::i18n::t("Units")).size(12).style(muted_text),
                 crate::appearance::pick_list(
                     crate::canvas::guides::Unit::ALL,
                     Some(self.guides.unit),
@@ -2236,18 +2236,18 @@ impl App {
                 .padding(5)
                 .width(68),
                 divider(),
-                text(crate::i18n::t("Language")).size(12).style(muted_text),
+                text(reshiki::i18n::t("Language")).size(12).style(muted_text),
                 crate::appearance::pick_list(
-                    crate::i18n::Language::ALL,
+                    reshiki::i18n::Language::ALL,
                     Some(self.language),
                     |language| Message::View(super::view_settings::Action::Language(language))
                 )
                 .text_size(12)
                 .padding(5)
                 .width(110),
-                command(crate::i18n::t("Page setup…"), Message::Pages(super::pages::Action::Show)),
+                command(reshiki::i18n::t("Page setup…"), Message::Pages(super::pages::Action::Show)),
                 Space::new().width(Length::Fill),
-                command(crate::i18n::t("Done"), Message::View(super::view_settings::Action::Toggle)),
+                command(reshiki::i18n::t("Done"), Message::View(super::view_settings::Action::Toggle)),
             ]
             .spacing(10)
             .align_y(Alignment::Center),

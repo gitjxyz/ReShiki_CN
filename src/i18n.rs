@@ -50,9 +50,7 @@ impl Language {
     /// every other locale keeps English until a matching dictionary exists.
     fn from_system_tag(tag: &str) -> Option<Self> {
         let lower = tag.replace('_', "-").to_ascii_lowercase();
-        if lower.starts_with("zh-cn")
-            || lower.starts_with("zh-sg")
-            || lower.starts_with("zh-hans")
+        if lower.starts_with("zh-cn") || lower.starts_with("zh-sg") || lower.starts_with("zh-hans")
         {
             Some(Self::ChineseSimplified)
         } else {
@@ -63,9 +61,9 @@ impl Language {
     fn dictionary(self) -> Option<&'static HashMap<&'static str, &'static str>> {
         match self {
             Self::English => None,
-            Self::ChineseSimplified => Some(ZH_CN.get_or_init(|| {
-                serde_json::from_str(ZH_CN_JSON).unwrap_or_default()
-            })),
+            Self::ChineseSimplified => {
+                Some(ZH_CN.get_or_init(|| serde_json::from_str(ZH_CN_JSON).unwrap_or_default()))
+            }
         }
     }
 }

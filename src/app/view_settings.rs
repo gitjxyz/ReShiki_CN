@@ -14,7 +14,7 @@ pub enum Action {
     /// Shows or hides the View options bar (was `ToggleView`).
     Toggle,
     /// Switches the interface language at runtime.
-    Language(crate::i18n::Language),
+    Language(reshiki::i18n::Language),
     /// Confirms the language preference write; errors surface in the status bar.
     LanguageSaved(Result<(), String>),
 }
@@ -41,14 +41,13 @@ impl App {
     }
     pub(super) fn set_language(
         &mut self,
-        language: crate::i18n::Language,
+        language: reshiki::i18n::Language,
     ) -> iced::Task<super::Message> {
         self.language = language;
-        crate::i18n::set_language(language);
-        iced::Task::perform(
-            crate::i18n::save_language(language),
-            super::Message::View(Action::LanguageSaved),
-        )
+        reshiki::i18n::set_language(language);
+        iced::Task::perform(reshiki::i18n::save_language(language), |result| {
+            super::Message::View(Action::LanguageSaved(result))
+        })
     }
     pub(super) fn set_viewport(&mut self, size: iced::Size) {
         // Inspector width changes, such as docking NMR, do not request fitting
