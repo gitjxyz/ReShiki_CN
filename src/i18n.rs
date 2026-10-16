@@ -15,18 +15,13 @@ static ZH_CN_JSON: &str = include_str!("../locales/zh-CN.json");
 
 const PREFERENCE_FILE: &str = "language-preference.json";
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub enum Language {
+    #[default]
     #[serde(rename = "en")]
     English,
     #[serde(rename = "zh-CN")]
     ChineseSimplified,
-}
-
-impl Default for Language {
-    fn default() -> Self {
-        Self::English
-    }
 }
 
 impl std::fmt::Display for Language {
