@@ -53,19 +53,27 @@ impl Language {
         }
     }
 
-    fn dictionary(self) -> Option<&'static HashMap<&'static str, &'static str>> {
+    fn dictionary(self) -> Option<&'static HashMap<String, String>> {
         match self {
             Self::English => None,
-            Self::ChineseSimplified => {
-                Some(ZH_CN.get_or_init(|| serde_json::from_str(ZH_CN_JSON).unwrap_or_default()))
-            }
+            Self::ChineseSimplified => Some(ZH_CN.get_or_init(|| {
+                match serde_json::from_str(ZH_CN_JSON) {
+                    Ok(map) => map,
+                    // A failed parse must be loud: a silent empty map would
+                    // flip the whole interface back to English.
+                    Err(error) => {
+                        eprintln!("i18n: failed to parse the zh-CN dictionary: {error}");
+                        HashMap::new()
+                    }
+                }
+            })),
         }
     }
 }
 
 static LANGUAGE: RwLock<Language> = RwLock::new(Language::English);
 
-static ZH_CN: OnceLock<HashMap<&'static str, &'static str>> = OnceLock::new();
+static ZH_CN: OnceLock<HashMap<String, String>> = OnceLock::new();
 
 /// Translate `key` for the active language; the key is the English text.
 pub fn t(key: &str) -> &str {
@@ -73,7 +81,7 @@ pub fn t(key: &str) -> &str {
         .read()
         .unwrap_or_else(|poisoned| poisoned.into_inner());
     match language.dictionary() {
-        Some(dictionary) => dictionary.get(key).copied().unwrap_or(key),
+        Some(dictionary) => dictionary.get(key).map(String::as_str).unwrap_or(key),
         None => key,
     }
 }
