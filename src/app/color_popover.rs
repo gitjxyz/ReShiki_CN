@@ -415,7 +415,9 @@ impl App {
         let pick = |color: Paint| Message::TextStyle(StyleChange::Color(color));
         let chosen = |color: Paint| (current == Some(color), Some(pick(color)));
         let head = row![
-            text("Apply to").size(12).style(muted_text),
+            text(reshiki::i18n::t("Apply to"))
+                .size(12)
+                .style(muted_text),
             crate::appearance::pick_list(
                 ColorScope::ALL,
                 Some(self.tab.color_scope),
@@ -578,7 +580,7 @@ impl App {
                     .width(Length::Fill),
                 hover_hint(
                     link("Edit hues…", Message::StyleMenu(Action::EditHues)),
-                    "Move the theme's hues; the drawing recolors as you go",
+                    reshiki::i18n::t("Move the theme's hues; the drawing recolors as you go"),
                     tooltip::Position::Bottom,
                 )
             ]
@@ -729,7 +731,7 @@ impl App {
             format!("Saved with “{theme}” in this drawing.")
         };
         let foot = row![
-            button(text("Restore default hues").size(12))
+            button(text(reshiki::i18n::t("Restore default hues")).size(12))
                 .padding([6, 10])
                 .style(crate::appearance::secondary)
                 .on_press_maybe(changed.then_some(Message::StyleMenu(Action::RestoreHues))),
@@ -748,7 +750,7 @@ impl App {
         container(
             column![
                 row![
-                    text("Edit hues").size(13),
+                    text(reshiki::i18n::t("Edit hues")).size(13),
                     text(theme).size(12).style(muted_text)
                 ]
                 .spacing(8)

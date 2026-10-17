@@ -281,7 +281,7 @@ impl App {
         if let Some(g) = self.selected_picture() {
             if let Some(p) = &g.picture {
                 if p.emf().is_some() {
-                    panel = panel.push(text("EMF vector picture").size(12));
+                    panel = panel.push(text(reshiki::i18n::t("EMF vector picture")).size(12));
                     panel = panel.push(
                         text(reshiki::metafile::EMF_PANEL_NOTICE)
                             .size(11)
@@ -323,7 +323,7 @@ impl App {
                 )
                 .push(
                     checkbox(self.tab.pictures.locked)
-                        .label("Link width and height")
+                        .label(reshiki::i18n::t("Link width and height"))
                         .on_toggle(move |v| message(Action::Lock(v)))
                         .size(14)
                         .text_size(12),
@@ -342,9 +342,9 @@ impl App {
                     ),
                 );
         } else {
-            panel = panel.push(text("Multiple pictures selected").size(12));
+            panel = panel.push(text(reshiki::i18n::t("Multiple pictures selected")).size(12));
         }
-        panel.push(text("Drag the corner handles to resize; use the handle above to rotate. Enter applies dimensions. Pictures are saved inside your drawing.").size(11).style(muted_text)).into()
+        panel.push(text(reshiki::i18n::t("Drag the corner handles to resize; use the handle above to rotate. Enter applies dimensions. Pictures are saved inside your drawing.")).size(11).style(muted_text)).into()
     }
 }
 

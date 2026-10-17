@@ -274,9 +274,11 @@ impl App {
             }
             if preview.modified {
                 content = content.push(
-                    text("Edited preview · Aliases need the original name")
-                        .size(11)
-                        .style(muted_text),
+                    text(reshiki::i18n::t(
+                        "Edited preview · Aliases need the original name",
+                    ))
+                    .size(11)
+                    .style(muted_text),
                 );
             } else {
                 content = content.push(self.alias_controls(AliasTarget::Import, &preview.record));
@@ -328,7 +330,7 @@ impl App {
         .spacing(8);
         if preview.modified {
             content = content.push(
-                text("Edited structure: name below is omitted.")
+                text(reshiki::i18n::t("Edited structure: name below is omitted."))
                     .size(11)
                     .style(muted_text),
             );

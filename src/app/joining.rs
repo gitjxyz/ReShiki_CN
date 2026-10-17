@@ -385,7 +385,7 @@ impl App {
     pub(super) fn join_panel(&self) -> Element<'_, Message> {
         use super::workspace::{accessible_command, muted_text};
         let Some(state) = &self.tab.joining else {
-            return text("Select a fragment to attach").into();
+            return text(reshiki::i18n::t("Select a fragment to attach")).into();
         };
         let texts = join_mode_texts(state.mode);
         let preview: Element<'_, Anchor> = canvas(TemplateAnchorPreview {

@@ -1064,7 +1064,7 @@ impl App {
             .into()
         }
         let mut panel = column![
-            text("3D preview").size(14),
+            text(reshiki::i18n::t("3D preview")).size(14),
             text(phase).size(12),
             text(format!("{} pinned · {energy}", session.pins.len()))
                 .size(11).style(super::workspace::muted_text),
@@ -1105,14 +1105,16 @@ impl App {
                 preview_control("optimization.clear-depth", "Clear depth appearance", "Clear depth", Action::ClearDepthAppearance, ready, None,
                     "Restore original ink while retaining the 3D projection"),
             ].spacing(6).align_y(Alignment::Center).width(Length::Fill).wrap().into()),
-            text("Shift-click selects atoms to pin. Unpin to drag; use the Tilt tool to rotate freely.")
+            text(reshiki::i18n::t("Shift-click selects atoms to pin. Unpin to drag; use the Tilt tool to rotate freely."))
                 .size(11).style(super::workspace::muted_text),
         ].spacing(10).width(Length::Fill);
         if session.phase == Phase::Preparing {
             panel = panel.push(
-                text("Building the preview. Apply becomes available when it is ready.")
-                    .size(11)
-                    .style(super::workspace::muted_text),
+                text(reshiki::i18n::t(
+                    "Building the preview. Apply becomes available when it is ready.",
+                ))
+                .size(11)
+                .style(super::workspace::muted_text),
             );
         } else if let Some(reason) = session.relaxation.paused {
             panel = panel.push(

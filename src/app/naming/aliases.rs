@@ -72,9 +72,11 @@ impl App {
         let mut content = column![section("CURATED ALIASES · OFFLINE")].spacing(6);
         if record.synonyms.is_empty() {
             content = content.push(
-                text("No curated aliases available in the bundled catalog.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "No curated aliases available in the bundled catalog.",
+                ))
+                .size(11)
+                .style(muted_text),
             );
         }
         for (index, alias) in record.synonyms.iter().enumerate() {
@@ -152,9 +154,11 @@ impl App {
             content = content.push(section("GENERATED SYSTEMATIC NAME · LOCAL RULES"));
             if !current {
                 content = content.push(
-                    text("Drawing changed · Generate the name again")
-                        .size(11)
-                        .style(muted_text),
+                    text(reshiki::i18n::t(
+                        "Drawing changed · Generate the name again",
+                    ))
+                    .size(11)
+                    .style(muted_text),
                 );
             }
             if let Some(name) = &record.systematic_name {

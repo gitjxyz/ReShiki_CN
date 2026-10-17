@@ -142,7 +142,7 @@ impl App {
             container(
                 column![
                     command("‹ Properties", Message::Inspector(InspectorTab::Properties)),
-                    text("Reaction roles").size(20)
+                    text(reshiki::i18n::t("Reaction roles")).size(20)
                 ]
                 .spacing(8)
             )
@@ -162,9 +162,11 @@ impl App {
                     })
                     .size(12),
                     exports,
-                    text("Save .rsk to retain the complete scheme and captions.")
-                        .size(11)
-                        .style(muted_text)
+                    text(reshiki::i18n::t(
+                        "Save .rsk to retain the complete scheme and captions."
+                    ))
+                    .size(11)
+                    .style(muted_text)
                 ]
                 .spacing(7)
             )
@@ -178,15 +180,17 @@ impl App {
     pub(super) fn reactions_panel(&self) -> Element<'_, Message> {
         use super::workspace::{command, control, muted_text};
         let mut body = column![
-            text("Choose an arrow, then assign molecules from the canvas.")
-                .size(12)
-                .style(muted_text),
+            text(reshiki::i18n::t(
+                "Choose an arrow, then assign molecules from the canvas."
+            ))
+            .size(12)
+            .style(muted_text),
         ]
         .spacing(12);
         let active = self.reaction_arrow();
         if self.tab.doc.arrows.is_empty() {
             return body
-                .push(text("Add a reaction arrow with A to begin.").size(13))
+                .push(text(reshiki::i18n::t("Add a reaction arrow with A to begin.")).size(13))
                 .into();
         }
         for (index, arrow) in self.tab.doc.arrows.iter().enumerate() {
@@ -267,7 +271,11 @@ impl App {
                 );
             }
             if parts.is_empty() {
-                card = card.push(text("No molecules assigned").size(11).style(muted_text));
+                card = card.push(
+                    text(reshiki::i18n::t("No molecules assigned"))
+                        .size(11)
+                        .style(muted_text),
+                );
             }
             card = card.push(
                 command(
@@ -297,7 +305,7 @@ impl App {
                     }),
             );
         }
-        body = body.push(text("Selecting any atom assigns its whole molecule. Reassigning moves it to the new role.").size(11).style(muted_text));
+        body = body.push(text(reshiki::i18n::t("Selecting any atom assigns its whole molecule. Reassigning moves it to the new role.")).size(11).style(muted_text));
         body = body.push(
             row![
                 command("Select reaction", Message::Reaction(Action::SelectAll)),

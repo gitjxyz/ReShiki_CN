@@ -369,10 +369,10 @@ impl App {
                 Some(Message::Mapping(Action::Show(!shown)))
             ),
             row![
-                text("Atom map").size(12),
+                text(reshiki::i18n::t("Atom map")).size(12),
                 reshiki::accessibility::text_input(
                     "mapping.atom",
-                    "Atom map",
+                    reshiki::i18n::t("Atom map"),
                     "Select one atom",
                     &value
                 )
@@ -449,7 +449,7 @@ impl App {
         };
         body = body
             .push(horizontal_line())
-            .push(text("Review atom maps").size(13))
+            .push(text(reshiki::i18n::t("Review atom maps")).size(13))
             .push(text(certainty).size(11).style(muted_text))
             .push(
                 text(format!(
@@ -486,15 +486,16 @@ impl App {
             );
         }
         if !current {
-            body = body.push(text("Drawing changed · Run Auto-map again").size(11));
+            body =
+                body.push(text(reshiki::i18n::t("Drawing changed · Run Auto-map again")).size(11));
         }
         body.push(
             row![
                 hover_hint(
                     reshiki::accessibility::button(
                         "mapping.apply",
-                        "Apply maps",
-                        text("Apply maps").size(12)
+                        reshiki::i18n::t("Apply maps"),
+                        text(reshiki::i18n::t("Apply maps")).size(12)
                     )
                     .padding([6, 14])
                     .style(crate::appearance::primary)

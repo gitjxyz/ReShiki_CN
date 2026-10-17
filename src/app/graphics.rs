@@ -145,7 +145,7 @@ impl App {
             }),
             text(kind.to_string()).size(14),
             row![
-                text("Line (pt)").size(11),
+                text(reshiki::i18n::t("Line (pt)")).size(11),
                 reshiki::accessibility::text_input(
                     "graphic-line-width",
                     "Graphic line width (pt)",
@@ -168,7 +168,9 @@ impl App {
             ]
             .spacing(6)
             .align_y(Alignment::Center),
-            text("Stroke color").size(11).style(muted_text),
+            text(reshiki::i18n::t("Stroke color"))
+                .size(11)
+                .style(muted_text),
             swatches(
                 Row::Strong,
                 (
@@ -221,7 +223,7 @@ impl App {
                     )
                     .push(hover_hint(
                         checkbox(self.tab.attach_symbols)
-                            .label("Attach to atoms")
+                            .label(reshiki::i18n::t("Attach to atoms"))
                             .on_toggle(|attach| Message::Graphics(Action::AttachSymbols(attach)))
                             .size(14)
                             .text_size(12),
@@ -255,7 +257,7 @@ impl App {
                     )
                     .push(
                         checkbox(self.tab.phase_flipped)
-                            .label("Reverse phases")
+                            .label(reshiki::i18n::t("Reverse phases"))
                             .on_toggle_maybe(
                                 (!matches!(
                                     kind,
@@ -282,7 +284,11 @@ impl App {
                 }))
         {
             panel = panel
-                .push(text("Fill color").size(11).style(muted_text))
+                .push(
+                    text(reshiki::i18n::t("Fill color"))
+                        .size(11)
+                        .style(muted_text),
+                )
                 .push(swatches(
                     Row::Tint,
                     (

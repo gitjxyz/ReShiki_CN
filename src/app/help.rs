@@ -37,8 +37,8 @@ impl App {
             column![
                 row![
                     column![
-                        text("Help & shortcuts").size(22),
-                        text("Quick reference for drawing and editing")
+                        text(reshiki::i18n::t("Help & shortcuts")).size(22),
+                        text(reshiki::i18n::t("Quick reference for drawing and editing"))
                             .size(12)
                             .style(muted_text)
                     ]
@@ -59,9 +59,11 @@ impl App {
                 .spacing(12),
                 scrollable(body).height(Length::Fill),
                 row![
-                    text("Hold a tool or click its corner for more options.")
-                        .size(12)
-                        .style(muted_text),
+                    text(reshiki::i18n::t(
+                        "Hold a tool or click its corner for more options."
+                    ))
+                    .size(12)
+                    .style(muted_text),
                     Space::new().width(Length::Fill),
                     reshiki::accessibility::button(
                         "help-done",
@@ -295,7 +297,10 @@ fn editing_shortcuts() -> Element<'static, Message> {
 
 fn context_shortcuts() -> iced::widget::Column<'static, Message> {
     column![
-        text("Under the pointer or keyboard hotspot (case-sensitive)").size(14),
+        text(reshiki::i18n::t(
+            "Under the pointer or keyboard hotspot (case-sensitive)"
+        ))
+        .size(14),
         shortcut("1 / 2 / 3", "Bond: single / double / triple"),
         shortcut("b / w / h / y", "Bond: bold / wedge / hashed wedge / wavy"),
         shortcut(
@@ -436,11 +441,11 @@ fn file_shortcuts() -> Element<'static, Message> {
 
 fn help_examples() -> iced::widget::Column<'static, Message> {
     column![
-        reshiki::accessibility::button("help-examples", "Open shortcut examples", text("Open shortcut examples").size(14))
+        reshiki::accessibility::button("help-examples", reshiki::i18n::t("Open shortcut examples"), text(reshiki::i18n::t("Open shortcut examples")).size(14))
             .padding([10, 16])
             .on_press(Message::OpenShortcutExamples)
             .style(control(true)),
-        text("One editable drawing with labeled examples. Opens in a tab; double-click a structure to select it, then copy and paste into your drawing. Save creates your own copy.")
+        text(reshiki::i18n::t("One editable drawing with labeled examples. Opens in a tab; double-click a structure to select it, then copy and paste into your drawing. Save creates your own copy."))
             .size(12).style(muted_text),
     ].spacing(8)
 }

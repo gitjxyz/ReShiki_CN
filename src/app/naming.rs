@@ -635,7 +635,7 @@ impl App {
                     .on_press(Message::Inspector(InspectorTab::Import)),
             ]
             .align_y(iced::Alignment::Center),
-            text("Chemical names").size(20),
+            text(reshiki::i18n::t("Chemical names")).size(20),
             text(PANEL_INTRO).size(11).style(muted_text),
         ]
         .spacing(8);
@@ -750,9 +750,11 @@ impl App {
         .spacing(8);
         if preview.modified {
             content = content.push(
-                text("Edited structure: the name may not match.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Edited structure: the name may not match.",
+                ))
+                .size(11)
+                .style(muted_text),
             );
         }
         content = content.push(

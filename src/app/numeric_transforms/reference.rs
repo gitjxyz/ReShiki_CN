@@ -469,7 +469,7 @@ impl App {
                 "Reference",
                 width,
                 crate::appearance::pick_list(choices, chosen, |c| message(Action::Reference(c)))
-                    .placeholder("Bond or edge")
+                    .placeholder(reshiki::i18n::t("Bond or edge"))
                     .text_size(12)
                     .padding(6)
                     .width(Length::Fill),

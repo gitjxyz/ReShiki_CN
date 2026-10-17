@@ -418,9 +418,9 @@ impl App {
             .spacing(10),
             reshiki::accessibility::button(
                 "updates-automatic",
-                "Check automatically",
+                reshiki::i18n::t("Check automatically"),
                 checkbox(state.automatic)
-                    .label("Check automatically")
+                    .label(reshiki::i18n::t("Check automatically"))
                     .on_toggle_maybe(
                         (!state.saving)
                             .then_some(|enabled| Message::Updates(Action::Automatic(enabled)))

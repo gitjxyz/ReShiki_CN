@@ -951,7 +951,7 @@ impl App {
                 ),
                 hover_hint(
                     command("Dummy atom (*)", Message::Element("*".into())).width(Length::Fill),
-                    "Draw * wildcard atoms with the Atom tool",
+                    reshiki::i18n::t("Draw * wildcard atoms with the Atom tool"),
                     tooltip::Position::Top,
                 ),
             ]
@@ -1087,7 +1087,7 @@ impl App {
         let mut controls = column![
             text(reshiki::i18n::t("Style")).size(11).style(muted_text),
             crate::appearance::pick_list(BondPreset::ALL, preset, Message::ApplyBondPreset)
-                .placeholder("Mixed bond styles")
+                .placeholder(reshiki::i18n::t("Mixed bond styles"))
                 .text_size(12)
                 .padding(7)
                 .width(Length::Fill),
@@ -1116,7 +1116,7 @@ impl App {
                         position,
                         Message::BondPosition,
                     )
-                    .placeholder("Mixed positions")
+                    .placeholder(reshiki::i18n::t("Mixed positions"))
                     .text_size(12)
                     .padding(7)
                     .width(Length::Fill),
@@ -1142,13 +1142,13 @@ impl App {
                         command("Aromatic circle", Message::AromaticDisplay)
                             .on_press_maybe((!self.tab.busy).then_some(Message::AromaticDisplay))
                             .width(Length::Fill),
-                        "Toggle the aromatic circle",
+                        reshiki::i18n::t("Toggle the aromatic circle"),
                         tooltip::Position::Top,
                     ),
                     hover_hint(
                         command("Inner ring curve", Message::InspectorAction(Action::RingArc))
                             .width(Length::Fill),
-                        "Toggle the inner ring curve · Select consecutive ring atoms for a partial curve, or the whole ring for a circle. Bond orders stay unchanged.",
+                        reshiki::i18n::t("Toggle the inner ring curve · Select consecutive ring atoms for a partial curve, or the whole ring for a circle. Bond orders stay unchanged."),
                         tooltip::Position::Top,
                     ),
                 ]
@@ -1271,7 +1271,7 @@ impl App {
                 None::<reshiki::graphics::GraphicKind>,
                 Message::AddFrame
             )
-            .placeholder("Add frame…")
+            .placeholder(reshiki::i18n::t("Add frame…"))
             .text_size(12)
             .padding(7)
             .width(Length::Fill),
@@ -1291,7 +1291,9 @@ impl App {
                     .size(14)
                     .text_size(12)
                     .on_toggle(Message::IntegralGroup),
-                "Integral groups stay whole with Option/Alt-click. Ungroup releases them.",
+                reshiki::i18n::t(
+                    "Integral groups stay whole with Option/Alt-click. Ungroup releases them.",
+                ),
                 tooltip::Position::Top,
             ));
         }

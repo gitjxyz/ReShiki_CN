@@ -107,10 +107,12 @@ impl App {
                 .on_submit(apply.clone());
                 column![
                     row![
-                        text("Rear opacity").size(12).width(Length::Fill),
+                        text(reshiki::i18n::t("Rear opacity"))
+                            .size(12)
+                            .width(Length::Fill),
                         container(hover_hint(
                             accessible_unit_field(field, "%"),
-                            "0–100 · Enter applies",
+                            reshiki::i18n::t("0–100 · Enter applies"),
                             tooltip::Position::Top,
                         ))
                         .width(REAR_OPACITY_FIELD),

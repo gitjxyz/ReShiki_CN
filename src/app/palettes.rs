@@ -445,8 +445,10 @@ impl App {
             body = body.push(line);
         }
         body = body.push(
-            text("Choose an element, then click an atom to replace it or empty space to add it.")
-                .size(11),
+            text(reshiki::i18n::t(
+                "Choose an element, then click an atom to replace it or empty space to add it.",
+            ))
+            .size(11),
         );
         body
     }
@@ -494,7 +496,7 @@ impl App {
             }
             body = body.push(line);
         }
-        body = body.push(text("Choose a style, then draw or click an existing bond. Single, double and triple bonds also have direct toolbar buttons.").size(11));
+        body = body.push(text(reshiki::i18n::t("Choose a style, then draw or click an existing bond. Single, double and triple bonds also have direct toolbar buttons.")).size(11));
         body
     }
     fn ring_palette<'a>(
@@ -552,7 +554,7 @@ impl App {
             }
             body = body.push(line);
         }
-        body = body.push(text("Choose a ring, then click an atom or bond to attach. Templates offer more structures.").size(11));
+        body = body.push(text(reshiki::i18n::t("Choose a ring, then click an atom or bond to attach. Templates offer more structures.")).size(11));
         body
     }
     fn arrow_palette<'a>(
@@ -659,7 +661,7 @@ impl App {
             }
             body = body.push(line);
         }
-        body = body.push(text("Click to place or change an arrow. Click the same type again to switch direction or half-head side. Drag to draw; drag the middle handle to bend.").size(11));
+        body = body.push(text(reshiki::i18n::t("Click to place or change an arrow. Click the same type again to switch direction or half-head side. Drag to draw; drag the middle handle to bend.")).size(11));
         body
     }
     fn graphic_palette<'a>(
@@ -695,8 +697,10 @@ impl App {
             body = body.push(line);
         }
         body = body.push(
-            text("Choose a style, then drag to draw. Hold the toolbar button to change it.")
-                .size(11),
+            text(reshiki::i18n::t(
+                "Choose a style, then drag to draw. Hold the toolbar button to change it.",
+            ))
+            .size(11),
         );
         body
     }

@@ -21,7 +21,7 @@ impl App {
         let popup = container(
             column![
                 row![
-                    text("Sent image").size(18),
+                    text(reshiki::i18n::t("Sent image")).size(18),
                     Space::new().width(Length::Fill),
                     reshiki::accessibility::button(
                         "image-close",

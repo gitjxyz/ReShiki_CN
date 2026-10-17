@@ -328,7 +328,7 @@ impl App {
             .line_height(self.tab.caption_format.line_spacing)
             .padding(7)
             .height(editor_height)
-            .placeholder("Type a label…")
+            .placeholder(reshiki::i18n::t("Type a label…"))
             .on_action(Message::CaptionAction)
             .highlight_with::<CaptionHighlighter>(
                 {
@@ -467,7 +467,7 @@ impl App {
         }
         body = body.push(
             row![
-                text("Esc to cancel")
+                text(reshiki::i18n::t("Esc to cancel"))
                     .size(10)
                     .style(super::workspace::muted_text),
                 Space::new().width(Length::Fill),
@@ -475,7 +475,7 @@ impl App {
                     reshiki::accessibility::button(
                         "inline-caption-done",
                         "Apply caption text",
-                        text("Done ↵").size(11)
+                        text(reshiki::i18n::t("Done ↵")).size(11)
                     )
                     .on_press(Message::InlineText(Action::Finish(true)))
                     .style(super::workspace::control(true)),

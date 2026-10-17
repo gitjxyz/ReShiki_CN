@@ -146,7 +146,7 @@ impl App {
                     ..Default::default()
                 }
             }),
-            "Arc sweep",
+            reshiki::i18n::t("Arc sweep"),
             tooltip::Position::Bottom,
         )
         .into()
