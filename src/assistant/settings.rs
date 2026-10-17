@@ -15,14 +15,14 @@ impl Effort {
 }
 pub fn effort_label(id: &str) -> &str {
     match id {
-        "none" => "None",
-        "minimal" => "Minimal",
-        "low" => "Low",
-        "medium" => "Medium",
-        "high" => "High",
-        "xhigh" => "Extra high",
-        "max" => "Max",
-        "ultra" => "Ultra",
+        "none" => crate::i18n::t("None"),
+        "minimal" => crate::i18n::t("Minimal"),
+        "low" => crate::i18n::t("Low"),
+        "medium" => crate::i18n::t("Medium"),
+        "high" => crate::i18n::t("High"),
+        "xhigh" => crate::i18n::t("Extra high"),
+        "max" => crate::i18n::t("Max"),
+        "ultra" => crate::i18n::t("Ultra"),
         other => other,
     }
 }
