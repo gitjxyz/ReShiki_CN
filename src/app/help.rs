@@ -136,7 +136,7 @@ impl App {
 
 fn shortcut(keys: &str, label: &'static str) -> Element<'static, Message> {
     row![
-        text(label).size(12).width(Length::Fill),
+        text(reshiki::i18n::t(label)).size(12).width(Length::Fill),
         container(rich_text(super::shortcuts::spans(keys)).size(11))
             .padding([3, 6])
             .style(|theme| crate::appearance::container(
@@ -158,7 +158,7 @@ fn shortcut(keys: &str, label: &'static str) -> Element<'static, Message> {
 }
 
 fn group(title: &'static str, shortcuts: &[(String, &'static str)]) -> Element<'static, Message> {
-    let mut body = column![text(title).size(14)].spacing(8);
+    let mut body = column![text(reshiki::i18n::t(title)).size(14)].spacing(8);
     for (keys, label) in shortcuts {
         body = body.push(shortcut(keys, label));
     }
