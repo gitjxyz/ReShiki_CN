@@ -18,7 +18,7 @@ impl App {
             Edit::CancelArrowSource => {
                 self.error = false;
                 self.tab.arrows.cancel_source();
-                self.status = "Arrow source canceled".into();
+                self.status = reshiki::i18n::t("Arrow source canceled").into();
                 return;
             }
             Edit::ContextMenu {
@@ -230,7 +230,8 @@ impl App {
                 length,
             } => {
                 if !self.reference_stretch_active(fixed, moving) {
-                    self.status = "Choose a bond in this drawing before stretching".into();
+                    self.status =
+                        reshiki::i18n::t("Choose a bond in this drawing before stretching").into();
                     self.error = true;
                     return;
                 }

@@ -64,7 +64,9 @@ impl App {
             Ok(doc) => {
                 if path != binding.path {
                     binding.reject();
-                    self.status = "Office edit source does not match the opened file".into();
+                    self.status =
+                        reshiki::i18n::t("Office edit source does not match the opened file")
+                            .into();
                     self.error = true;
                     return Task::none();
                 }

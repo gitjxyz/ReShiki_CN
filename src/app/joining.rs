@@ -337,7 +337,7 @@ impl App {
             Action::Cancel => {
                 self.cancel_join();
                 self.error = false;
-                self.status = "Move & attach cancelled".into();
+                self.status = reshiki::i18n::t("Move & attach cancelled").into();
             }
             Action::Anchor(anchor) => {
                 if let Some(state) = &mut self.tab.joining
@@ -346,7 +346,9 @@ impl App {
                     state.anchor = anchor;
                     if matches!(anchor, Anchor::Bond(..)) {
                         if state.mode == Connection::Coordinate {
-                            self.status = "Coordination requires a donor atom, not a bond.".into();
+                            self.status =
+                                reshiki::i18n::t("Coordination requires a donor atom, not a bond.")
+                                    .into();
                             self.error = true;
                             state.anchor = state.prepared.default_anchor(state.mode);
                             return Task::none();

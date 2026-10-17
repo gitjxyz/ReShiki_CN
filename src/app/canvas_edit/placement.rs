@@ -48,7 +48,7 @@ impl App {
             self.tab.doc = fallback;
             return;
         }
-        self.status = "Bond from text".into();
+        self.status = reshiki::i18n::t("Bond from text").into();
         self.error = false;
     }
 
@@ -92,7 +92,7 @@ impl App {
         if self.tab.revision == revision {
             return;
         }
-        self.status = "Bond from text".into();
+        self.status = reshiki::i18n::t("Bond from text").into();
         self.error = false;
     }
 
@@ -187,7 +187,8 @@ impl App {
         if let Some(state) = &self.tab.joining {
             if state.revision != self.tab.revision || state.epoch != self.tab.file_epoch {
                 self.cancel_join();
-                self.status = "The drawing changed. Start Move & attach again.".into();
+                self.status =
+                    reshiki::i18n::t("The drawing changed. Start Move & attach again.").into();
                 self.error = true;
                 return;
             }
@@ -321,7 +322,8 @@ impl App {
             .bond_preset()
             .unwrap_or(reshiki::bonds::BondPreset::Single);
         if preset == reshiki::bonds::BondPreset::Dotted {
-            self.status = "Drag from a bonded explicit H to an existing acceptor".into();
+            self.status =
+                reshiki::i18n::t("Drag from a bonded explicit H to an existing acceptor").into();
             self.error = true;
             return;
         }

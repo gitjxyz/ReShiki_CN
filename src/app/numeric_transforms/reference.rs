@@ -304,7 +304,8 @@ impl App {
         self.try_replace_document(candidate, selected)?;
         self.sync_numeric_transforms();
         self.error = false;
-        self.status = "Drawing geometry updated · Undo restores the operation".into();
+        self.status =
+            reshiki::i18n::t("Drawing geometry updated · Undo restores the operation").into();
         Ok(())
     }
     pub(super) fn reference_transform_action(&mut self, action: Action) {

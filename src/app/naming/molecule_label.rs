@@ -22,14 +22,15 @@ impl App {
             return Task::none();
         }
         if target(&self.tab.doc, &atoms, &[]).as_ref() != Some(&atoms) {
-            self.status = "Select one complete molecule to show its chemical name".into();
+            self.status =
+                reshiki::i18n::t("Select one complete molecule to show its chemical name").into();
             self.error = true;
             return Task::none();
         }
         let (ticket, cancel) = self.begin_naming(Pending::Caption);
         self.tab.naming.label_target = Some(atoms.clone());
         let document = self.tab.doc.clone();
-        self.status = "Generating chemical name locally…".into();
+        self.status = reshiki::i18n::t("Generating chemical name locally…").into();
         self.error = false;
         Task::perform(generate_for_atoms(document, atoms, cancel), move |result| {
             Message::Naming(Action::Finished(ticket, Box::new(result)))
@@ -38,7 +39,9 @@ impl App {
 
     pub(super) fn place_molecule_name(&mut self, atoms: &[u64], record: Record) {
         let Some(text) = record.systematic_name else {
-            self.status = "The local generator returned no supported systematic name".into();
+            self.status =
+                reshiki::i18n::t("The local generator returned no supported systematic name")
+                    .into();
             self.error = true;
             return;
         };
@@ -75,7 +78,7 @@ impl App {
         if reshiki::molecule_names::hide(&mut self.tab.doc, atoms) {
             self.changed(before);
             if !self.error {
-                self.status = "Chemical name hidden · Undo restores it".into();
+                self.status = reshiki::i18n::t("Chemical name hidden · Undo restores it").into();
             }
         }
     }

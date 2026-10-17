@@ -140,7 +140,7 @@ impl App {
             || matches!(action, Action::Toggle) && self.tab.keyboard_drawing.enabled()
         {
             self.tab.keyboard_drawing.leave();
-            self.status = "Keyboard drawing off".into();
+            self.status = reshiki::i18n::t("Keyboard drawing off").into();
             self.error = false;
             return Task::none();
         }
@@ -190,7 +190,7 @@ impl App {
                         format!("Marked atom {id} · Navigate to another atom, then ] to connect");
                     self.error = false;
                 } else {
-                    self.status = "Navigate to an atom, then [ to mark it".into();
+                    self.status = reshiki::i18n::t("Navigate to an atom, then [ to mark it").into();
                     self.error = false;
                 }
             }

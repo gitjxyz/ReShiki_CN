@@ -226,7 +226,7 @@ impl App {
                 self.tab.mapping.set_proposal(Some(proposal));
             }
             Ok(_) => {
-                self.status = "The drawing changed; run Auto-map again".into();
+                self.status = reshiki::i18n::t("The drawing changed; run Auto-map again").into();
             }
             Err(error) => {
                 self.status = error;
@@ -266,7 +266,7 @@ impl App {
             return Task::none();
         }
         let Some(arrow) = self.reaction_arrow() else {
-            self.status = "Assign reactants and products first".into();
+            self.status = reshiki::i18n::t("Assign reactants and products first").into();
             self.error = true;
             return Task::none();
         };
@@ -275,7 +275,7 @@ impl App {
         let epoch = self.tab.file_epoch;
         self.tab.mapping.pending = Some((epoch, serial));
         self.tab.mapping.set_proposal(None);
-        self.status = "Finding atom correspondence…".into();
+        self.status = reshiki::i18n::t("Finding atom correspondence…").into();
         self.error = false;
         Task::perform(calculate(self.tab.doc.clone(), arrow), move |result| {
             Message::Mapping(Action::Ready(epoch, serial, result))
@@ -303,7 +303,7 @@ impl App {
             .map(|a| a.id)
             .collect();
         self.tool = Tool::EditPoints;
-        self.status = "Drag atom-map handles · Escape finishes".into();
+        self.status = reshiki::i18n::t("Drag atom-map handles · Escape finishes").into();
     }
     fn commit_mapping(&mut self, edit: impl FnOnce(&Document) -> Result<Document, String>) {
         let before = self.tab.doc.clone();
@@ -312,7 +312,7 @@ impl App {
                 self.tab.doc = candidate;
                 self.changed(before);
                 self.tab.mapping.set_proposal(None);
-                self.status = "Atom mapping updated".into();
+                self.status = reshiki::i18n::t("Atom mapping updated").into();
                 self.error = false;
             }
             Err(error) => {

@@ -879,7 +879,7 @@ impl App {
             }
             _ => {
                 self.error = true;
-                self.status = "Enter a font size from 4 to 144 pt".into();
+                self.status = reshiki::i18n::t("Enter a font size from 4 to 144 pt").into();
             }
         }
     }
@@ -887,9 +887,12 @@ impl App {
         self.tab.color_scope = scope;
         self.sync_color_input();
         if scope == typography::ColorScope::Rings {
-            self.status = "Ring interiors · Select a ring, then choose a Tint color".into();
+            self.status =
+                reshiki::i18n::t("Ring interiors · Select a ring, then choose a Tint color").into();
         } else if scope == typography::ColorScope::Highlights {
-            self.status = "Highlights · Select atoms or bonds, then choose a Tint color".into();
+            self.status =
+                reshiki::i18n::t("Highlights · Select atoms or bonds, then choose a Tint color")
+                    .into();
         }
     }
     pub(super) fn set_text_color_input(&mut self, value: String) {
@@ -922,7 +925,9 @@ impl App {
             self.apply_paragraph(None, None, Some(Some(width)));
         } else {
             self.error = true;
-            self.status = "Text width must be 10–2000 pt, or blank for automatic width".into();
+            self.status =
+                reshiki::i18n::t("Text width must be 10–2000 pt, or blank for automatic width")
+                    .into();
         }
     }
 }

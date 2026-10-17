@@ -60,7 +60,8 @@ impl App {
             self.status = format!("Place {} atoms", self.element);
             self.error = false;
         } else {
-            self.status = "Enter an element symbol, for example Si, Fe, Na or H".into();
+            self.status =
+                reshiki::i18n::t("Enter an element symbol, for example Si, Fe, Na or H").into();
             self.error = true;
         }
     }
@@ -88,7 +89,9 @@ impl App {
                 self.changed(before);
             }
             _ => {
-                self.status = "Enter an isotope mass number from 0 to 300 (0 clears it)".into();
+                self.status =
+                    reshiki::i18n::t("Enter an isotope mass number from 0 to 300 (0 clears it)")
+                        .into();
                 self.error = true;
             }
         }

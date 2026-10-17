@@ -484,7 +484,9 @@ impl Session {
         let was_paused = self.relaxation.paused.is_some();
         let task = self.next();
         if was_paused && self.running {
-            *status = "Relaxation resumed for the edited targets · Preview retained".into();
+            *status =
+                reshiki::i18n::t("Relaxation resumed for the edited targets · Preview retained")
+                    .into();
         } else if let Some(reason) = self.relaxation.paused {
             *status = reason.status().into();
         }
@@ -554,7 +556,7 @@ impl App {
         }
         if matches!(message, Message::Escape) {
             self.cancel_optimization();
-            self.status = "3D preview cancelled · Drawing unchanged".into();
+            self.status = reshiki::i18n::t("3D preview cancelled · Drawing unchanged").into();
             self.error = false;
             return Some(Task::none());
         }
@@ -577,7 +579,8 @@ impl App {
         if allowed {
             None
         } else {
-            self.status = "Apply or cancel the 3D preview to continue editing".into();
+            self.status =
+                reshiki::i18n::t("Apply or cancel the 3D preview to continue editing").into();
             Some(Task::none())
         }
     }
@@ -644,13 +647,13 @@ impl App {
             let task = session.dispatch(Work::Generate);
             self.tab.optimization = Some(session);
             self.tool = Tool::Select;
-            self.status = "Generating stereo-preserving 3D · MMFF94s".into();
+            self.status = reshiki::i18n::t("Generating stereo-preserving 3D · MMFF94s").into();
             self.error = false;
             return Task::batch([task, self.show_optimization_properties()]);
         }
         if matches!(action, Action::Cancel) {
             self.cancel_optimization();
-            self.status = "3D preview cancelled · Drawing unchanged".into();
+            self.status = reshiki::i18n::t("3D preview cancelled · Drawing unchanged").into();
             self.error = false;
             return Task::none();
         }
@@ -697,7 +700,9 @@ impl App {
                 session.phase = Phase::Failed;
                 session.notice =
                     Some("The optimizer moved a pinned atom; the result was discarded".into());
-                self.status = "The optimizer moved a pinned atom; the result was discarded".into();
+                self.status =
+                    reshiki::i18n::t("The optimizer moved a pinned atom; the result was discarded")
+                        .into();
                 self.error = true;
                 return Task::none();
             }
@@ -813,12 +818,12 @@ impl App {
                 session.phase = Phase::Running;
                 session.notice = None;
                 session.relaxation = Relaxation::default();
-                self.status = "Relaxing 3D preview…".into();
+                self.status = reshiki::i18n::t("Relaxing 3D preview…").into();
                 return session.next_with_status(&mut self.status);
             }
             Action::Stop => {
                 session.pause();
-                self.status = "Relaxation stopped · Preview retained".into();
+                self.status = reshiki::i18n::t("Relaxation stopped · Preview retained").into();
             }
             Action::Apply => {
                 if session.conformer.is_none() || session.phase == Phase::Failed {
@@ -827,7 +832,7 @@ impl App {
                 session.pause();
                 session.original = false;
                 session.phase = Phase::Applying;
-                self.status = "Checking the final 3D projection…".into();
+                self.status = reshiki::i18n::t("Checking the final 3D projection…").into();
                 return session.dispatch(Work::Apply);
             }
             Action::Field(field) => {

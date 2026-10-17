@@ -395,7 +395,7 @@ impl App {
             match result {
                 Ok(_) => {
                     self.tab.autosaved_revision = Some(self.tab.revision);
-                    self.tab.autosave_status = "Recovery draft saved".into();
+                    self.tab.autosave_status = reshiki::i18n::t("Recovery draft saved").into();
                 }
                 Err(error) => self.tab.autosave_status = format!("Recovery save failed: {error}"),
             }

@@ -20,7 +20,7 @@ impl App {
 
     pub(super) fn copy_as(&mut self, format: CopyFormat) -> Task<Message> {
         if self.clipboard_working() {
-            self.status = "A clipboard operation is already in progress".into();
+            self.status = reshiki::i18n::t("A clipboard operation is already in progress").into();
             return Task::none();
         }
         let snapshot = reshiki::clipboard::selection_or_drawing(&self.tab.doc, &self.tab.selected);
@@ -42,7 +42,7 @@ impl App {
 
     pub(super) fn copy_chemical_text(&mut self) -> Task<Message> {
         if self.clipboard_working() {
-            self.status = "A clipboard operation is already in progress".into();
+            self.status = reshiki::i18n::t("A clipboard operation is already in progress").into();
             return Task::none();
         }
         let snapshot = reshiki::clipboard::selection_or_drawing(&self.tab.doc, &self.tab.selected);
@@ -108,7 +108,9 @@ impl App {
         }
         if key.revision != self.tab.revision || key.selected != self.tab.selected {
             self.finish_copy_as();
-            self.status = "Drawing or selection changed; copy again · Clipboard unchanged".into();
+            self.status =
+                reshiki::i18n::t("Drawing or selection changed; copy again · Clipboard unchanged")
+                    .into();
             self.error = false;
             return Task::none();
         }
@@ -127,7 +129,9 @@ impl App {
         if !reshiki::clipboard::available() {
             let Some(text) = copy.text().map(str::to_owned) else {
                 self.finish_copy_as();
-                self.status = "Native clipboard is unavailable; use Export for this format".into();
+                self.status =
+                    reshiki::i18n::t("Native clipboard is unavailable; use Export for this format")
+                        .into();
                 self.error = true;
                 return Task::none();
             };
@@ -175,11 +179,11 @@ impl App {
 
     pub(super) fn copy_native(&mut self, cut: bool, image_only: bool) -> Task<Message> {
         if self.clipboard_working() {
-            self.status = "A clipboard operation is already in progress".into();
+            self.status = reshiki::i18n::t("A clipboard operation is already in progress").into();
             return Task::none();
         }
         if self.tab.selected.is_empty() && !image_only {
-            self.status = "Select objects to copy".into();
+            self.status = reshiki::i18n::t("Select objects to copy").into();
             return Task::none();
         }
         let snapshot = if self.tab.selected.is_empty() {
@@ -196,7 +200,7 @@ impl App {
         self.native_copy_busy = true;
         self.tab.clipboard_busy = true;
         self.error = false;
-        self.status = "Preparing clipboard…".into();
+        self.status = reshiki::i18n::t("Preparing clipboard…").into();
         Task::perform(
             reshiki::clipboard::copy(self.engine.clone(), snapshot, image_only),
             move |result| Message::ClipboardWritten {
@@ -210,12 +214,12 @@ impl App {
 
     pub(super) fn paste_native(&mut self, image_only: bool) -> Task<Message> {
         if self.clipboard_working() {
-            self.status = "A clipboard operation is already in progress".into();
+            self.status = reshiki::i18n::t("A clipboard operation is already in progress").into();
             return Task::none();
         }
         self.tab.clipboard_busy = true;
         self.error = false;
-        self.status = "Reading clipboard…".into();
+        self.status = reshiki::i18n::t("Reading clipboard…").into();
         let (epoch, revision) = (self.tab.file_epoch, self.tab.revision);
         Task::perform(
             reshiki::clipboard::paste_with_warnings(self.engine.clone(), image_only),
@@ -329,7 +333,7 @@ impl App {
         );
         if selected.is_empty() || self.tab.doc.validate().is_err() {
             self.tab.doc = before;
-            self.status = "Could not insert the clipboard drawing".into();
+            self.status = reshiki::i18n::t("Could not insert the clipboard drawing").into();
             self.error = true;
             return;
         }
@@ -348,9 +352,10 @@ impl App {
             if let Some(id) = self.tab.selected.first().copied() {
                 self.reveal_picture(id);
             }
-            self.status = "Picture pasted · Drag the corner handles to resize".into();
+            self.status =
+                reshiki::i18n::t("Picture pasted · Drag the corner handles to resize").into();
         } else {
-            self.status = "Editable drawing pasted".into();
+            self.status = reshiki::i18n::t("Editable drawing pasted").into();
         }
         if !outcome.warnings.is_empty() {
             self.status.push_str(" · ");
@@ -360,14 +365,14 @@ impl App {
 
     pub(super) fn copy_selection(&mut self, cut: bool) -> Task<Message> {
         if self.clipboard_working() {
-            self.status = "A clipboard operation is already in progress".into();
+            self.status = reshiki::i18n::t("A clipboard operation is already in progress").into();
             return Task::none();
         }
         if reshiki::clipboard::available() {
             return self.copy_native(cut, false);
         }
         if self.tab.selected.is_empty() {
-            self.status = "Select objects to copy".into();
+            self.status = reshiki::i18n::t("Select objects to copy").into();
             return Task::none();
         }
         let selection = editing::selection(&self.tab.doc, &self.tab.selected);
@@ -398,7 +403,7 @@ impl App {
 
     pub(super) fn copy_smiles(&mut self) -> Task<Message> {
         if self.clipboard_working() {
-            self.status = "A clipboard operation is already in progress".into();
+            self.status = reshiki::i18n::t("A clipboard operation is already in progress").into();
             return Task::none();
         }
         if let Some(a) = self.property_analysis() {
@@ -428,7 +433,7 @@ impl App {
                         );
                         self.changed(before);
                         self.tool = Tool::Select;
-                        self.status = "Selection pasted".into();
+                        self.status = reshiki::i18n::t("Selection pasted").into();
                     }
                     Err(e) => {
                         self.status = format!("Could not paste: {e}");

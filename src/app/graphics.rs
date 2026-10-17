@@ -419,7 +419,7 @@ impl App {
             }
             _ => {
                 self.error = true;
-                self.status = "Line width must be 0.1–12 pt".into();
+                self.status = reshiki::i18n::t("Line width must be 0.1–12 pt").into();
             }
         }
     }

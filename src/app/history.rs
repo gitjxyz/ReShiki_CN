@@ -71,7 +71,7 @@ impl App {
                     self.fit();
                 }
             }
-            self.status = "History restored".into();
+            self.status = reshiki::i18n::t("History restored").into();
             self.error = false;
         }
     }

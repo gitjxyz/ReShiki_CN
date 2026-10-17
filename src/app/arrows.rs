@@ -281,7 +281,7 @@ impl App {
         self.changed(before);
         self.sync_arrows();
         self.error = false;
-        self.status = "Arrow updated · Drag the diamond to bend".into();
+        self.status = reshiki::i18n::t("Arrow updated · Drag the diamond to bend").into();
     }
     pub(super) fn arrow_panel(&self) -> Element<'_, Message> {
         use super::workspace::{accessible_command, command, hover_hint, muted_text, section};

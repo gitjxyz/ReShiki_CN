@@ -57,11 +57,13 @@ impl App {
         match action {
             Action::Start(scope) => {
                 if self.printing.active.is_some() {
-                    self.status = "A print dialog is already open or being prepared".into();
+                    self.status =
+                        reshiki::i18n::t("A print dialog is already open or being prepared").into();
                     return Task::none();
                 }
                 if !reshiki::printing::available() {
-                    self.status = "Export a page PDF to print on this system".into();
+                    self.status =
+                        reshiki::i18n::t("Export a page PDF to print on this system").into();
                     return Task::none();
                 }
                 let source = match self.print_document() {
@@ -92,7 +94,7 @@ impl App {
                 };
                 self.printing.active = Some(ticket.serial);
                 self.error = false;
-                self.status = "Preparing print preview…".into();
+                self.status = reshiki::i18n::t("Preparing print preview…").into();
                 let mut title = self
                     .tab
                     .path
@@ -123,7 +125,7 @@ impl App {
                         if ticket.epoch == self.tab.file_epoch
                             && ticket.revision == self.tab.revision
                         {
-                            self.status = "Print dialog open".into();
+                            self.status = reshiki::i18n::t("Print dialog open").into();
                         }
                         return Task::perform(reshiki::printing::show_dialog(job), move |result| {
                             Message::Printing(Action::Finished(ticket, result))

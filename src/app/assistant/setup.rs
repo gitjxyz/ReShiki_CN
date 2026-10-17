@@ -230,7 +230,8 @@ impl App {
                 self.assistant.requires_apply = true;
                 self.assistant.example_reference = reference().ok();
                 self.assistant.replace = false;
-                self.assistant.status = "Example attached locally · Choose Send when ready".into();
+                self.assistant.status =
+                    reshiki::i18n::t("Example attached locally · Choose Send when ready").into();
                 self.assistant.error = false;
                 self.assistant.follow_chat = true;
             }

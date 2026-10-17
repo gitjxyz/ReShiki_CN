@@ -170,7 +170,7 @@ impl App {
     fn depth_targets(&mut self) -> Option<Vec<u64>> {
         let ids = self.depth_ids();
         if ids.is_empty() {
-            self.status = "Select a molecule to edit its depth appearance".into();
+            self.status = reshiki::i18n::t("Select a molecule to edit its depth appearance").into();
             self.error = true;
             None
         } else {
@@ -207,7 +207,7 @@ impl App {
             .ok()
             .filter(|v| v.is_finite() && (0. ..=100.).contains(v));
         let Some(value) = value else {
-            self.status = "Rear opacity must be between 0% and 100%".into();
+            self.status = reshiki::i18n::t("Rear opacity must be between 0% and 100%").into();
             self.error = true;
             return Task::none();
         };

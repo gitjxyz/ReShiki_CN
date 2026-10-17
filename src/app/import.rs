@@ -339,12 +339,14 @@ impl App {
                 Plan::Insert(paths) => {
                     if self.tab.busy {
                         self.error = true;
-                        self.status = "Wait for the current operation, then import again".into();
+                        self.status =
+                            reshiki::i18n::t("Wait for the current operation, then import again")
+                                .into();
                         return Task::none();
                     }
                     self.tab.busy = true;
                     self.error = false;
-                    self.status = "Importing…".into();
+                    self.status = reshiki::i18n::t("Importing…").into();
                     let ticket = Ticket {
                         epoch: self.tab.file_epoch,
                         revision: self.tab.revision,

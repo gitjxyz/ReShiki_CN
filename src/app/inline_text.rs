@@ -184,7 +184,7 @@ impl App {
         } else {
             self.tab.inline_text = None;
             self.error = false;
-            self.status = "Text edit cancelled".into();
+            self.status = reshiki::i18n::t("Text edit cancelled").into();
         }
         self.tab.autosaved_revision = None;
         self.tab.autosave.edited_draft();

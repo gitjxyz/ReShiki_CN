@@ -113,7 +113,7 @@ impl App {
                     u.bracket != Some(bracket) && !u.bracket_objects.contains(&bracket)
                 });
                 self.changed(before);
-                self.status = "Repeating-unit definition cleared".into();
+                self.status = reshiki::i18n::t("Repeating-unit definition cleared").into();
                 self.error = false;
             }
             Action::Expand | Action::ExpandComponent(_) => {
@@ -142,7 +142,7 @@ impl App {
                 };
                 let key = (self.tab.id, self.tab.file_epoch);
                 self.generic.pending = Some(key);
-                self.status = "Expanding generic structures…".into();
+                self.status = reshiki::i18n::t("Expanding generic structures…").into();
                 self.error = false;
                 return Task::perform(
                     async move {
@@ -175,7 +175,8 @@ impl App {
                     .strip()
                     .any(|tab| tab.id == source && tab.file_epoch == epoch)
                 {
-                    self.status = "Expansion source was closed or replaced".into();
+                    self.status =
+                        reshiki::i18n::t("Expansion source was closed or replaced").into();
                     return Task::none();
                 }
                 match *result {

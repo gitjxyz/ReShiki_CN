@@ -346,7 +346,7 @@ impl App {
                     Ok(id) => {
                         self.tab.selected = vec![id];
                         self.changed(before);
-                        self.status = "Attachment point added · Draw a bond from * to the metal or substituent".into();
+                        self.status = reshiki::i18n::t("Attachment point added · Draw a bond from * to the metal or substituent").into();
                         self.error = false;
                     }
                     Err(error) => {

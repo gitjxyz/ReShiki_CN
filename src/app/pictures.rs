@@ -99,7 +99,7 @@ impl App {
         let picture = match result {
             Ok(Some(picture)) => picture,
             Ok(None) => {
-                self.status = "Picture replacement cancelled".into();
+                self.status = reshiki::i18n::t("Picture replacement cancelled").into();
                 return;
             }
             Err(error) => {
@@ -142,7 +142,7 @@ impl App {
         self.sync_graphics();
         self.sync_arrows();
         self.sync_bonds();
-        self.status = "Picture replaced · Undo restores the original".into();
+        self.status = reshiki::i18n::t("Picture replaced · Undo restores the original").into();
     }
     pub(super) fn reveal_picture(&mut self, id: u64) {
         if let Some(g) = self
@@ -190,7 +190,7 @@ impl App {
                 };
                 self.tab.pictures.active = Some(ticket.serial);
                 self.error = false;
-                self.status = "Choose a picture…".into();
+                self.status = reshiki::i18n::t("Choose a picture…").into();
                 return Task::perform(choose_picture(), move |result| {
                     Message::Pictures(Action::Loaded(ticket, result))
                 });
@@ -211,7 +211,8 @@ impl App {
                     .filter(|v| (0.01..=10_000.).contains(v));
                 let Some(size) = size else {
                     self.error = true;
-                    self.status = "Enter a picture dimension from 0.01 to 10,000 mm".into();
+                    self.status =
+                        reshiki::i18n::t("Enter a picture dimension from 0.01 to 10,000 mm").into();
                     return Task::none();
                 };
                 let Some(g) = self.selected_picture() else {

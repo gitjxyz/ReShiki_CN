@@ -223,7 +223,9 @@ impl App {
             }
             Action::Saved(result) => match result {
                 Ok(true) => {
-                    self.status = "Theme exported · Includes light and dark palettes".into();
+                    self.status =
+                        reshiki::i18n::t("Theme exported · Includes light and dark palettes")
+                            .into();
                     self.error = false;
                 }
                 Ok(false) => {}

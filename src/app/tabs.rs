@@ -350,7 +350,8 @@ impl App {
                     if !self.office.closing.contains(&id) {
                         self.office.closing.push(id);
                     }
-                    self.status = "Closing the Office tab after its save finishes…".into();
+                    self.status =
+                        reshiki::i18n::t("Closing the Office tab after its save finishes…").into();
                     return Task::none();
                 }
                 if let Some(index) = self.tabs.background.iter().position(|tab| tab.id == id)

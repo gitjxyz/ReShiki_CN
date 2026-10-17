@@ -26,7 +26,9 @@ impl App {
                 }
             }
             tool if tool.bond_preset() == Some(reshiki::bonds::BondPreset::Dotted) => {
-                self.status = "Drag from a bonded explicit H to an existing acceptor".into();
+                self.status =
+                    reshiki::i18n::t("Drag from a bonded explicit H to an existing acceptor")
+                        .into();
                 self.error = true;
                 return;
             }
@@ -195,7 +197,7 @@ impl App {
     pub(super) fn default_bond_from_atom(&mut self, a: u64) -> bool {
         let (order, display) = self.bond_style();
         let Some(start) = self.tab.doc.atom(a).map(|a| a.position) else {
-            self.status = "The bond's starting atom is unavailable".into();
+            self.status = reshiki::i18n::t("The bond's starting atom is unavailable").into();
             self.error = true;
             return false;
         };

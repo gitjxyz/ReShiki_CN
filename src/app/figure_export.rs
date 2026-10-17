@@ -59,7 +59,7 @@ impl App {
                 self.error = false;
             }
             Ok(None) => {
-                self.status = "Export canceled".into();
+                self.status = reshiki::i18n::t("Export canceled").into();
                 self.error = false;
             }
             Err(error) => {

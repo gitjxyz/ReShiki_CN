@@ -61,7 +61,7 @@ impl App {
                             self.tab.doc = doc;
                             self.changed(before);
                             self.tab.selected = anchor.into_iter().collect();
-                            self.status = "Ligand abbreviated · Real atoms and five-center attachment retained".into();
+                            self.status = reshiki::i18n::t("Ligand abbreviated · Real atoms and five-center attachment retained").into();
                             self.error = false;
                             self.tool = Tool::Select;
                         }
@@ -90,7 +90,7 @@ impl App {
                 }
                 self.changed(before);
                 self.tool = Tool::Select;
-                self.status = "Fragment abbreviated · All atoms and bonds retained · Expand restores the drawing".into();
+                self.status = reshiki::i18n::t("Fragment abbreviated · All atoms and bonds retained · Expand restores the drawing").into();
             }
             Action::Expand | Action::ExpandAll => {
                 let ids = if matches!(action, Action::ExpandAll) {

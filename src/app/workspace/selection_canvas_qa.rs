@@ -126,7 +126,7 @@ async fn selection_layout_and_double_click_regression() {
                 app.tab.doc.atoms[0].element = "N".into();
                 app.tab.saved = app.tab.doc.clone();
                 app.tab.busy = false;
-                app.status = "Ready".into();
+                app.status = reshiki::i18n::t("Ready").into();
                 app.appearance.mode = crate::appearance::Mode::Light;
                 app.inspector_open = inspector;
                 app.tab.camera.zoom = zoom;
@@ -225,7 +225,7 @@ async fn selection_layout_and_double_click_regression() {
         });
         app.tab.saved = app.tab.doc.clone();
         app.tab.busy = false;
-        app.status = "Ready".into();
+        app.status = reshiki::i18n::t("Ready").into();
         app.appearance.mode = crate::appearance::Mode::Light;
         app.inspector_open = false;
         app.tab.camera.center = reshiki::document::Point::new(-20., 10.);

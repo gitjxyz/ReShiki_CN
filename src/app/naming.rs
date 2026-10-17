@@ -339,7 +339,9 @@ impl App {
                 "The drawing changed. Try again.",
             ));
             if caption {
-                self.status = "The molecule changed while naming. Show its name again".into();
+                self.status =
+                    reshiki::i18n::t("The molecule changed while naming. Show its name again")
+                        .into();
                 self.error = true;
             }
             return;
@@ -589,7 +591,8 @@ impl App {
         self.changed(before);
         self.tool = Tool::Select;
         self.fit();
-        self.status = "Inserted editable name result · Undo removes the insertion".into();
+        self.status =
+            reshiki::i18n::t("Inserted editable name result · Undo removes the insertion").into();
         self.error = false;
     }
 

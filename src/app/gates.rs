@@ -106,7 +106,9 @@ impl App {
                     | Message::Updates(updates::Action::Install)
             )
         {
-            self.status = "Finish opening the requested drawings before closing the editor".into();
+            self.status =
+                reshiki::i18n::t("Finish opening the requested drawings before closing the editor")
+                    .into();
             return Break(Task::none());
         }
         Continue(message)
@@ -368,7 +370,9 @@ impl App {
                 && !self.answers_save_dialog(&message)
             {
                 if !matches!(message, Message::Canvas(_)) {
-                    self.status = "Apply or cancel the cleanup preview to continue editing".into();
+                    self.status =
+                        reshiki::i18n::t("Apply or cancel the cleanup preview to continue editing")
+                            .into();
                 }
                 return Break(Task::none());
             }
