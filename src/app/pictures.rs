@@ -298,7 +298,7 @@ impl App {
             panel = panel
                 .push(
                     row![
-                        text("Width").size(12).width(45),
+                        text(reshiki::i18n::t("Width")).size(12).width(45),
                         crate::appearance::text_input("mm", &self.tab.pictures.width)
                             .on_input(move |v| message(Action::Width(v)))
                             .on_submit(message(Action::Resize(true)))
@@ -311,7 +311,7 @@ impl App {
                 )
                 .push(
                     row![
-                        text("Height").size(12).width(45),
+                        text(reshiki::i18n::t("Height")).size(12).width(45),
                         crate::appearance::text_input("mm", &self.tab.pictures.height)
                             .on_input(move |v| message(Action::Height(v)))
                             .on_submit(message(Action::Resize(false)))

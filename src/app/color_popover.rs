@@ -501,7 +501,7 @@ impl App {
             canvas_theme,
         );
         let input = row![
-            text("Color").size(12).style(muted_text),
+            text(reshiki::i18n::t("Color")).size(12).style(muted_text),
             reshiki::accessibility::text_input(
                 INPUT,
                 "Custom color: hexadecimal, RGB or OKLCH",
@@ -517,7 +517,7 @@ impl App {
             reshiki::accessibility::button(
                 "style-color-apply",
                 "Apply custom color",
-                text("Apply").size(12)
+                text(reshiki::i18n::t("Apply")).size(12)
             )
             .padding([6, 10])
             .style(crate::appearance::secondary)
@@ -736,11 +736,11 @@ impl App {
                 .style(crate::appearance::secondary)
                 .on_press_maybe(changed.then_some(Message::StyleMenu(Action::RestoreHues))),
             Space::new().width(Length::Fill),
-            button(text("Cancel").size(12))
+            button(text(reshiki::i18n::t("Cancel")).size(12))
                 .padding([6, 10])
                 .style(crate::appearance::secondary)
                 .on_press(Message::StyleMenu(Action::Cancel)),
-            button(text("Done").size(12))
+            button(text(reshiki::i18n::t("Done")).size(12))
                 .padding([6, 12])
                 .style(crate::appearance::primary)
                 .on_press(Message::StyleMenu(Action::Done)),

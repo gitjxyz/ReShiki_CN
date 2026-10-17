@@ -688,7 +688,7 @@ impl App {
             );
         }
         if !idle {
-            let mut working = row![text("Working…").size(12)]
+            let mut working = row![text(reshiki::i18n::t("Working…")).size(12)]
                 .spacing(10)
                 .align_y(iced::Alignment::Center);
             if state.local_cancel.is_some() {
@@ -791,7 +791,7 @@ impl App {
                 button(
                     "naming.insert",
                     "Insert editable structure",
-                    text("Insert").size(12)
+                    text(reshiki::i18n::t("Insert")).size(12)
                 )
                 .padding([6, 12])
                 .style(crate::appearance::primary)

@@ -681,7 +681,7 @@ impl App {
                     reshiki::accessibility::button(
                         "transform-apply",
                         "Apply numeric transforms",
-                        text("Apply").size(12)
+                        text(reshiki::i18n::t("Apply")).size(12)
                     )
                     .padding([6, 14])
                     .style(crate::appearance::primary)

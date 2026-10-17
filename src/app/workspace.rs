@@ -24,9 +24,9 @@ impl App {
     fn keyboard_context_summary(&self) -> String {
         use reshiki::keyboard_drawing::Target;
         match self.tab.keyboard_drawing.target() {
-            Target::Blank(_) => "Empty position".into(),
+            Target::Blank(_) => reshiki::i18n::t("Empty position").to_owned(),
             Target::Atom(id) => self.tab.doc.atom(id).map_or_else(
-                || "Empty position".into(),
+                || reshiki::i18n::t("Empty position").to_owned(),
                 |atom| format!("{} #{id}", atom.element),
             ),
             Target::Bond(a, b) => format!("Bond {a}–{b}"),
@@ -121,10 +121,10 @@ impl App {
             .into()
         };
         let mut tools = row![
-            text("STYLE").size(10).style(muted_text),
+            text(reshiki::i18n::t("STYLE")).size(10).style(muted_text),
             combo_box(
                 &self.font_options,
-                "Search fonts…",
+                reshiki::i18n::t("Search fonts…"),
                 Some(&style.family),
                 |family| Message::TextStyle(StyleChange::Family(family))
             )
@@ -356,7 +356,7 @@ impl App {
                     ),
                 Space::new().width(Length::Fill),
                 command("Cancel", Message::Cleanup(super::cleanup::Action::Cancel)),
-                button(text("Apply").size(12))
+                button(text(reshiki::i18n::t("Apply")).size(12))
                     .on_press_maybe(
                         (!self.tab.busy).then_some(Message::Cleanup(super::cleanup::Action::Apply))
                     )
@@ -698,7 +698,7 @@ impl App {
                     iced::widget::canvas(Glyph(Icon::Keyboard, true))
                         .width(24)
                         .height(24),
-                    text("Help").size(10),
+                    text(reshiki::i18n::t("Help")).size(10),
                 ]
                 .spacing(3)
                 .align_x(Alignment::Center),
@@ -1010,7 +1010,7 @@ impl App {
     fn context_row(&self, width: f32) -> Element<'_, Message> {
         let keyboard = self.keyboard_drawing_active();
         let (name, short) = if keyboard {
-            ("Keyboard", "Keys")
+            (reshiki::i18n::t("Keyboard"), reshiki::i18n::t("Keys"))
         } else {
             tool_name(self.tool)
         };
@@ -1196,7 +1196,7 @@ impl App {
                     reshiki::accessibility::button(
                         "stretch-done",
                         "Finish stretching bonds",
-                        text("Done").size(12),
+                        text(reshiki::i18n::t("Done")).size(12),
                     )
                     .padding([7, 9])
                     .on_press(Message::Tool(Tool::Select))
@@ -1211,7 +1211,7 @@ impl App {
                         reshiki::accessibility::button(
                             "edit-points-done",
                             "Finish editing points",
-                            text("Done").size(12),
+                            text(reshiki::i18n::t("Done")).size(12),
                         )
                         .padding([7, 9])
                         .on_press(Message::Tool(Tool::Select))
@@ -1301,7 +1301,7 @@ impl App {
             )
             .into(),
             row![
-                text("Angle").size(11),
+                text(reshiki::i18n::t("Angle")).size(11),
                 container(unit_field(
                     crate::appearance::text_input("120", &self.tab.chain_angle_input)
                         .on_input(Message::ChainAngle),
@@ -1378,7 +1378,10 @@ impl App {
             return options;
         }
         options.extend([
-            text("Size").size(11).style(muted_text).into(),
+            text(reshiki::i18n::t("Size"))
+                .size(11)
+                .style(muted_text)
+                .into(),
             crate::appearance::pick_list(
                 [3_u8, 4, 5, 6, 7, 8],
                 Some(self.ring_size),
@@ -1814,9 +1817,11 @@ impl App {
                 let entry = categories.entry(name).or_insert((0, template));
                 entry.0 += 1;
             }
-            body = body
-                .push(horizontal_line())
-                .push(text("CATEGORIES").size(10).style(muted_text));
+            body = body.push(horizontal_line()).push(
+                text(reshiki::i18n::t("CATEGORIES"))
+                    .size(10)
+                    .style(muted_text),
+            );
             for (name, (count, sample)) in categories {
                 let preview: Element<'_, Message> =
                     canvas(crate::canvas::TemplateThumbnail(&sample.document))
@@ -2194,8 +2199,8 @@ impl App {
     fn view_options(&self) -> Element<'_, Message> {
         container(
             row![
-                text("View").size(12).style(muted_text),
-                text("Interface").size(12).style(muted_text),
+                text(reshiki::i18n::t("View")).size(12).style(muted_text),
+                text(reshiki::i18n::t("Interface")).size(12).style(muted_text),
                 crate::appearance::pick_list(
                     crate::appearance::Mode::ALL,
                     Some(self.appearance.mode),
@@ -2850,7 +2855,7 @@ fn icon_button_at(
     .into()
 }
 pub(super) fn section(label: &str) -> iced::widget::Text<'_> {
-    text(label).size(10).style(muted_text)
+    text(reshiki::i18n::t(label)).size(10).style(muted_text)
 }
 fn ink() -> Color {
     Color::from_rgb8(37, 43, 51)

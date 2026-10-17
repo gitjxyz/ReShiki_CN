@@ -184,7 +184,9 @@ impl DocumentTab {
             arrow_style: Default::default(),
             arrows: Default::default(),
             caption: "Reaction conditions".into(),
-            caption_editor: iced::widget::text_editor::Content::with_text("Reaction conditions"),
+            caption_editor: iced::widget::text_editor::Content::with_text(reshiki::i18n::t(
+                "Reaction conditions",
+            )),
             caption_format: Default::default(),
             caption_target: None,
             font_size_input: "10".into(),
@@ -212,7 +214,11 @@ impl DocumentTab {
             .as_ref()
             .and_then(|p| p.file_name())
             .map(|n| n.to_string_lossy().into_owned())
-            .unwrap_or_else(|| self.untitled_name.unwrap_or("Untitled").into())
+            .unwrap_or_else(|| {
+                self.untitled_name
+                    .unwrap_or(reshiki::i18n::t("Untitled"))
+                    .into()
+            })
     }
 
     pub(super) fn dirty(&self) -> bool {

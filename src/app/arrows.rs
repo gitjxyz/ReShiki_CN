@@ -365,7 +365,7 @@ impl App {
             .padding(6)
             .width(Length::Fill),
             row![
-                text("End").size(11).width(44),
+                text(reshiki::i18n::t("End")).size(11).width(44),
                 crate::appearance::pick_list(Head::ALL, Some(s.head), |v| Message::ArrowAction(
                     Action::Head(v)
                 ))
@@ -375,7 +375,7 @@ impl App {
             ]
             .align_y(Alignment::Center),
             row![
-                text("Start").size(11).width(44),
+                text(reshiki::i18n::t("Start")).size(11).width(44),
                 crate::appearance::pick_list(Head::ALL, Some(s.tail), |v| Message::ArrowAction(
                     Action::Tail(v)
                 ))

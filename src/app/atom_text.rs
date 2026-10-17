@@ -517,7 +517,9 @@ impl App {
             }
             content = content.push(
                 column![
-                    text("Appearance").size(10).style(muted_text),
+                    text(reshiki::i18n::t("Appearance"))
+                        .size(10)
+                        .style(muted_text),
                     canvas(crate::canvas::OwnedDrawingPreview(preview))
                         .width(Length::Fill)
                         .height(52),

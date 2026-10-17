@@ -455,7 +455,7 @@ impl App {
             };
             body = body
                 .push(
-                    text("Appearance")
+                    text(reshiki::i18n::t("Appearance"))
                         .size(10)
                         .style(super::workspace::muted_text),
                 )

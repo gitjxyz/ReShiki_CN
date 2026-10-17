@@ -217,9 +217,12 @@ impl App {
                 reshiki::accessibility::button(
                     "arrange-compact",
                     "Arrange: align, distribute, order, flip and rotate",
-                    row![text("Arrange").size(12), workspace::caret(9.)]
-                        .spacing(5)
-                        .align_y(Alignment::Center),
+                    row![
+                        text(reshiki::i18n::t("Arrange")).size(12),
+                        workspace::caret(9.)
+                    ]
+                    .spacing(5)
+                    .align_y(Alignment::Center),
                 )
                 .width(COMPACT_WIDTH)
                 .padding([7, 9])

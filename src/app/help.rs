@@ -68,7 +68,7 @@ impl App {
                     reshiki::accessibility::button(
                         "help-done",
                         "Done; close Help and shortcuts",
-                        text("Done").size(13)
+                        text(reshiki::i18n::t("Done")).size(13)
                     )
                     .padding([7, 18])
                     .on_press(Message::ToggleHelp)

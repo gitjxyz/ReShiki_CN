@@ -675,7 +675,7 @@ impl App {
             command("‹ Properties")
                 .on_press(action(Action::Cancel))
                 .style(button::text),
-            text("Drawing style").size(19),
+            text(reshiki::i18n::t("Drawing style")).size(19),
             text(reshiki::i18n::t("Physical sizes for this document"))
                 .size(12)
                 .style(super::workspace::muted_text),

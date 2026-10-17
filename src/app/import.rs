@@ -502,7 +502,7 @@ impl App {
             reshiki::accessibility::button(
                 "import-kind-structure",
                 "Import structure",
-                text("Structure").size(12),
+                text(reshiki::i18n::t("Structure")).size(12),
             )
             .checked(kind == InputKind::Structure)
             .style(super::workspace::control(kind == InputKind::Structure))
@@ -510,7 +510,7 @@ impl App {
             reshiki::accessibility::button(
                 "import-kind-name",
                 "Import chemical name",
-                text("Name").size(12),
+                text(reshiki::i18n::t("Name")).size(12),
             )
             .checked(kind == InputKind::Name)
             .style(super::workspace::control(kind == InputKind::Name))
@@ -604,7 +604,11 @@ impl App {
             .width(Length::Fill),
             row![
                 hover_hint(
-                    split(text("Insert").size(12).into(), Message::InsertInput, true),
+                    split(
+                        text(reshiki::i18n::t("Insert")).size(12).into(),
+                        Message::InsertInput,
+                        true
+                    ),
                     format!(
                         "Insert into the drawing · {}",
                         super::shortcuts::keys(iced::keyboard::Modifiers::COMMAND, "Enter")
