@@ -36,10 +36,10 @@ pub enum Preview {
 impl std::fmt::Display for Preview {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Self::Labels => "Element labels",
-            Self::Colors => "Color tiles",
-            Self::Tiles => "Interface tiles",
-            Self::Rings => "On ring fills",
+            Self::Labels => reshiki::i18n::t("Element labels"),
+            Self::Colors => reshiki::i18n::t("Color tiles"),
+            Self::Tiles => reshiki::i18n::t("Interface tiles"),
+            Self::Rings => reshiki::i18n::t("On ring fills"),
         })
     }
 }
@@ -74,10 +74,10 @@ pub enum Selection {
 impl std::fmt::Display for Selection {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::New => f.write_str("New theme…"),
+            Self::New => f.write_str(reshiki::i18n::t("New theme…")),
             Self::Builtin(theme) => theme.fmt(f),
             Self::Saved { name, .. } => f.write_str(name),
-            Self::Draft => f.write_str("Unsaved theme"),
+            Self::Draft => f.write_str(reshiki::i18n::t("Unsaved theme")),
         }
     }
 }
@@ -281,7 +281,7 @@ fn action(action: Action) -> Message {
     Message::ThemeGenerator(action)
 }
 fn command(label: &str, message: Action) -> iced::widget::Button<'_, Message> {
-    button(text(label).size(12))
+    button(text(reshiki::i18n::t(label)).size(12))
         .padding([8, 10])
         .on_press(action(message))
         .style(crate::appearance::secondary)
@@ -363,7 +363,9 @@ impl App {
         editor.references.retain(|r| r.id != reference.id);
         editor.references.push(reference);
         editor.load_theme(theme, Selection::Draft);
-        self.status = "Imported for preview · Save to add it to your library and drawing".into();
+        self.status =
+            reshiki::i18n::t("Imported for preview · Save to add it to your library and drawing")
+                .into();
         self.error = false;
     }
     pub(super) fn theme_generator_action(&mut self, event: Action) -> Task<Message> {
@@ -385,7 +387,8 @@ impl App {
                 self.palette = None;
                 self.tab.styles.editor = None;
                 self.error = false;
-                self.status = "Preview only · Save keeps and applies your theme".into();
+                self.status =
+                    reshiki::i18n::t("Preview only · Save keeps and applies your theme").into();
             }
             Action::Back => {
                 self.theme_library.editor = None;
@@ -435,7 +438,8 @@ impl App {
                         },
                     );
                     self.error = false;
-                    self.status = "Preview only · Save to keep and apply this theme".into();
+                    self.status =
+                        reshiki::i18n::t("Preview only · Save to keep and apply this theme").into();
                 }
             }
             Action::Delete => {
@@ -454,8 +458,10 @@ impl App {
                         editor.references.retain(|r| r.id != id);
                     }
                     let _ = self.theme_generator_action(Action::Select(Selection::New));
-                    self.status =
-                        "Theme removed from library · Existing drawings keep their colors".into();
+                    self.status = reshiki::i18n::t(
+                        "Theme removed from library · Existing drawings keep their colors",
+                    )
+                    .into();
                     self.error = false;
                 }
             }
@@ -466,7 +472,10 @@ impl App {
                 let candidate = if editor.epoch != self.tab.file_epoch
                     || editor.original != ThemeFile::capture(&self.tab.doc)
                 {
-                    Err("The document theme changed. Reopen the generator before saving.".into())
+                    Err(reshiki::i18n::t(
+                        "The document theme changed. Reopen the generator before saving.",
+                    )
+                    .into())
                 } else {
                     editor.candidate()
                 };
@@ -491,7 +500,7 @@ impl App {
                     return Task::perform(
                         async move {
                             let Some(path) = super::files::save_path(
-                                "Export theme (light and dark)",
+                                reshiki::i18n::t("Export theme (light and dark)"),
                                 &format!("{}.reshiki-theme", theme.id),
                                 "reshiki-theme",
                             )
@@ -528,9 +537,10 @@ impl App {
                         );
                         editor.original = original;
                     }
-                    self.status =
-                        "Theme saved and applied · Undo in the drawing restores previous colors"
-                            .into();
+                    self.status = reshiki::i18n::t(
+                        "Theme saved and applied · Undo in the drawing restores previous colors",
+                    )
+                    .into();
                     self.error = false;
                 }
             }
@@ -617,7 +627,7 @@ impl App {
         let can_delete = matches!(&editor.selection, Selection::Saved { id, .. } if self.theme_library.themes().iter().any(|t| t.id == *id));
         let controls = row![
             command("‹ Back to drawing", Action::Back),
-            text("Themes").size(20),
+            text(reshiki::i18n::t("Themes")).size(20),
             crate::appearance::pick_list(choices, Some(editor.selection.clone()), |s| action(
                 Action::Select(s)
             ))
@@ -664,9 +674,11 @@ impl App {
             tables = tables.push(self.theme_table(editor, mode));
         }
         tables = tables.push(
-            text("Light and dark previews · Select an element to inspect its contrast")
-                .size(11)
-                .style(super::workspace::muted_text),
+            text(reshiki::i18n::t(
+                "Light and dark previews · Select an element to inspect its contrast",
+            ))
+            .size(11)
+            .style(super::workspace::muted_text),
         );
         column![
             container(controls)
@@ -766,9 +778,9 @@ impl App {
         }
         let (ink, bg) = editor.colors(&editor.element, mode);
         let role = if matches!(editor.preview, Preview::Colors | Preview::Tiles) {
-            "Symbol / tile"
+            reshiki::i18n::t("Symbol / tile")
         } else {
-            "Label / background"
+            reshiki::i18n::t("Label / background")
         };
         body = body.push(super::workspace::hover_hint(
             text(format!(
@@ -802,10 +814,12 @@ impl App {
             return command("Manage themes…", Action::Open).into();
         };
         let mut body = column![
-            text("Make it yours").size(19),
-            text("Choose a reference. Adjust its lightness and color intensity.")
-                .size(12)
-                .style(super::workspace::muted_text),
+            text(reshiki::i18n::t("Make it yours")).size(19),
+            text(reshiki::i18n::t(
+                "Choose a reference. Adjust its lightness and color intensity."
+            ))
+            .size(12)
+            .style(super::workspace::muted_text),
             row![
                 preview_control(
                     text("N").size(17),
@@ -865,9 +879,11 @@ impl App {
         }
         if matches!(editor.selection, Selection::Builtin(_)) {
             body = body.push(
-                text("Built-in theme · Save creates a custom copy.")
-                    .size(11)
-                    .style(super::workspace::muted_text),
+                text(reshiki::i18n::t(
+                    "Built-in theme · Save creates a custom copy.",
+                ))
+                .size(11)
+                .style(super::workspace::muted_text),
             );
         }
         if editor.selection == Selection::Draft
@@ -888,19 +904,21 @@ impl App {
         }
         if editor.palette.generator.is_none() {
             body = body.push(
-                text("Original palette shown. Adjust a generation control to create new colors.")
-                    .size(11)
-                    .style(super::workspace::muted_text),
+                text(reshiki::i18n::t(
+                    "Original palette shown. Adjust a generation control to create new colors.",
+                ))
+                .size(11)
+                .style(super::workspace::muted_text),
             );
         }
         body = body.push(
             column![
-                text("Theme name").size(12),
-                crate::appearance::text_input("My theme", &editor.name)
+                text(reshiki::i18n::t("Theme name")).size(12),
+                crate::appearance::text_input(reshiki::i18n::t("My theme"), &editor.name)
                     .on_input(|v| action(Action::Name(v)))
                     .padding(8)
                     .size(13),
-                text("Reference theme").size(12),
+                text(reshiki::i18n::t("Reference theme")).size(12),
                 crate::appearance::pick_list(
                     std::iter::once(ReferenceChoice::Jmol)
                         .chain(editor.references.iter().map(ReferenceChoice::from))
@@ -938,8 +956,8 @@ impl App {
                 .push(super::workspace::horizontal_line())
                 .push(text(format!("{mode} mode")).size(15));
             for (label, value, is_lightness) in [
-                ("Lightness", tone.lightness, true),
-                ("Color intensity", tone.chroma, false),
+                (reshiki::i18n::t("Lightness"), tone.lightness, true),
+                (reshiki::i18n::t("Color intensity"), tone.chroma, false),
             ] {
                 let maximum = if is_lightness {
                     100.
@@ -964,15 +982,15 @@ impl App {
                     );
             }
         }
-        body = body.push(text("Lightness: dark → light\nIntensity: 0% gray · 100% reference chroma · 200% twice reference chroma").size(11).style(super::workspace::muted_text))
-            .push(text("Very vivid colors may reach the RGB display limit before 200%.").size(11).style(super::workspace::muted_text))
-            .push(text("Contrast: 4.5:1 minimum for small text. Canvas labels aim for 5:1 and may adjust lightness to stay readable.").size(11).style(super::workspace::muted_text));
+        body = body.push(text(reshiki::i18n::t("Lightness: dark → light\nIntensity: 0% gray · 100% reference chroma · 200% twice reference chroma")).size(11).style(super::workspace::muted_text))
+            .push(text(reshiki::i18n::t("Very vivid colors may reach the RGB display limit before 200%.")).size(11).style(super::workspace::muted_text))
+            .push(text(reshiki::i18n::t("Contrast: 4.5:1 minimum for small text. Canvas labels aim for 5:1 and may adjust lightness to stay readable.")).size(11).style(super::workspace::muted_text));
         body = body.push(super::workspace::horizontal_line())
-            .push(text("Generation formula · OKLCH").size(13))
-            .push(text("Reference RGB → OKLCH\nL = lightness / 100\nC = reference C × intensity / 100\nh = reference h").size(12))
+            .push(text(reshiki::i18n::t("Generation formula · OKLCH")).size(13))
+            .push(text(reshiki::i18n::t("Reference RGB → OKLCH\nL = lightness / 100\nC = reference C × intensity / 100\nh = reference h")).size(12))
             .push(text(format!("Light: L = {:.2}, C = reference C × {:.2}\nDark: L = {:.2}, C = reference C × {:.2}",
                 editor.recipe.light.lightness, editor.recipe.light.chroma, editor.recipe.dark.lightness, editor.recipe.dark.chroma)).size(11).style(super::workspace::muted_text))
-            .push(text("Each mode uses its matching reference palette, with separate seeds for labels and interface tiles. C and H labels stay neutral. RGB conversion reduces chroma if needed; the contrast check can then adjust label lightness.").size(11).style(super::workspace::muted_text));
+            .push(text(reshiki::i18n::t("Each mode uses its matching reference palette, with separate seeds for labels and interface tiles. C and H labels stay neutral. RGB conversion reduces chroma if needed; the contrast check can then adjust label lightness.")).size(11).style(super::workspace::muted_text));
         let candidate = editor.candidate();
         let mut footer = column![].spacing(8);
         if let Err(error) = &candidate {

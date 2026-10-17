@@ -16,7 +16,7 @@ use reshiki::{
 };
 
 fn command(label: &str) -> iced::widget::Button<'_, Message> {
-    button(text(label).size(12)).padding([7, 9])
+    button(text(reshiki::i18n::t(label)).size(12)).padding([7, 9])
 }
 
 #[cfg(test)]
@@ -48,8 +48,8 @@ impl Field {
             format!("{} ({unit})", dimension.name())
         } else {
             match self {
-                Self::FontSize => "Label size (pt)",
-                _ => "Bond spacing (%)",
+                Self::FontSize => reshiki::i18n::t("Label size (pt)"),
+                _ => reshiki::i18n::t("Bond spacing (%)"),
             }
             .into()
         }
@@ -65,7 +65,7 @@ impl Field {
         let value = if self == Self::Spacing {
             text.trim()
                 .parse::<f32>()
-                .map_err(|_| "Enter a number for bond spacing (%).".to_string())?
+                .map_err(|_| reshiki::i18n::t("Enter a number for bond spacing (%).").to_string())?
         } else {
             let parsed = units::parse(
                 text,
@@ -77,7 +77,9 @@ impl Field {
             )
             .map_err(|error| format!("{}: {error}", self.label(unit)))?;
             if self == Self::FontSize && parsed.unit != Unit::Points {
-                return Err("Label size uses pt; enter a bare number or add pt.".into());
+                return Err(
+                    reshiki::i18n::t("Label size uses pt; enter a bare number or add pt.").into(),
+                );
             }
             parsed.points
         };
@@ -142,8 +144,8 @@ impl std::fmt::Display for Choice {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Journal(preset) => preset.fmt(f),
-            Self::Custom => f.write_str("Custom"),
-            Self::Details => f.write_str("Manage styles…"),
+            Self::Custom => f.write_str(reshiki::i18n::t("Custom")),
+            Self::Details => f.write_str(reshiki::i18n::t("Manage styles…")),
         }
     }
 }
@@ -441,7 +443,10 @@ impl App {
                 let result = if editor.epoch != self.tab.file_epoch
                     || editor.original != self.tab.doc.drawing_style
                 {
-                    Err("The document style changed. Reopen Drawing style before applying.".into())
+                    Err(reshiki::i18n::t(
+                        "The document style changed. Reopen Drawing style before applying.",
+                    )
+                    .into())
                 } else {
                     editor.candidate().and_then(|style| {
                         if !editor.apply_semantics_requested && style == self.tab.doc.drawing_style
@@ -461,7 +466,7 @@ impl App {
                     Ok(None) => {
                         self.tab.styles.editor = None;
                         self.inspector_tab = InspectorTab::Properties;
-                        self.status = "Drawing style unchanged".into();
+                        self.status = reshiki::i18n::t("Drawing style unchanged").into();
                         self.error = false;
                     }
                     Ok(Some(doc)) => {
@@ -471,7 +476,7 @@ impl App {
                         if !self.error {
                             self.tab.styles.editor = None;
                             self.inspector_tab = InspectorTab::Properties;
-                            self.status = "Drawing style applied · Undo restores the previous style and layout".into();
+                            self.status = reshiki::i18n::t("Drawing style applied · Undo restores the previous style and layout").into();
                         }
                     }
                     Err(error) => {
@@ -510,9 +515,9 @@ impl App {
                 return Task::perform(
                     async {
                         let Some(file) = rfd::AsyncFileDialog::new()
-                            .set_title("Load drawing style")
+                            .set_title(reshiki::i18n::t("Load drawing style"))
                             .add_filter(
-                                "Drawing styles and ChemDraw stationery",
+                                reshiki::i18n::t("Drawing styles and ChemDraw stationery"),
                                 &[
                                     "reshiki-style",
                                     "moruno-style",
@@ -568,7 +573,7 @@ impl App {
                         return Task::perform(
                             async move {
                                 let Some(path) = super::files::save_path(
-                                    "Save drawing style",
+                                    reshiki::i18n::t("Save drawing style"),
                                     &format!("Drawing.{}", format.extension()),
                                     format.extension(),
                                 )
@@ -594,7 +599,7 @@ impl App {
             }
             Action::Saved(result) => match result {
                 Ok(true) => {
-                    self.status = "Drawing style saved".into();
+                    self.status = reshiki::i18n::t("Drawing style saved").into();
                     self.error = false;
                 }
                 Ok(false) => {}
@@ -671,7 +676,7 @@ impl App {
                 .on_press(action(Action::Cancel))
                 .style(button::text),
             text("Drawing style").size(19),
-            text("Physical sizes for this document")
+            text(reshiki::i18n::t("Physical sizes for this document"))
                 .size(12)
                 .style(super::workspace::muted_text),
             crate::appearance::pick_list(
@@ -704,9 +709,11 @@ impl App {
                 );
         } else {
             header = header.push(
-                text("Customize the current settings, then save a reusable style file.")
-                    .size(12)
-                    .style(super::workspace::muted_text),
+                text(reshiki::i18n::t(
+                    "Customize the current settings, then save a reusable style file.",
+                ))
+                .size(12)
+                .style(super::workspace::muted_text),
             );
         }
         if let Ok(style) = &candidate {
@@ -744,16 +751,16 @@ impl App {
         // focus in the middle of an incomplete number or unit suffix.
         let mut body = column![header].spacing(10);
         body = body.push(
-            crate::appearance::text_input("Style name", &editor.name)
+            crate::appearance::text_input(reshiki::i18n::t("Style name"), &editor.name)
                 .on_input(move |s| action(Action::Name(s)))
                 .size(13)
                 .padding(7),
         );
-        body = body.push(text("Label font").size(12));
+        body = body.push(text(reshiki::i18n::t("Label font")).size(12));
         body = body.push(
             combo_box(
                 &editor.font_options,
-                "Search fonts…",
+                reshiki::i18n::t("Search fonts…"),
                 Some(&editor.font),
                 move |s| action(Action::Font(s)),
             )
@@ -765,7 +772,7 @@ impl App {
         );
         body = body.push(
             row![
-                text("Dimension units").size(12).width(Length::Fill),
+                text(reshiki::i18n::t("Dimension units")).size(12).width(Length::Fill),
                 super::workspace::hover_hint(
                     crate::appearance::pick_list(Unit::ALL, Some(editor.display_unit), move |unit| action(Action::DisplayUnit(unit)))
                         .text_size(12).padding(6).width(104),
@@ -808,27 +815,29 @@ impl App {
             .push(super::workspace::horizontal_line())
             .push(
                 checkbox(editor.matching)
-                    .label("Update matching text and strokes")
+                    .label(reshiki::i18n::t("Update matching text and strokes"))
                     .on_toggle(move |v| action(Action::Matching(v)))
                     .text_size(12),
             )
             .push(
-                text("Preserve custom fonts, sizes and widths.")
+                text(reshiki::i18n::t("Preserve custom fonts, sizes and widths."))
                     .size(11)
                     .style(super::workspace::muted_text),
             )
             .push(
                 checkbox(editor.scale)
-                    .label("Scale layout with bond length")
+                    .label(reshiki::i18n::t("Scale layout with bond length"))
                     .on_toggle(move |v| action(Action::Scale(v)))
                     .text_size(12),
             )
             .push(
-                text("Off: keep positions. On: scale object geometry; keep paper size.")
-                    .size(11)
-                    .style(super::workspace::muted_text),
+                text(reshiki::i18n::t(
+                    "Off: keep positions. On: scale object geometry; keep paper size.",
+                ))
+                .size(11)
+                .style(super::workspace::muted_text),
             );
-        body = body.push(text("Load .cds, .cdx or .cdxml for label fonts and bond settings. Template artwork and page layout are not imported.")
+        body = body.push(text(reshiki::i18n::t("Load .cds, .cdx or .cdxml for label fonts and bond settings. Template artwork and page layout are not imported."))
             .size(11).style(super::workspace::muted_text));
         let mut footer = column![super::workspace::horizontal_line()].spacing(8);
         if let Some(notice) = &editor.unit_notice {
