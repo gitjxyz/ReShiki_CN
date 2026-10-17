@@ -696,5 +696,18 @@
   "Drag an object": "拖动对象",
   "Drag corner handle": "拖动角手柄",
   "Drag side handle": "拖动边手柄",
-  "a with an aromatic ring selected": "选中芳香环时按 a"
+  "a with an aromatic ring selected": "选中芳香环时按 a",
+  "Select / move · v": "选择 / 移动 · v",
+  "Select / move · Escape or toolbar": "选择 / 移动 · Escape 或工具栏",
+  "Lasso select · l": "套索选择 · l",
+  "Lasso select · Toolbar": "套索选择 · 工具栏",
+  "Snaking chain · Steer while dragging · Retrace to shorten": "蜿蜒链 · 拖动时转向 · 回描可缩短",
+  "Graphic line": "图形线条",
+  "Bézier curve": "贝塞尔曲线",
+  "Pen path": "钢笔路径",
+  "Arc": "弧线",
+  "Chemical symbols": "化学符号",
+  "Orbitals": "轨道",
+  "Other bonds": "其他键型",
+  "Rings · r": "环 · r"
 }
