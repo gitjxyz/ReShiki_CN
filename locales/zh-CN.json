@@ -757,5 +757,9 @@
   "Coordinate marked donor to active metal }": "将已标记的给体原子配位到当前金属 }",
   "Mark a donor N/O/S/P with [, choose a metal, then } for a directed dative contact in place": "先用 [ 标记 N/O/S/P 给体原子，再选择金属，按 } 建立定位配位接触",
   "3D optimize…": "3D 优化…",
-  "Generate an optimized conformer using MMFF or UFF; preview before applying": "使用 MMFF 或 UFF 生成优化构象，应用前可预览"
+  "Generate an optimized conformer using MMFF or UFF; preview before applying": "使用 MMFF 或 UFF 生成优化构象，应用前可预览",
+  "Properties": "属性",
+  "Predict": "预测",
+  "Templates": "模板",
+  "Overview": "总览"
 }

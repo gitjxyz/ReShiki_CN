@@ -1549,7 +1549,7 @@ impl App {
                 // Compact labels keep all five tabs inside the 256 px panels
                 // (about 238 px of tabs in 244 px); 11 px labels would need
                 // about 297 px, more than even the 300 px panels offer.
-                button(text(label).size(10))
+                button(text(reshiki::i18n::t(label)).size(10))
                     .padding([7, 3])
                     .style(control(
                         self.inspector_tab == tab
