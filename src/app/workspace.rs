@@ -27,9 +27,9 @@ impl App {
             Target::Blank(_) => reshiki::i18n::t("Empty position").to_owned(),
             Target::Atom(id) => self.tab.doc.atom(id).map_or_else(
                 || reshiki::i18n::t("Empty position").to_owned(),
-                |atom| format!("{} #{id}", atom.element),
+                |atom| reshiki::i18n::tf("{} #{}", &[atom.element.to_string(), id.to_string()]),
             ),
-            Target::Bond(a, b) => format!("Bond {a}–{b}"),
+            Target::Bond(a, b) => reshiki::i18n::tf("Bond {}–{}", &[a.to_string(), b.to_string()]),
         }
     }
 
@@ -508,7 +508,7 @@ impl App {
             "Rings · r".into()
         } else {
             super::palettes::ring_hint(
-                &format!("{}-membered", self.ring_size),
+                &reshiki::i18n::tf("{}-membered", &[self.ring_size.to_string()]),
                 &super::palettes::Action::Ring(self.ring_size, false),
             )
         };
@@ -1061,12 +1061,15 @@ impl App {
                 .tab
                 .keyboard_drawing
                 .marked()
-                .map(|id| format!(" · Marked atom {id}"))
+                .map(|id| reshiki::i18n::tf(" · Marked atom {}", &[id.to_string()]))
                 .unwrap_or_default();
             hover_hint(
                 reshiki::accessibility::button(
                     "keyboard-done",
-                    format!("Leave keyboard drawing · F8 · Active {active}{marked}"),
+                    reshiki::i18n::tf(
+                        "Leave keyboard drawing · F8 · Active {}{}",
+                        &[active.clone(), marked.clone()],
+                    ),
                     text(if fit.short { short } else { name }).size(12),
                 )
                 .checked(true)

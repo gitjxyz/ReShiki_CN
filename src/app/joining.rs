@@ -459,11 +459,15 @@ pub(super) const CONTACT_ADDED: &str = "Donor → metal contact added in place �
 
 pub(super) fn coordination_status(outcome: &Coordination, marked: bool) -> &'static str {
     match (outcome, marked) {
-        (Coordination::Added(_), false) => CONTACT_ADDED,
-        (Coordination::AlreadyPresent, false) => "This donor is already coordinated to that metal",
-        (Coordination::Added(_), true) => "Marked donor → metal contact added · Undo removes it",
+        (Coordination::Added(_), false) => reshiki::i18n::t(CONTACT_ADDED),
+        (Coordination::AlreadyPresent, false) => {
+            reshiki::i18n::t("This donor is already coordinated to that metal")
+        }
+        (Coordination::Added(_), true) => {
+            reshiki::i18n::t("Marked donor → metal contact added · Undo removes it")
+        }
         (Coordination::AlreadyPresent, true) => {
-            "This marked donor is already coordinated to that metal"
+            reshiki::i18n::t("This marked donor is already coordinated to that metal")
         }
     }
 }

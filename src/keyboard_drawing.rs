@@ -269,33 +269,43 @@ impl State {
 
     pub fn active_label(&self, doc: &Document) -> String {
         match self.current.target {
-            Target::Blank(_) => "Empty drawing position".into(),
+            Target::Blank(_) => crate::i18n::t("Empty drawing position").to_owned(),
             Target::Atom(id) => doc
                 .atom(id)
                 .map(|atom| {
                     if let Some(group) = doc.abbreviation(id) {
-                        format!("{} group at atom {id}", group.label)
+                        crate::i18n::tf(
+                            "{} group at atom {}",
+                            &[group.label.to_string(), id.to_string()],
+                        )
                     } else {
-                        format!("{} atom {id}", atom.element)
+                        crate::i18n::tf("{} atom {}", &[atom.element.to_string(), id.to_string()])
                     }
                 })
-                .unwrap_or_else(|| "Empty drawing position".into()),
+                .unwrap_or_else(|| crate::i18n::t("Empty drawing position").to_owned()),
             Target::Bond(a, b) => doc
                 .bonds
                 .iter()
                 .find(|bond| bond.connects(a, b))
                 .map(|bond| {
                     crate::bonds::BondPreset::of(bond).map_or_else(
-                        || format!("Bond {a}–{b}"),
-                        |preset| format!("{preset} bond {a}–{b}"),
+                        || crate::i18n::tf("Bond {}–{}", &[a.to_string(), b.to_string()]),
+                        |preset| {
+                            crate::i18n::tf(
+                                "{} bond {}–{}",
+                                &[preset.to_string(), a.to_string(), b.to_string()],
+                            )
+                        },
                     )
                 })
-                .unwrap_or_else(|| "Empty drawing position".into()),
+                .unwrap_or_else(|| crate::i18n::t("Empty drawing position").to_owned()),
         }
     }
 
     pub fn hint() -> &'static str {
-        "Mouse or arrows: choose hotspot · Shift+arrows: skip · Digits/letters: draw · Enter: label · [: mark · ]: connect · F8: off for arrow nudging"
+        crate::i18n::t(
+            "Mouse or arrows: choose hotspot · Shift+arrows: skip · Digits/letters: draw · Enter: label · [: mark · ]: connect · F8: off for arrow nudging",
+        )
     }
 
     fn check_epoch(&mut self, epoch: u64) {

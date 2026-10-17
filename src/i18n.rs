@@ -86,6 +86,30 @@ pub fn t(key: &str) -> &str {
     }
 }
 
+/// Translate a template, then substitute `arguments` into `{…}` placeholders
+/// in order. English templates use `{}` so the fallback path reproduces the
+/// original `format!` output; translated entries may reorder or drop the
+/// placeholders as the target language requires (`{}` tokens only — the
+/// substitution is positional, names inside braces are ignored).
+pub fn tf(key: &str, arguments: &[String]) -> String {
+    let mut result = String::new();
+    let mut rest = t(key);
+    let mut next = arguments.iter();
+    while let Some(open) = rest.find('{') {
+        let Some(close) = rest[open..].find('}').map(|end| open + end + 1) else {
+            break;
+        };
+        result.push_str(&rest[..open]);
+        match next.next() {
+            Some(argument) => result.push_str(argument),
+            None => result.push_str(&rest[..close]),
+        }
+        rest = &rest[close..];
+    }
+    result.push_str(rest);
+    result
+}
+
 /// The active interface language.
 pub fn language() -> Language {
     *LANGUAGE
