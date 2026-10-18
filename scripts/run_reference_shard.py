@@ -42,6 +42,7 @@ WORKSPACE_TARGET_SHARDS = {
     ("reshiki-agent", "headless"): 0,
     ("reshiki-mcp", "panic_hook"): 0,
     ("reshiki-mcp", "transcripts"): 0,
+    ("reshiki-process-heap", "global_allocator_unwind"): 0,
     # The OPSIN Rust port's integration tests (about two minutes in total).
     ("opsin", "assembly_methods"): 0,
     ("opsin", "carbohydrates"): 0,
