@@ -46,9 +46,13 @@ def filenames(version: str) -> list[str]:
     ]
 
 
-def verify_assets(directory: Path, version: str, windows_signing: str = "unsigned") -> list[str]:
+def verify_assets(
+    directory: Path, version: str, windows_signing: str = "unsigned", macos_signing: str = "notarized"
+) -> list[str]:
     if windows_signing not in {"required", "unsigned"}:
         raise ValueError("Expected required or unsigned Windows signing mode")
+    if macos_signing not in {"notarized", "unsigned"}:
+        raise ValueError("Expected notarized or unsigned macOS signing mode")
     expected = filenames(version)
     found = {path.name for path in directory.glob("reshiki-*")}
     required = set(expected) | {name + ".sha256" for name in expected}
@@ -76,8 +80,8 @@ def verify_assets(directory: Path, version: str, windows_signing: str = "unsigne
             "version": version,
             "platform": "macos",
             "architecture": architecture,
-            "signed": True,
-            "notarized": True,
+            "signed": macos_signing == "notarized",
+            "notarized": macos_signing == "notarized",
         }
         if any(metadata.get(key) != value for key, value in expected_metadata.items()):
             raise ValueError(f"macOS archive is not the signed, notarized release: {name}")
@@ -120,11 +124,13 @@ def verify_assets(directory: Path, version: str, windows_signing: str = "unsigne
     return checksums
 
 
-def prepare(directory: Path, repository: str, tag: str, windows_signing: str = "unsigned") -> str:
+def prepare(
+    directory: Path, repository: str, tag: str, windows_signing: str = "unsigned", macos_signing: str = "notarized"
+) -> str:
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
         raise ValueError("Expected an owner/repository name")
     version = release_version(tag)
-    checksums = verify_assets(directory, version, windows_signing)
+    checksums = verify_assets(directory, version, windows_signing, macos_signing)
     base = f"https://github.com/{repository}/releases/download/{quote(tag, safe='')}"
 
     def link(name: str, label: str) -> str:
@@ -153,6 +159,8 @@ def prepare(directory: Path, repository: str, tag: str, windows_signing: str = "
                 "are signed with SignPath Foundation. Linux downloads are unsigned."
                 if windows_signing == "required"
                 else "macOS downloads are signed and notarized. Windows and Linux downloads are unsigned."
+                if macos_signing == "notarized"
+                else "All downloads are unsigned community builds; verify publishers where your platform requires it."
             ),
             "Installers replace an existing ReShiki installation. To retain another version, extract a portable archive into a separate folder and keep its contents together.",
             "",
@@ -175,8 +183,9 @@ def main():
     parser.add_argument("--notes", type=Path, required=True)
     parser.add_argument("--append", action="store_true")
     parser.add_argument("--windows-signing", choices=("required", "unsigned"), default="unsigned")
+    parser.add_argument("--macos-signing", choices=("notarized", "unsigned"), default="notarized")
     args = parser.parse_args()
-    table = prepare(args.directory, args.repository, args.tag, args.windows_signing)
+    table = prepare(args.directory, args.repository, args.tag, args.windows_signing, args.macos_signing)
     prefix = args.notes.read_text(encoding="utf-8").rstrip() + "\n\n" if args.append else ""
     args.notes.write_text(prefix + table, encoding="utf-8", newline="\n")
 
