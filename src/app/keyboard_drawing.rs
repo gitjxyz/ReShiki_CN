@@ -140,7 +140,7 @@ impl App {
             || matches!(action, Action::Toggle) && self.tab.keyboard_drawing.enabled()
         {
             self.tab.keyboard_drawing.leave();
-            self.status = "Keyboard drawing off".into();
+            self.status = reshiki::i18n::t("Keyboard drawing off").into();
             self.error = false;
             return Task::none();
         }
@@ -164,7 +164,10 @@ impl App {
                     self.tab.camera.center,
                     self.tab.file_epoch,
                 );
-                self.status = format!("Keyboard drawing · {}", State::hint());
+                self.status = reshiki::i18n::tf(
+                    "Keyboard drawing · {}",
+                    &[reshiki::i18n::t(State::hint()).to_owned()],
+                );
                 self.error = false;
                 return iced::advanced::widget::operate(ReleaseFocus);
             }
@@ -174,23 +177,25 @@ impl App {
                         .keyboard_drawing
                         .move_target(&self.tab.doc, direction, same_kind);
                 self.status = if moved {
-                    format!(
+                    reshiki::i18n::tf(
                         "Keyboard drawing · {}",
-                        self.tab.keyboard_drawing.active_label(&self.tab.doc)
+                        &[self.tab.keyboard_drawing.active_label(&self.tab.doc)],
                     )
                 } else {
-                    "No drawing hotspot in that direction".into()
+                    reshiki::i18n::t("No drawing hotspot in that direction").to_owned()
                 };
                 self.error = false;
             }
             Action::Mark if self.keyboard_drawing_active() => {
                 if let Target::Atom(id) = self.tab.keyboard_drawing.target() {
                     self.tab.keyboard_drawing.mark(id);
-                    self.status =
-                        format!("Marked atom {id} · Navigate to another atom, then ] to connect");
+                    self.status = reshiki::i18n::tf(
+                        "Marked atom {} · Navigate to another atom, then ] to connect",
+                        &[id.to_string()],
+                    );
                     self.error = false;
                 } else {
-                    self.status = "Navigate to an atom, then [ to mark it".into();
+                    self.status = reshiki::i18n::t("Navigate to an atom, then [ to mark it").into();
                     self.error = false;
                 }
             }
@@ -206,7 +211,10 @@ impl App {
                         _ => None,
                     })
                     .ok_or_else(|| {
-                        "Mark an atom with [, then navigate to another atom and press ]".to_string()
+                        reshiki::i18n::t(
+                            "Mark an atom with [, then navigate to another atom and press ]",
+                        )
+                        .to_owned()
                     })
                     .and_then(|(a, b)| {
                         if coordinate {
@@ -216,13 +224,18 @@ impl App {
                             })
                         } else {
                             connect_atoms(&self.tab.doc, a, b).map(|doc| {
-                                (doc, "Connected marked atom · Undo restores the open chain")
+                                (
+                                    doc,
+                                    reshiki::i18n::t(
+                                        "Connected marked atom · Undo restores the open chain",
+                                    ),
+                                )
                             })
                         }
                     });
                 // commit_hotkey ignores the success status when an edit failed.
                 let status = result.as_ref().map_or(
-                    "Connected marked atom · Undo restores the open chain",
+                    reshiki::i18n::t("Connected marked atom · Undo restores the open chain"),
                     |(_, status)| *status,
                 );
                 if self.commit_hotkey(result.map(|(doc, _)| (doc, target.atoms())), status) {
@@ -266,7 +279,10 @@ impl App {
                         active,
                         selected,
                     }) => {
-                        if self.commit_hotkey(Ok((doc, selected)), "Keyboard drawing started") {
+                        if self.commit_hotkey(
+                            Ok((doc, selected)),
+                            reshiki::i18n::t("Keyboard drawing started"),
+                        ) {
                             self.tab.keyboard_drawing.set_target(active, &self.tab.doc);
                         }
                     }

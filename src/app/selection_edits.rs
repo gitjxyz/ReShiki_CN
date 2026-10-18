@@ -41,7 +41,7 @@ impl App {
             }
             self.changed(before);
             self.tool = Tool::Select;
-            self.status = "Frame added and grouped with the selection".into();
+            self.status = reshiki::i18n::t("Frame added and grouped with the selection").into();
         }
     }
     pub(super) fn group_selected(&mut self) {
@@ -67,7 +67,7 @@ impl App {
         let before = self.tab.doc.clone();
         if self.tab.doc.ungroup_selection(&self.tab.selected) {
             self.changed(before);
-            self.status = "Ungrouped one level".into();
+            self.status = reshiki::i18n::t("Ungrouped one level").into();
         }
     }
     pub(super) fn set_integral_groups(&mut self, integral: bool) {

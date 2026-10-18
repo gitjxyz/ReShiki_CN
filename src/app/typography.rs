@@ -689,9 +689,11 @@ impl App {
         if self.tab.inline_text.is_some() {
             return column![
                 section("EDITING ON CANVAS"),
-                text("Select text in the canvas editor, then use the Style toolbar to format it.")
-                    .size(12)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Select text in the canvas editor, then use the Style toolbar to format it."
+                ))
+                .size(12)
+                .style(muted_text),
                 row![
                     command(
                         "Cancel",
@@ -717,9 +719,11 @@ impl App {
                 )
                 .size(12)
                 .style(muted_text),
-                text("Use the Style toolbar for fonts, colors and chemical formulas.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Use the Style toolbar for fonts, colors and chemical formulas."
+                ))
+                .size(11)
+                .style(muted_text),
             ]
             .spacing(9)
             .into();
@@ -739,7 +743,7 @@ impl App {
             .style(muted_text),
             text_editor(&self.tab.caption_editor)
                 .on_action(Message::CaptionAction)
-                .placeholder("Reaction conditions, labels, notes…")
+                .placeholder(reshiki::i18n::t("Reaction conditions, labels, notes…"))
                 .height(116)
                 .size(14)
                 .padding(10)
@@ -769,9 +773,11 @@ impl App {
                         text_editor::Binding::from_key_press(key)
                     }
                 }),
-            text("Select part of the text to format it with the Style toolbar.")
-                .size(11)
-                .style(muted_text),
+            text(reshiki::i18n::t(
+                "Select part of the text to format it with the Style toolbar."
+            ))
+            .size(11)
+            .style(muted_text),
             self.caption_spacing_control().align_y(Alignment::Center),
             self.caption_width_control().align_y(Alignment::Center),
         ]
@@ -781,7 +787,9 @@ impl App {
 
     fn caption_spacing_control(&self) -> Row<'_, Message> {
         row![
-            text("Line spacing").size(11).width(Length::Fill),
+            text(reshiki::i18n::t("Line spacing"))
+                .size(11)
+                .width(Length::Fill),
             crate::appearance::pick_list(
                 [1.0_f32, 1.2, 1.5, 2.0],
                 Some(self.tab.caption_format.line_spacing),
@@ -794,7 +802,9 @@ impl App {
 
     fn caption_width_control(&self) -> Row<'_, Message> {
         row![
-            text("Wrap width (pt)").size(11).width(Length::Fill),
+            text(reshiki::i18n::t("Wrap width (pt)"))
+                .size(11)
+                .width(Length::Fill),
             crate::appearance::text_input("Auto", &self.tab.text_width_input)
                 .on_input(Message::TextWidth)
                 .on_submit(Message::ApplyTextWidth)
@@ -869,7 +879,7 @@ impl App {
             }
             _ => {
                 self.error = true;
-                self.status = "Enter a font size from 4 to 144 pt".into();
+                self.status = reshiki::i18n::t("Enter a font size from 4 to 144 pt").into();
             }
         }
     }
@@ -877,9 +887,12 @@ impl App {
         self.tab.color_scope = scope;
         self.sync_color_input();
         if scope == typography::ColorScope::Rings {
-            self.status = "Ring interiors · Select a ring, then choose a Tint color".into();
+            self.status =
+                reshiki::i18n::t("Ring interiors · Select a ring, then choose a Tint color").into();
         } else if scope == typography::ColorScope::Highlights {
-            self.status = "Highlights · Select atoms or bonds, then choose a Tint color".into();
+            self.status =
+                reshiki::i18n::t("Highlights · Select atoms or bonds, then choose a Tint color")
+                    .into();
         }
     }
     pub(super) fn set_text_color_input(&mut self, value: String) {
@@ -912,7 +925,9 @@ impl App {
             self.apply_paragraph(None, None, Some(Some(width)));
         } else {
             self.error = true;
-            self.status = "Text width must be 10–2000 pt, or blank for automatic width".into();
+            self.status =
+                reshiki::i18n::t("Text width must be 10–2000 pt, or blank for automatic width")
+                    .into();
         }
     }
 }

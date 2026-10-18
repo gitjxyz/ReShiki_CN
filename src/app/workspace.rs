@@ -24,12 +24,12 @@ impl App {
     fn keyboard_context_summary(&self) -> String {
         use reshiki::keyboard_drawing::Target;
         match self.tab.keyboard_drawing.target() {
-            Target::Blank(_) => "Empty position".into(),
+            Target::Blank(_) => reshiki::i18n::t("Empty position").to_owned(),
             Target::Atom(id) => self.tab.doc.atom(id).map_or_else(
-                || "Empty position".into(),
-                |atom| format!("{} #{id}", atom.element),
+                || reshiki::i18n::t("Empty position").to_owned(),
+                |atom| reshiki::i18n::tf("{} #{}", &[atom.element.to_string(), id.to_string()]),
             ),
-            Target::Bond(a, b) => format!("Bond {a}–{b}"),
+            Target::Bond(a, b) => reshiki::i18n::tf("Bond {}–{}", &[a.to_string(), b.to_string()]),
         }
     }
 
@@ -121,10 +121,10 @@ impl App {
             .into()
         };
         let mut tools = row![
-            text("STYLE").size(10).style(muted_text),
+            text(reshiki::i18n::t("STYLE")).size(10).style(muted_text),
             combo_box(
                 &self.font_options,
-                "Search fonts…",
+                reshiki::i18n::t("Search fonts…"),
                 Some(&style.family),
                 |family| Message::TextStyle(StyleChange::Family(family))
             )
@@ -140,7 +140,7 @@ impl App {
                     .width(46)
                     .size(12)
                     .padding(6),
-                "Font size in points · Enter to apply",
+                reshiki::i18n::t("Font size in points · Enter to apply"),
                 tooltip::Position::Bottom
             ),
             text("pt").size(11).style(muted_text),
@@ -209,7 +209,7 @@ impl App {
                 .width(112)
                 .text_size(11)
                 .padding(6),
-                "Group labels: Automatic follows bonds; Stacked above places the nickname above its attachment. Left, Center and Right are in the alignment menu.",
+                reshiki::i18n::t("Group labels: Automatic follows bonds; Stacked above places the nickname above its attachment. Left, Center and Right are in the alignment menu."),
                 tooltip::Position::Bottom,
             ));
         }
@@ -341,14 +341,14 @@ impl App {
         let scopes = vec![Scope::SelectedAtoms, Scope::SelectedMolecules];
         let mut bar = column![
             row![
-                text("Cleanup preview").size(13),
+                text(reshiki::i18n::t("Cleanup preview")).size(13),
                 crate::appearance::pick_list(scopes, Some(preview.job.options.scope), |scope| {
                     Message::Cleanup(super::cleanup::Action::Scope(scope))
                 })
                 .text_size(12)
                 .width(160),
                 checkbox(preview.original)
-                    .label("Show original")
+                    .label(reshiki::i18n::t("Show original"))
                     .text_size(12)
                     .size(14)
                     .on_toggle(
@@ -356,7 +356,7 @@ impl App {
                     ),
                 Space::new().width(Length::Fill),
                 command("Cancel", Message::Cleanup(super::cleanup::Action::Cancel)),
-                button(text("Apply").size(12))
+                button(text(reshiki::i18n::t("Apply")).size(12))
                     .on_press_maybe(
                         (!self.tab.busy).then_some(Message::Cleanup(super::cleanup::Action::Apply))
                     )
@@ -366,7 +366,7 @@ impl App {
             .align_y(Alignment::Center),
             row![
                 checkbox(preview.job.options.keep_orientation)
-                    .label("Keep orientation")
+                    .label(reshiki::i18n::t("Keep orientation"))
                     .text_size(11)
                     .size(13)
                     .on_toggle(|keep| Message::Cleanup(super::cleanup::Action::Orientation(keep))),
@@ -395,7 +395,7 @@ impl App {
                 .padding(0)
                 .style(button::text)
                 .on_press(Message::Updates(super::updates::Action::Show(true))),
-                "About ReShiki · Check for updates",
+                reshiki::i18n::t("About ReShiki · Check for updates"),
                 tooltip::Position::Bottom
             ),
             divider(),
@@ -508,7 +508,7 @@ impl App {
             "Rings · r".into()
         } else {
             super::palettes::ring_hint(
-                &format!("{}-membered", self.ring_size),
+                &reshiki::i18n::tf("{}-membered", &[self.ring_size.to_string()]),
                 &super::palettes::Action::Ring(self.ring_size, false),
             )
         };
@@ -698,7 +698,7 @@ impl App {
                     iced::widget::canvas(Glyph(Icon::Keyboard, true))
                         .width(24)
                         .height(24),
-                    text("Help").size(10),
+                    text(reshiki::i18n::t("Help")).size(10),
                 ]
                 .spacing(3)
                 .align_x(Alignment::Center),
@@ -706,7 +706,7 @@ impl App {
             .padding([5, 10])
             .on_press(Message::ToggleHelp)
             .style(control(self.help_open)),
-            "Help · F1",
+            reshiki::i18n::t("Help · F1"),
             tooltip::Position::Right,
         )
     }
@@ -984,12 +984,14 @@ impl App {
                         reshiki::accessibility::button(
                             "context-3d-properties",
                             "Open 3D preview controls in Properties",
-                            text("3D preview →").size(12),
+                            text(reshiki::i18n::t("3D preview →")).size(12),
                         )
                         .on_press(Message::Inspector(InspectorTab::Properties))
                         .padding([7, 9])
                         .style(control(false)),
-                        "Open the 3D preview controls in the right Properties panel",
+                        reshiki::i18n::t(
+                            "Open the 3D preview controls in the right Properties panel"
+                        ),
                         tooltip::Position::Bottom,
                     ),
                 ]
@@ -1008,7 +1010,7 @@ impl App {
     fn context_row(&self, width: f32) -> Element<'_, Message> {
         let keyboard = self.keyboard_drawing_active();
         let (name, short) = if keyboard {
-            ("Keyboard", "Keys")
+            (reshiki::i18n::t("Keyboard"), reshiki::i18n::t("Keys"))
         } else {
             tool_name(self.tool)
         };
@@ -1059,12 +1061,15 @@ impl App {
                 .tab
                 .keyboard_drawing
                 .marked()
-                .map(|id| format!(" · Marked atom {id}"))
+                .map(|id| reshiki::i18n::tf(" · Marked atom {}", &[id.to_string()]))
                 .unwrap_or_default();
             hover_hint(
                 reshiki::accessibility::button(
                     "keyboard-done",
-                    format!("Leave keyboard drawing · F8 · Active {active}{marked}"),
+                    reshiki::i18n::tf(
+                        "Leave keyboard drawing · F8 · Active {}{}",
+                        &[active.clone(), marked.clone()],
+                    ),
                     text(if fit.short { short } else { name }).size(12),
                 )
                 .checked(true)
@@ -1194,7 +1199,7 @@ impl App {
                     reshiki::accessibility::button(
                         "stretch-done",
                         "Finish stretching bonds",
-                        text("Done").size(12),
+                        text(reshiki::i18n::t("Done")).size(12),
                     )
                     .padding([7, 9])
                     .on_press(Message::Tool(Tool::Select))
@@ -1209,12 +1214,12 @@ impl App {
                         reshiki::accessibility::button(
                             "edit-points-done",
                             "Finish editing points",
-                            text("Done").size(12),
+                            text(reshiki::i18n::t("Done")).size(12),
                         )
                         .padding([7, 9])
                         .on_press(Message::Tool(Tool::Select))
                         .style(control(false)),
-                        "Return to Select · Esc",
+                        reshiki::i18n::t("Return to Select · Esc"),
                         tooltip::Position::Bottom,
                     )
                     .into(),
@@ -1294,12 +1299,12 @@ impl App {
                 ]
                 .spacing(4)
                 .align_y(Alignment::Center),
-                "Includes attachment atoms · Auto places 6 atoms per click",
+                reshiki::i18n::t("Includes attachment atoms · Auto places 6 atoms per click"),
                 tooltip::Position::Bottom,
             )
             .into(),
             row![
-                text("Angle").size(11),
+                text(reshiki::i18n::t("Angle")).size(11),
                 container(unit_field(
                     crate::appearance::text_input("120", &self.tab.chain_angle_input)
                         .on_input(Message::ChainAngle),
@@ -1376,7 +1381,10 @@ impl App {
             return options;
         }
         options.extend([
-            text("Size").size(11).style(muted_text).into(),
+            text(reshiki::i18n::t("Size"))
+                .size(11)
+                .style(muted_text)
+                .into(),
             crate::appearance::pick_list(
                 [3_u8, 4, 5, 6, 7, 8],
                 Some(self.ring_size),
@@ -1424,7 +1432,7 @@ impl App {
             tilts.into(),
             hover_hint(
                 command("Front bonds", depth.clone()).on_press_maybe(enabled.then_some(depth)),
-                "Emphasize front bonds using the retained projection depth",
+                reshiki::i18n::t("Emphasize front bonds using the retained projection depth"),
                 tooltip::Position::Bottom,
             )
             .into(),
@@ -1468,7 +1476,9 @@ impl App {
             options.push(
                 hover_hint(
                     self.bond_constraints(),
-                    "Bonded movement follows Length / Angles · Option/Alt: free movement",
+                    reshiki::i18n::t(
+                        "Bonded movement follows Length / Angles · Option/Alt: free movement",
+                    ),
                     tooltip::Position::Bottom,
                 )
                 .into(),
@@ -1542,7 +1552,7 @@ impl App {
                 // Compact labels keep all five tabs inside the 256 px panels
                 // (about 238 px of tabs in 244 px); 11 px labels would need
                 // about 297 px, more than even the 300 px panels offer.
-                button(text(label).size(10))
+                button(text(reshiki::i18n::t(label)).size(10))
                     .padding([7, 3])
                     .style(control(
                         self.inspector_tab == tab
@@ -1678,7 +1688,7 @@ impl App {
                 body = body.push(command("Forward →", action(A::Forward)));
             }
             body = body.push(
-                button(text("Save selection as template").size(12))
+                button(text(reshiki::i18n::t("Save selection as template")).size(12))
                     .padding(7)
                     .width(Length::Fill)
                     .on_press_maybe((!self.tab.selected.is_empty()).then(|| action(A::BeginSave))),
@@ -1754,7 +1764,7 @@ impl App {
             )
             .push(
                 checkbox(state.repeat)
-                    .label("Keep placing")
+                    .label(reshiki::i18n::t("Keep placing"))
                     .text_size(12)
                     .size(14)
                     .on_toggle(|v| Message::Templates(A::Repeat(v))),
@@ -1781,7 +1791,7 @@ impl App {
                     .spacing(5),
                 )
                 .push(
-                    button(text("Replace from selection").size(11))
+                    button(text(reshiki::i18n::t("Replace from selection")).size(11))
                         .padding(6)
                         .on_press_maybe(
                             (!self.tab.selected.is_empty()).then(|| action(A::Replace)),
@@ -1810,9 +1820,11 @@ impl App {
                 let entry = categories.entry(name).or_insert((0, template));
                 entry.0 += 1;
             }
-            body = body
-                .push(horizontal_line())
-                .push(text("CATEGORIES").size(10).style(muted_text));
+            body = body.push(horizontal_line()).push(
+                text(reshiki::i18n::t("CATEGORIES"))
+                    .size(10)
+                    .style(muted_text),
+            );
             for (name, (count, sample)) in categories {
                 let preview: Element<'_, Message> =
                     canvas(crate::canvas::TemplateThumbnail(&sample.document))
@@ -1887,9 +1899,11 @@ impl App {
         }
         if empty {
             body = body.push(
-                text("No matching templates. Try another search or save a selection.")
-                    .size(12)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "No matching templates. Try another search or save a selection.",
+                ))
+                .size(12)
+                .style(muted_text),
             );
         }
         body
@@ -1923,15 +1937,15 @@ impl App {
         let label = self.abbreviations.label.trim();
         let mut body = column![
             command("‹ Properties", Message::Inspector(InspectorTab::Properties)),
-            text("Chemical abbreviations").size(18),
-            text("Compact labels with the complete molecule inside.").size(12).style(muted_text),
+            text(reshiki::i18n::t("Chemical abbreviations")).size(18),
+            text(reshiki::i18n::t("Compact labels with the complete molecule inside.")).size(12).style(muted_text),
             row![
                 item("Expand selected", action(A::Expand), !selected.is_empty(), "Restore the atoms and bonds of the selected abbreviations", "Select an abbreviation first"),
                 item("Expand all", action(A::ExpandAll), !self.tab.doc.abbreviations.is_empty(), "Restore every abbreviation in the drawing", "The drawing has no abbreviations"),
             ]
             .spacing(6),
             horizontal_line(),
-            text("COMMON GROUP").size(11).style(muted_text),
+            text(reshiki::i18n::t("COMMON GROUP")).size(11).style(muted_text),
             crate::appearance::pick_list(choices, Some(self.abbreviations.preset.clone()), move |s| action(A::Preset(s))).width(Length::Fill).text_size(14),
             item(
                 "Replace selected endpoint",
@@ -1950,7 +1964,7 @@ impl App {
             ),
             text(if self.tab.selected.is_empty() { "Searches the whole drawing." } else { "Complete groups in the selection only." }).size(11).style(muted_text),
             horizontal_line(),
-            text("NAME A SELECTED FRAGMENT").size(11).style(muted_text),
+            text(reshiki::i18n::t("NAME A SELECTED FRAGMENT")).size(11).style(muted_text),
             crate::appearance::text_input("Label, e.g. Ar", &self.abbreviations.label).on_input(move |s| action(A::Label(s))).on_submit(action(A::Contract)).size(13),
             crate::appearance::text_input("From the right (optional)", &self.abbreviations.reverse_label).on_input(move |s| action(A::ReverseLabel(s))).on_submit(action(A::Contract)).size(13),
             item(
@@ -2048,29 +2062,31 @@ impl App {
             text(format!("{} atoms in scope", ids.len()))
                 .size(11)
                 .style(muted_text),
-            text("Carbon labels").size(12),
+            text(reshiki::i18n::t("Carbon labels")).size(12),
             crate::appearance::pick_list(Carbons::ALL, carbons, |v| Message::Labels(A::Carbons(v)))
                 .placeholder("Mixed")
                 .text_size(12)
                 .width(Length::Fill),
             checkbox(hydrogens)
-                .label("Show implied hydrogens")
+                .label(reshiki::i18n::t("Show implied hydrogens"))
                 .text_size(12)
                 .on_toggle(|v| Message::Labels(A::Hydrogens(v))),
             checkbox(atoms.iter().all(|a| !a.display.hide_charge))
-                .label("Show charge labels")
+                .label(reshiki::i18n::t("Show charge labels"))
                 .text_size(12)
                 .on_toggle(|v| Message::Labels(A::Charges(v))),
-            text("Hydrogen position").size(12),
+            text(reshiki::i18n::t("Hydrogen position")).size(12),
             crate::appearance::pick_list(HydrogenPosition::ALL, position, |v| Message::Labels(
                 A::Position(v)
             ))
             .placeholder("Mixed")
             .text_size(12)
             .width(Length::Fill),
-            text("Display settings keep the molecular composition intact.")
-                .size(11)
-                .style(muted_text),
+            text(reshiki::i18n::t(
+                "Display settings keep the molecular composition intact."
+            ))
+            .size(11)
+            .style(muted_text),
             horizontal_line(),
             section("ATOM NUMBERS"),
             row![
@@ -2083,24 +2099,28 @@ impl App {
                     .on_press_maybe((!ids.is_empty()).then_some(Message::Labels(A::Number)))
             ]
             .spacing(5),
-            text("Sequence follows atom creation/import order.")
-                .size(11)
-                .style(muted_text),
+            text(reshiki::i18n::t(
+                "Sequence follows atom creation/import order."
+            ))
+            .size(11)
+            .style(muted_text),
             command("Clear numbers", Message::Labels(A::ClearNumbers)),
         ]
         .spacing(9);
         if ids.len() == 1 {
-            body = body.push(text("Custom atom number").size(12)).push(
-                row![
-                    crate::appearance::text_input("e.g. Cα or 12a", &self.tab.labels.number)
-                        .on_input(|s| Message::Labels(A::Text(s)))
-                        .on_submit(Message::Labels(A::ApplyText))
-                        .size(12)
-                        .padding(7),
-                    command("Set", Message::Labels(A::ApplyText))
-                ]
-                .spacing(5),
-            );
+            body = body
+                .push(text(reshiki::i18n::t("Custom atom number")).size(12))
+                .push(
+                    row![
+                        crate::appearance::text_input("e.g. Cα or 12a", &self.tab.labels.number)
+                            .on_input(|s| Message::Labels(A::Text(s)))
+                            .on_submit(Message::Labels(A::ApplyText))
+                            .size(12)
+                            .padding(7),
+                        command("Set", Message::Labels(A::ApplyText))
+                    ]
+                    .spacing(5),
+                );
         }
         body = self.atom_label_stereo_section(body, stereo);
         self.atom_label_indicator_section(body)
@@ -2117,14 +2137,16 @@ impl App {
             .push(section("STEREOCHEMISTRY"))
             .push(
                 checkbox(stereo)
-                    .label("Show R/S and E/Z labels")
+                    .label(reshiki::i18n::t("Show R/S and E/Z labels"))
                     .text_size(12)
                     .on_toggle(|v| Message::Labels(A::Stereo(v))),
             )
             .push(
-                text("Labels update after chemical edits. Unassigned centers have no R/S label.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Labels update after chemical edits. Unassigned centers have no R/S label.",
+                ))
+                .size(11)
+                .style(muted_text),
             );
         if let Some(notice) = &self.tab.chemistry_notice {
             let line = text(notice).size(11);
@@ -2180,8 +2202,8 @@ impl App {
     fn view_options(&self) -> Element<'_, Message> {
         container(
             row![
-                text("View").size(12).style(muted_text),
-                text("Interface").size(12).style(muted_text),
+                text(reshiki::i18n::t("View")).size(12).style(muted_text),
+                text(reshiki::i18n::t("Interface")).size(12).style(muted_text),
                 crate::appearance::pick_list(
                     crate::appearance::Mode::ALL,
                     Some(self.appearance.mode),
@@ -2192,41 +2214,41 @@ impl App {
                 .width(132),
                 hover_hint(
                     checkbox(self.appearance.arrange_controls)
-                        .label("Arrange controls")
+                        .label(reshiki::i18n::t("Arrange controls"))
                         .on_toggle(|visible| Message::ObjectToolbar(
                             super::object_toolbar::Action::Visible(visible)
                         ))
                         .size(14)
                         .text_size(12),
-                    "Align, distribute, order, flip and rotate at the right end of the Select row",
+                    reshiki::i18n::t("Align, distribute, order, flip and rotate at the right end of the Select row"),
                     tooltip::Position::Top,
                 ),
                 checkbox(self.grid)
-                    .label("Grid")
+                    .label(reshiki::i18n::t("Grid"))
                     .on_toggle(|_| Message::View(super::view_settings::Action::Grid))
                     .size(14)
                     .text_size(12),
                 hover_hint(
                     checkbox(self.appearance.smart_guides)
-                        .label("Smart guides")
+                        .label(reshiki::i18n::t("Smart guides"))
                         .on_toggle(|on| Message::View(super::view_settings::Action::SmartGuides(on)))
                         .size(14)
                         .text_size(12),
-                    "Snap dragged objects to other objects' edges, centers and equal gaps · Hold Option/Alt to move freely",
+                    reshiki::i18n::t("Snap dragged objects to other objects' edges, centers and equal gaps · Hold Option/Alt to move freely"),
                     tooltip::Position::Top,
                 ),
                 checkbox(self.guides.rulers)
-                    .label("Rulers")
+                    .label(reshiki::i18n::t("Rulers"))
                     .on_toggle(|on| Message::View(super::view_settings::Action::Rulers(on)))
                     .size(14)
                     .text_size(12),
                 checkbox(self.guides.crosshair)
-                    .label("Crosshair")
+                    .label(reshiki::i18n::t("Crosshair"))
                     .on_toggle(|on| Message::View(super::view_settings::Action::Crosshair(on)))
                     .size(14)
                     .text_size(12),
                 divider(),
-                text("Units").size(12).style(muted_text),
+                text(reshiki::i18n::t("Units")).size(12).style(muted_text),
                 crate::appearance::pick_list(
                     crate::canvas::guides::Unit::ALL,
                     Some(self.guides.unit),
@@ -2235,9 +2257,19 @@ impl App {
                 .text_size(12)
                 .padding(5)
                 .width(68),
-                command("Page setup…", Message::Pages(super::pages::Action::Show)),
+                divider(),
+                text(reshiki::i18n::t("Language")).size(12).style(muted_text),
+                crate::appearance::pick_list(
+                    reshiki::i18n::Language::ALL,
+                    Some(self.language),
+                    |language| Message::View(super::view_settings::Action::Language(language))
+                )
+                .text_size(12)
+                .padding(5)
+                .width(110),
+                command(reshiki::i18n::t("Page setup…"), Message::Pages(super::pages::Action::Show)),
                 Space::new().width(Length::Fill),
-                command("Done", Message::View(super::view_settings::Action::Toggle)),
+                command(reshiki::i18n::t("Done"), Message::View(super::view_settings::Action::Toggle)),
             ]
             .spacing(10)
             .align_y(Alignment::Center),
@@ -2291,7 +2323,7 @@ impl App {
         if !self.recovered.is_empty() {
             status = status
                 .push(
-                    text("Recovery draft")
+                    text(reshiki::i18n::t("Recovery draft"))
                         .size(11)
                         .wrapping(text::Wrapping::None),
                 )
@@ -2305,7 +2337,7 @@ impl App {
                 ))
                 .push(hover_hint(
                     command("Dismiss", Message::DismissRecovery),
-                    "Hide until the next launch",
+                    reshiki::i18n::t("Hide until the next launch"),
                     tooltip::Position::Top,
                 ));
         }
@@ -2393,7 +2425,7 @@ impl App {
                 )
                 .text_size(11)
                 .padding([4, 8]),
-                "Journal preset · Bond length, line widths and label font",
+                reshiki::i18n::t("Journal preset · Bond length, line widths and label font"),
                 tooltip::Position::Top,
             )
             .into(),
@@ -2405,7 +2437,7 @@ impl App {
                 .placeholder(theme.to_string())
                 .text_size(11)
                 .padding([4, 8]),
-                "Color theme",
+                reshiki::i18n::t("Color theme"),
                 tooltip::Position::Top,
             )
             .into(),
@@ -2559,7 +2591,7 @@ fn chain_atoms_label(mode: reshiki::chains::ChainMode) -> &'static str {
 fn done(label: &str) -> Element<'_, Message> {
     hover_hint(
         command(label, Message::Tool(Tool::Select)),
-        "Return to Select · Esc",
+        reshiki::i18n::t("Return to Select · Esc"),
         tooltip::Position::Bottom,
     )
     .into()
@@ -2599,6 +2631,7 @@ pub(super) fn hover_hint<'a>(
     position: tooltip::Position,
 ) -> tooltip::Tooltip<'a, Message> {
     let label = label.into();
+    let label = reshiki::i18n::t(&label).to_owned();
     // Key symbols, as in "Redo · ⇧⌘Z", use the shortcut font.
     let label: Element<'a, Message> = if label.contains(super::shortcuts::symbol) {
         rich_text(super::shortcuts::spans(&label)).size(12).into()
@@ -2631,7 +2664,7 @@ pub(super) fn keyed_text<'a>(
     keys: Option<String>,
     detail: &str,
 ) -> Element<'a, Message> {
-    let mut spans: Vec<text::Span<'a>> = vec![span(title.to_owned())];
+    let mut spans: Vec<text::Span<'a>> = vec![span(reshiki::i18n::t(title).to_owned())];
     if let Some(keys) = keys {
         spans.push(span(" · "));
         spans.extend(super::shortcuts::spans(&keys));
@@ -2716,7 +2749,7 @@ pub(super) fn accessible_unit_field<'a>(
 }
 
 pub(super) fn command(label: &str, message: Message) -> button::Button<'_, Message> {
-    button(text(label).size(12))
+    button(text(reshiki::i18n::t(label)).size(12))
         .padding([7, 9])
         .on_press(message)
         .style(control(false))
@@ -2760,6 +2793,7 @@ pub(super) fn accessible_checkbox<'a>(
 }
 /// `title · keys` with the shortcut of `message`, for plain-text hints.
 pub(super) fn keyed(title: &str, message: &Message) -> String {
+    let title = reshiki::i18n::t(title);
     match super::shortcuts::label(message) {
         Some(keys) => format!("{title} · {keys}"),
         None => title.to_owned(),
@@ -2824,7 +2858,7 @@ fn icon_button_at(
     .into()
 }
 pub(super) fn section(label: &str) -> iced::widget::Text<'_> {
-    text(label).size(10).style(muted_text)
+    text(reshiki::i18n::t(label)).size(10).style(muted_text)
 }
 fn ink() -> Color {
     Color::from_rgb8(37, 43, 51)
@@ -3005,12 +3039,15 @@ fn tip(_: &Theme) -> container::Style {
 }
 /// The context row's tool name and the short form a short row uses.
 fn tool_name(tool: Tool) -> (&'static str, &'static str) {
+    let t = reshiki::i18n::t;
     let name = match tool {
-        Tool::Select => return ("Select / move", "Select"),
-        Tool::Lasso => return ("Lasso select", "Lasso"),
-        Tool::Chain(reshiki::chains::ChainMode::Straight) => return ("Straight chain", "Chain"),
+        Tool::Select => return (t("Select / move"), t("Select")),
+        Tool::Lasso => return (t("Lasso select"), t("Lasso")),
+        Tool::Chain(reshiki::chains::ChainMode::Straight) => {
+            return (t("Straight chain"), t("Chain"));
+        }
         // "Max atoms" beside it still marks the snaking mode.
-        Tool::Chain(_) => return ("Snaking chain", "Chain"),
+        Tool::Chain(_) => return (t("Snaking chain"), t("Chain")),
         Tool::Tilt => "3D tilt",
         Tool::StretchBond { .. } => "Stretch bond",
         Tool::Atom => "Atom label",
@@ -3024,7 +3061,7 @@ fn tool_name(tool: Tool) -> (&'static str, &'static str) {
         Tool::Graphic(_) => "Drawing object",
         Tool::EditPoints => "Edit points",
     };
-    (name, name)
+    (t(name), t(name))
 }
 
 #[cfg(test)]

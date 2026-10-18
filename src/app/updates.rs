@@ -398,7 +398,7 @@ impl App {
                 .size(13)
                 .style(super::workspace::muted_text),
             row![
-                text("Channel").size(13),
+                text(reshiki::i18n::t("Channel")).size(13),
                 reshiki::accessibility::button("updates-stable", "Stable update channel", "Stable").checked(state.channel == Channel::Stable)
                     .on_press_maybe((!state.saving && !state.installing && !state.restarting).then_some(msg(Action::Channel(Channel::Stable))))
                     .style(if state.channel == Channel::Stable { button::primary } else { button::secondary }),
@@ -418,9 +418,9 @@ impl App {
             .spacing(10),
             reshiki::accessibility::button(
                 "updates-automatic",
-                "Check automatically",
+                reshiki::i18n::t("Check automatically"),
                 checkbox(state.automatic)
-                    .label("Check automatically")
+                    .label(reshiki::i18n::t("Check automatically"))
                     .on_toggle_maybe(
                         (!state.saving)
                             .then_some(|enabled| Message::Updates(Action::Automatic(enabled)))

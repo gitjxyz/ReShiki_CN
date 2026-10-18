@@ -281,7 +281,7 @@ impl App {
         self.changed(before);
         self.sync_arrows();
         self.error = false;
-        self.status = "Arrow updated · Drag the diamond to bend".into();
+        self.status = reshiki::i18n::t("Arrow updated · Drag the diamond to bend").into();
     }
     pub(super) fn arrow_panel(&self) -> Element<'_, Message> {
         use super::workspace::{accessible_command, command, hover_hint, muted_text, section};
@@ -365,7 +365,7 @@ impl App {
             .padding(6)
             .width(Length::Fill),
             row![
-                text("End").size(11).width(44),
+                text(reshiki::i18n::t("End")).size(11).width(44),
                 crate::appearance::pick_list(Head::ALL, Some(s.head), |v| Message::ArrowAction(
                     Action::Head(v)
                 ))
@@ -375,7 +375,7 @@ impl App {
             ]
             .align_y(Alignment::Center),
             row![
-                text("Start").size(11).width(44),
+                text(reshiki::i18n::t("Start")).size(11).width(44),
                 crate::appearance::pick_list(Head::ALL, Some(s.tail), |v| Message::ArrowAction(
                     Action::Tail(v)
                 ))
@@ -399,7 +399,7 @@ impl App {
                         .size(12)
                         .padding(5)
                         .width(Length::Fill),
-                    "Hex color · Enter applies",
+                    reshiki::i18n::t("Hex color · Enter applies"),
                     tooltip::Position::Top,
                 )
             ]
@@ -408,7 +408,9 @@ impl App {
         ]
         .spacing(8);
         let mut geometry = column![
-            text("Arrowhead shape").size(11).style(muted_text),
+            text(reshiki::i18n::t("Arrowhead shape"))
+                .size(11)
+                .style(muted_text),
             crate::appearance::pick_list(HeadShape::ALL, Some(s.shape), |v| Message::ArrowAction(
                 Action::Shape(v)
             ))
@@ -429,7 +431,7 @@ impl App {
         geometry = geometry
             .push(
                 row![
-                    text("No reaction").size(11),
+                    text(reshiki::i18n::t("No reaction")).size(11),
                     crate::appearance::pick_list(NoGo::ALL, Some(s.no_go), |v| {
                         Message::ArrowAction(Action::NoGo(v))
                     })
@@ -441,7 +443,7 @@ impl App {
             )
             .push(
                 checkbox(s.dipole)
-                    .label("Dipole cross at start")
+                    .label(reshiki::i18n::t("Dipole cross at start"))
                     .on_toggle(|v| Message::ArrowAction(Action::Dipole(v)))
                     .size(14)
                     .text_size(12),

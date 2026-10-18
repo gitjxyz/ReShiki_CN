@@ -230,7 +230,8 @@ impl App {
                 self.assistant.requires_apply = true;
                 self.assistant.example_reference = reference().ok();
                 self.assistant.replace = false;
-                self.assistant.status = "Example attached locally · Choose Send when ready".into();
+                self.assistant.status =
+                    reshiki::i18n::t("Example attached locally · Choose Send when ready").into();
                 self.assistant.error = false;
                 self.assistant.follow_chat = true;
             }
@@ -332,18 +333,22 @@ impl App {
         if let Some(source) = &self.assistant.source_image
             && let Some(handle) = source.handle(false)
         {
-            content = content.push(text("Attached source image").size(11)).push(
-                iced::widget::image(handle)
-                    .height(76)
-                    .content_fit(iced::ContentFit::Contain),
-            );
+            content = content
+                .push(text(reshiki::i18n::t("Attached source image")).size(11))
+                .push(
+                    iced::widget::image(handle)
+                        .height(76)
+                        .content_fit(iced::ContentFit::Contain),
+                );
         }
         if let Some(reference) = &self.assistant.example_reference {
-            content = content.push(text("Known reference graph").size(11)).push(
-                crate::canvas::layered::canvas(crate::canvas::DrawingPreview(reference))
-                    .width(Length::Fill)
-                    .height(100),
-            );
+            content = content
+                .push(text(reshiki::i18n::t("Known reference graph")).size(11))
+                .push(
+                    crate::canvas::layered::canvas(crate::canvas::DrawingPreview(reference))
+                        .width(Length::Fill)
+                        .height(100),
+                );
         }
         content = content.push(text(EXAMPLE_CAUTION).size(11).style(muted_text));
         container(content)

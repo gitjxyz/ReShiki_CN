@@ -339,7 +339,9 @@ impl App {
                 "The drawing changed. Try again.",
             ));
             if caption {
-                self.status = "The molecule changed while naming. Show its name again".into();
+                self.status =
+                    reshiki::i18n::t("The molecule changed while naming. Show its name again")
+                        .into();
                 self.error = true;
             }
             return;
@@ -589,7 +591,8 @@ impl App {
         self.changed(before);
         self.tool = Tool::Select;
         self.fit();
-        self.status = "Inserted editable name result · Undo removes the insertion".into();
+        self.status =
+            reshiki::i18n::t("Inserted editable name result · Undo removes the insertion").into();
         self.error = false;
     }
 
@@ -635,7 +638,7 @@ impl App {
                     .on_press(Message::Inspector(InspectorTab::Import)),
             ]
             .align_y(iced::Alignment::Center),
-            text("Chemical names").size(20),
+            text(reshiki::i18n::t("Chemical names")).size(20),
             text(PANEL_INTRO).size(11).style(muted_text),
         ]
         .spacing(8);
@@ -685,7 +688,7 @@ impl App {
             );
         }
         if !idle {
-            let mut working = row![text("Working…").size(12)]
+            let mut working = row![text(reshiki::i18n::t("Working…")).size(12)]
                 .spacing(10)
                 .align_y(iced::Alignment::Center);
             if state.local_cancel.is_some() {
@@ -750,9 +753,11 @@ impl App {
         .spacing(8);
         if preview.modified {
             content = content.push(
-                text("Edited structure: the name may not match.")
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::t(
+                    "Edited structure: the name may not match.",
+                ))
+                .size(11)
+                .style(muted_text),
             );
         }
         content = content.push(
@@ -786,7 +791,7 @@ impl App {
                 button(
                     "naming.insert",
                     "Insert editable structure",
-                    text("Insert").size(12)
+                    text(reshiki::i18n::t("Insert")).size(12)
                 )
                 .padding([6, 12])
                 .style(crate::appearance::primary)

@@ -42,6 +42,7 @@ pub mod assistant;
 pub mod cli;
 pub mod clipboard;
 pub mod hotkeys;
+pub mod i18n;
 pub mod keyboard_drawing;
 pub mod libreoffice;
 pub mod metafile;

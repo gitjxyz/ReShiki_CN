@@ -200,7 +200,10 @@ impl State {
                 epoch,
                 replace,
                 review: assistant::review::Report {
-                    summary: "Completed preview retained for inspection and editing.".into(),
+                    summary: reshiki::i18n::t(
+                        "Completed preview retained for inspection and editing.",
+                    )
+                    .into(),
                     issues: vec![reason.into()],
                     ..Default::default()
                 },
@@ -351,7 +354,8 @@ fn action<'a>(
     label: impl Into<std::borrow::Cow<'a, str>>,
     value: Action,
 ) -> button::Button<'a, Message> {
-    button(text(label.into()).size(12))
+    let label = label.into();
+    button(text(reshiki::i18n::t(label.as_ref()).to_owned()).size(12))
         .padding([7, 10])
         .on_press(Message::Assistant(value))
         .style(super::workspace::control(false))

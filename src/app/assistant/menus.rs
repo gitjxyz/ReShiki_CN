@@ -11,14 +11,16 @@ impl App {
         let mut options = column![].spacing(4);
         match menu {
             Menu::Attachments => {
-                options = options.push(text("Reference image").size(12)).push(
-                    action("Choose image…", Action::OpenImage)
-                        .width(Length::Fill)
-                        .on_press_maybe(
-                            (!state.busy && !state.reading_image)
-                                .then_some(Message::Assistant(Action::OpenImage)),
-                        ),
-                );
+                options = options
+                    .push(text(reshiki::i18n::t("Reference image")).size(12))
+                    .push(
+                        action("Choose image…", Action::OpenImage)
+                            .width(Length::Fill)
+                            .on_press_maybe(
+                                (!state.busy && !state.reading_image)
+                                    .then_some(Message::Assistant(Action::OpenImage)),
+                            ),
+                    );
                 if reshiki::clipboard::available() {
                     options =
                         options.push(
@@ -50,7 +52,7 @@ impl App {
             Menu::Edits => {
                 if state.guided_example || state.requires_apply {
                     options = options.push(
-                        text("The image exercise waits for your Apply. This preference applies to other requests.")
+                        text(reshiki::i18n::t("The image exercise waits for your Apply. This preference applies to other requests."))
                             .size(11)
                             .style(super::super::workspace::muted_text),
                     );
@@ -58,13 +60,13 @@ impl App {
                 options = options
                     .push(
                         checkbox(state.replace)
-                            .label("Replace selection")
+                            .label(reshiki::i18n::t("Replace selection"))
                             .text_size(12)
                             .on_toggle(|v| Message::Assistant(Action::Replace(v))),
                     )
                     .push(iced::widget::rule::horizontal(1));
                 options = options.push(
-                    text("Assistant edits")
+                    text(reshiki::i18n::t("Assistant edits"))
                         .size(12)
                         .style(super::super::workspace::muted_text),
                 );
@@ -114,9 +116,11 @@ impl App {
                         )),
                 );
                 options = options.push(
-                    text("Uses GPT-6 Astra when available; otherwise your account default")
-                        .size(10)
-                        .style(super::super::workspace::muted_text),
+                    text(reshiki::i18n::t(
+                        "Uses GPT-6 Astra when available; otherwise your account default",
+                    ))
+                    .size(10)
+                    .style(super::super::workspace::muted_text),
                 );
                 if let Some(account) = &state.account {
                     let search = state.search.to_lowercase();
@@ -154,7 +158,9 @@ impl App {
                         );
                     }
                 } else {
-                    options = options.push(text("Connect to load your available models.").size(12));
+                    options = options.push(
+                        text(reshiki::i18n::t("Connect to load your available models.")).size(12),
+                    );
                 }
             }
             Menu::Effort => {
@@ -181,7 +187,7 @@ impl App {
                         ));
                     }
                     options = options.push(iced::widget::rule::horizontal(1)).push(
-                        text("Service tier")
+                        text(reshiki::i18n::t("Service tier"))
                             .size(12)
                             .style(super::super::workspace::muted_text),
                     );
@@ -205,7 +211,10 @@ impl App {
                     }
                 } else {
                     options = options.push(
-                        text("Choose an available model to see its reasoning levels.").size(12),
+                        text(reshiki::i18n::t(
+                            "Choose an available model to see its reasoning levels.",
+                        ))
+                        .size(12),
                     );
                 }
             }

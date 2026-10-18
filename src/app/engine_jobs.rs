@@ -17,7 +17,7 @@ impl App {
         }
         self.tab.busy = true;
         self.error = false;
-        self.status = "Working…".into();
+        self.status = reshiki::i18n::t("Working…").into();
         let engine = self.engine.clone();
         let revision = self.tab.revision;
         let aromatic_selection = matches!(kind, Job::AromaticDisplay);
@@ -38,7 +38,7 @@ impl App {
     }
     pub(super) fn request_aromatic_display(&mut self) -> Task<Message> {
         if self.tab.selected.is_empty() {
-            self.status = "Select an aromatic ring first".into();
+            self.status = reshiki::i18n::t("Select an aromatic ring first").into();
             return Task::none();
         }
         let mut request = Request::molecule("aromatic", self.tab.doc.clone());
@@ -170,7 +170,10 @@ impl App {
             self.changed(before);
             self.fit();
             self.tool = Tool::Select;
-            self.status = "Inserted structure · Drag to position · Delete or Undo to remove".into();
+            self.status = reshiki::i18n::t(
+                "Inserted structure · Drag to position · Delete or Undo to remove",
+            )
+            .into();
             if !response.warnings.is_empty() {
                 self.status.push_str(" · ");
                 self.status.push_str(&response.warnings.join(" · "));
@@ -190,7 +193,8 @@ impl App {
             self.tab.labels_dirty = false;
             self.tab.analysis = response.analysis;
             self.tool = Tool::Select;
-            self.status = "Aromatic display changed · Molecular identity retained".into();
+            self.status =
+                reshiki::i18n::t("Aromatic display changed · Molecular identity retained").into();
         }
     }
     fn abbreviations_ready(&mut self, response: Response) {
@@ -225,7 +229,7 @@ impl App {
         }
         self.tab.analysis = response.analysis;
         self.tab.chemistry_notice = None;
-        self.status = "No chemistry errors found".into();
+        self.status = reshiki::i18n::t("No chemistry errors found").into();
         self.error = false;
     }
     fn structure_replaced(&mut self, kind: Job, response: Response) {

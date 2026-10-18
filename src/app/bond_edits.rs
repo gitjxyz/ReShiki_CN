@@ -24,7 +24,7 @@ impl App {
             self.tab.bond_drawing.length = reshiki::style::DEFAULT.world(points);
             self.error = false;
         } else {
-            self.status = "Bond length must be between 1 and 300 pt".into();
+            self.status = reshiki::i18n::t("Bond length must be between 1 and 300 pt").into();
             self.error = true;
         }
     }
@@ -39,7 +39,10 @@ impl App {
             self.tab.chain_drawing.atoms = Some(count);
             self.error = false;
         } else {
-            self.status = "Enter 1–512 chain atoms, or clear the field for automatic length".into();
+            self.status = reshiki::i18n::t(
+                "Enter 1–512 chain atoms, or clear the field for automatic length",
+            )
+            .into();
             self.error = true;
         }
     }
@@ -52,7 +55,7 @@ impl App {
             self.tab.chain_drawing.angle = angle;
             self.error = false;
         } else {
-            self.status = "Chain angle must be between 1° and 179°".into();
+            self.status = reshiki::i18n::t("Chain angle must be between 1° and 179°").into();
             self.error = true;
         }
     }
@@ -64,7 +67,8 @@ impl App {
                     && !reshiki::bonds::hydrogen_endpoints(&self.tab.doc, b.a, b.b)
             })
         {
-            self.status = "Hydrogen bonds need a bonded explicit H and an acceptor".into();
+            self.status =
+                reshiki::i18n::t("Hydrogen bonds need a bonded explicit H and an acceptor").into();
             self.error = true;
             return;
         }
@@ -114,7 +118,7 @@ impl App {
             self.changed(before);
         } else {
             self.error = true;
-            self.status = "Enter a six-digit bond color, such as #205091".into();
+            self.status = reshiki::i18n::t("Enter a six-digit bond color, such as #205091").into();
         }
     }
     pub(super) fn reverse_selected_bonds(&mut self) {

@@ -67,7 +67,7 @@ impl App {
                 .filter(|id| self.tab.doc.atom(*id).is_some())
                 .collect();
             if selection.is_empty() {
-                self.status = "Select a molecule or atoms to clean up".into();
+                self.status = reshiki::i18n::t("Select a molecule or atoms to clean up").into();
                 self.error = true;
                 return Task::none();
             }
@@ -88,7 +88,7 @@ impl App {
             job.options.keep_orientation = keep_orientation;
         }
         if job.options.scope != Scope::Drawing && job.selection.is_empty() {
-            self.status = "Select atoms before using selected cleanup".into();
+            self.status = reshiki::i18n::t("Select atoms before using selected cleanup").into();
             return Task::none();
         }
         self.tab.cleanup_serial = self.tab.cleanup_serial.wrapping_add(1);
@@ -106,7 +106,7 @@ impl App {
     pub(super) fn cancel_cleanup(&mut self) {
         self.tab.cleanup_serial = self.tab.cleanup_serial.wrapping_add(1);
         self.tab.cleanup = None;
-        self.status = "Cleanup cancelled · Drawing unchanged".into();
+        self.status = reshiki::i18n::t("Cleanup cancelled · Drawing unchanged").into();
         self.error = false;
     }
     pub(super) fn apply_cleanup(&mut self) {
@@ -115,7 +115,7 @@ impl App {
         }
         if let Some(preview) = self.tab.cleanup.take() {
             if preview.revision != self.tab.revision || preview.epoch != self.tab.file_epoch {
-                self.status = "Drawing changed · Run cleanup again".into();
+                self.status = reshiki::i18n::t("Drawing changed · Run cleanup again").into();
                 return;
             }
             let before = self.tab.doc.clone();
@@ -123,7 +123,8 @@ impl App {
             self.changed(before);
             if !self.error {
                 self.tab.analysis = preview.analysis;
-                self.status = "Cleanup applied · Undo restores the original layout".into();
+                self.status =
+                    reshiki::i18n::t("Cleanup applied · Undo restores the original layout").into();
             }
         }
     }

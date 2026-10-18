@@ -915,8 +915,8 @@ impl App {
                             .map(|command| command.hint),
                         _ => None,
                     };
-                    let accessible_name = keyboard_hint.unwrap_or(label);
-                    let label = text(label).size(12).width(Length::Fill);
+                    let accessible_name = keyboard_hint.unwrap_or(reshiki::i18n::t(label));
+                    let label = text(reshiki::i18n::t(label)).size(12).width(Length::Fill);
                     let label = if destructive {
                         label.style(crate::appearance::text_color(Color::from_rgb8(167, 59, 51)))
                     } else {
@@ -975,8 +975,12 @@ impl App {
                 }
                 Entry::Separator => entries.push(horizontal_line()),
                 Entry::Hint(label) => entries.push(
-                    container(text(label).size(11).style(super::workspace::muted_text))
-                        .padding([5, 10]),
+                    container(
+                        text(reshiki::i18n::t(label))
+                            .size(11)
+                            .style(super::workspace::muted_text),
+                    )
+                    .padding([5, 10]),
                 ),
             };
         }

@@ -99,7 +99,7 @@ impl App {
         let picture = match result {
             Ok(Some(picture)) => picture,
             Ok(None) => {
-                self.status = "Picture replacement cancelled".into();
+                self.status = reshiki::i18n::t("Picture replacement cancelled").into();
                 return;
             }
             Err(error) => {
@@ -142,7 +142,7 @@ impl App {
         self.sync_graphics();
         self.sync_arrows();
         self.sync_bonds();
-        self.status = "Picture replaced · Undo restores the original".into();
+        self.status = reshiki::i18n::t("Picture replaced · Undo restores the original").into();
     }
     pub(super) fn reveal_picture(&mut self, id: u64) {
         if let Some(g) = self
@@ -190,7 +190,7 @@ impl App {
                 };
                 self.tab.pictures.active = Some(ticket.serial);
                 self.error = false;
-                self.status = "Choose a picture…".into();
+                self.status = reshiki::i18n::t("Choose a picture…").into();
                 return Task::perform(choose_picture(), move |result| {
                     Message::Pictures(Action::Loaded(ticket, result))
                 });
@@ -211,7 +211,8 @@ impl App {
                     .filter(|v| (0.01..=10_000.).contains(v));
                 let Some(size) = size else {
                     self.error = true;
-                    self.status = "Enter a picture dimension from 0.01 to 10,000 mm".into();
+                    self.status =
+                        reshiki::i18n::t("Enter a picture dimension from 0.01 to 10,000 mm").into();
                     return Task::none();
                 };
                 let Some(g) = self.selected_picture() else {
@@ -281,7 +282,7 @@ impl App {
         if let Some(g) = self.selected_picture() {
             if let Some(p) = &g.picture {
                 if p.emf().is_some() {
-                    panel = panel.push(text("EMF vector picture").size(12));
+                    panel = panel.push(text(reshiki::i18n::t("EMF vector picture")).size(12));
                     panel = panel.push(
                         text(reshiki::metafile::EMF_PANEL_NOTICE)
                             .size(11)
@@ -297,7 +298,7 @@ impl App {
             panel = panel
                 .push(
                     row![
-                        text("Width").size(12).width(45),
+                        text(reshiki::i18n::t("Width")).size(12).width(45),
                         crate::appearance::text_input("mm", &self.tab.pictures.width)
                             .on_input(move |v| message(Action::Width(v)))
                             .on_submit(message(Action::Resize(true)))
@@ -310,7 +311,7 @@ impl App {
                 )
                 .push(
                     row![
-                        text("Height").size(12).width(45),
+                        text(reshiki::i18n::t("Height")).size(12).width(45),
                         crate::appearance::text_input("mm", &self.tab.pictures.height)
                             .on_input(move |v| message(Action::Height(v)))
                             .on_submit(message(Action::Resize(false)))
@@ -323,7 +324,7 @@ impl App {
                 )
                 .push(
                     checkbox(self.tab.pictures.locked)
-                        .label("Link width and height")
+                        .label(reshiki::i18n::t("Link width and height"))
                         .on_toggle(move |v| message(Action::Lock(v)))
                         .size(14)
                         .text_size(12),
@@ -342,9 +343,9 @@ impl App {
                     ),
                 );
         } else {
-            panel = panel.push(text("Multiple pictures selected").size(12));
+            panel = panel.push(text(reshiki::i18n::t("Multiple pictures selected")).size(12));
         }
-        panel.push(text("Drag the corner handles to resize; use the handle above to rotate. Enter applies dimensions. Pictures are saved inside your drawing.").size(11).style(muted_text)).into()
+        panel.push(text(reshiki::i18n::t("Drag the corner handles to resize; use the handle above to rotate. Enter applies dimensions. Pictures are saved inside your drawing.")).size(11).style(muted_text)).into()
     }
 }
 

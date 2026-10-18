@@ -16,7 +16,7 @@ impl App {
         self.assistant.error = false;
         self.assistant.account = None;
         self.assistant.connection = Connection::Checking;
-        self.assistant.status = "Connecting to Codex…".into();
+        self.assistant.status = reshiki::i18n::t("Connecting to Codex…").into();
         self.assistant.started = Some(std::time::Instant::now());
         let serial = self.assistant.serial;
         let cancel = self.assistant.cancel.clone();

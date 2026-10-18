@@ -337,7 +337,7 @@ impl App {
             Action::Cancel => {
                 self.cancel_join();
                 self.error = false;
-                self.status = "Move & attach cancelled".into();
+                self.status = reshiki::i18n::t("Move & attach cancelled").into();
             }
             Action::Anchor(anchor) => {
                 if let Some(state) = &mut self.tab.joining
@@ -346,7 +346,9 @@ impl App {
                     state.anchor = anchor;
                     if matches!(anchor, Anchor::Bond(..)) {
                         if state.mode == Connection::Coordinate {
-                            self.status = "Coordination requires a donor atom, not a bond.".into();
+                            self.status =
+                                reshiki::i18n::t("Coordination requires a donor atom, not a bond.")
+                                    .into();
                             self.error = true;
                             state.anchor = state.prepared.default_anchor(state.mode);
                             return Task::none();
@@ -385,7 +387,7 @@ impl App {
     pub(super) fn join_panel(&self) -> Element<'_, Message> {
         use super::workspace::{accessible_command, muted_text};
         let Some(state) = &self.tab.joining else {
-            return text("Select a fragment to attach").into();
+            return text(reshiki::i18n::t("Select a fragment to attach")).into();
         };
         let texts = join_mode_texts(state.mode);
         let preview: Element<'_, Anchor> = canvas(TemplateAnchorPreview {
@@ -457,11 +459,15 @@ pub(super) const CONTACT_ADDED: &str = "Donor → metal contact added in place �
 
 pub(super) fn coordination_status(outcome: &Coordination, marked: bool) -> &'static str {
     match (outcome, marked) {
-        (Coordination::Added(_), false) => CONTACT_ADDED,
-        (Coordination::AlreadyPresent, false) => "This donor is already coordinated to that metal",
-        (Coordination::Added(_), true) => "Marked donor → metal contact added · Undo removes it",
+        (Coordination::Added(_), false) => reshiki::i18n::t(CONTACT_ADDED),
+        (Coordination::AlreadyPresent, false) => {
+            reshiki::i18n::t("This donor is already coordinated to that metal")
+        }
+        (Coordination::Added(_), true) => {
+            reshiki::i18n::t("Marked donor → metal contact added · Undo removes it")
+        }
         (Coordination::AlreadyPresent, true) => {
-            "This marked donor is already coordinated to that metal"
+            reshiki::i18n::t("This marked donor is already coordinated to that metal")
         }
     }
 }

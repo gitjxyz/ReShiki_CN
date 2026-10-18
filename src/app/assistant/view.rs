@@ -86,7 +86,7 @@ impl App {
                 name.unwrap_or_else(|| "a closed drawing".into())
             ))
             .size(13),
-            button(text("Go to drawing").size(12))
+            button(text(reshiki::i18n::t("Go to drawing")).size(12))
                 .on_press(Message::Tabs(super::super::tabs::Action::Select(id))),
             action("New conversation here", Action::Reset),
         ]
@@ -108,11 +108,11 @@ impl App {
             && !state.guided_example
         {
             chat = chat.push(Space::new().height(20))
-                .push(text("What would you like to draw?").size(19))
-                .push(text("Molecules, reactions, or a starting point for your next scheme.").size(13).style(super::super::workspace::muted_text))
+                .push(text(reshiki::i18n::t("What would you like to draw?")).size(19))
+                .push(text(reshiki::i18n::t("Molecules, reactions, or a starting point for your next scheme.")).size(13).style(super::super::workspace::muted_text))
                 .push(action("Draw a molecule", Action::Example("Draw caffeine.")))
                 .push(action("Build a reaction", Action::Example("Draw the esterification of acetic acid with ethanol to ethyl acetate. Put H₂SO₄ and heat above the arrow.")))
-                .push(text("Review each proposal before applying. Changes stay editable and can be undone.").size(11).style(super::super::workspace::muted_text));
+                .push(text(reshiki::i18n::t("Review each proposal before applying. Changes stay editable and can be undone.")).size(11).style(super::super::workspace::muted_text));
         }
         for message in &state.messages {
             chat = chat.push(chat_message(message));
@@ -136,9 +136,9 @@ impl App {
         if !state.busy && state.draft.is_none() && !self.tab.doc.all_ids().is_empty() {
             chat = chat.push(action(
                 if self.tab.selected.is_empty() {
-                    "Improve drawing layout"
+                    reshiki::i18n::t("Improve drawing layout")
                 } else {
-                    "Improve selected layout"
+                    reshiki::i18n::t("Improve selected layout")
                 },
                 Action::Improve,
             ));
@@ -190,16 +190,20 @@ impl App {
             .is_some_and(|t| t.elapsed().as_secs() >= 8)
         {
             activity = activity.push(
-                text("Generation is still running. Waiting for the next completed step…")
-                    .size(11)
-                    .style(super::super::workspace::muted_text),
+                text(reshiki::i18n::t(
+                    "Generation is still running. Waiting for the next completed step…",
+                ))
+                .size(11)
+                .style(super::super::workspace::muted_text),
             );
         }
         if let Some(doc) = &state.preview {
             activity = activity.push(self.assistant_preview_canvas(doc));
             activity = activity.push(
-                text("Editable draft · Changes here stop generation and retain this preview.")
-                    .size(11),
+                text(reshiki::i18n::t(
+                    "Editable draft · Changes here stop generation and retain this preview.",
+                ))
+                .size(11),
             );
             activity = activity.push(self.assistant_preview_controls(doc));
         }
@@ -211,9 +215,12 @@ impl App {
     }
     fn assistant_retained_preview<'a>(&'a self, doc: &'a Document) -> Element<'a, Message> {
         container(column![
-            text("Retained preview").size(12),
+            text(reshiki::i18n::t("Retained preview")).size(12),
             self.assistant_preview_canvas(doc),
-            text("Review did not finish. The completed preview is retained.").size(11)
+            text(reshiki::i18n::t(
+                "Review did not finish. The completed preview is retained."
+            ))
+            .size(11)
         ])
         .padding(12)
         .style(|theme| crate::appearance::container(theme, card()))
@@ -225,16 +232,16 @@ impl App {
             && (draft.replace.is_empty() || draft.revision == self.tab.revision);
         let mut proposal = column![
             text(if draft.review.can_auto_apply() {
-                "Quality checked"
+                reshiki::i18n::t("Quality checked")
             } else {
-                "Draft · Review needed"
+                reshiki::i18n::t("Draft · Review needed")
             })
             .size(13),
             self.assistant_preview_canvas(&draft.fragment),
             text(if draft.replace.is_empty() {
-                "Adds editable objects to your drawing"
+                reshiki::i18n::t("Adds editable objects to your drawing")
             } else {
-                "Replaces the targeted objects; keeps the rest of your drawing"
+                reshiki::i18n::t("Replaces the targeted objects; keeps the rest of your drawing")
             })
             .size(11)
             .style(super::super::workspace::muted_text)
@@ -254,7 +261,10 @@ impl App {
         proposal = proposal.push(self.assistant_preview_controls(&draft.fragment));
         if !current {
             proposal = proposal.push(
-                text("Your drawing changed. Send a follow-up to refresh this proposal.").size(11),
+                text(reshiki::i18n::t(
+                    "Your drawing changed. Send a follow-up to refresh this proposal.",
+                ))
+                .size(11),
             );
         }
         proposal = proposal.push(
@@ -311,7 +321,7 @@ impl App {
         let effort = state
             .model()
             .map(|m| effort_label(state.preferences.effort(m)))
-            .unwrap_or("Reasoning");
+            .unwrap_or(reshiki::i18n::t("Reasoning"));
         let composer = self.assistant_composer();
         let connection = super::super::workspace::hover_hint(
             action(
@@ -365,13 +375,13 @@ impl App {
                 text(format!(
                     "{} · {seconds}s",
                     if state.connection == super::setup::Connection::Checking {
-                        "Checking connection"
+                        reshiki::i18n::t("Checking connection")
                     } else if state.checking > 0 {
-                        "Checking draft"
+                        reshiki::i18n::t("Checking draft")
                     } else if state.structures.is_some() {
-                        "Preparing structures"
+                        reshiki::i18n::t("Preparing structures")
                     } else {
-                        "Preparing scheme"
+                        reshiki::i18n::t("Preparing scheme")
                     }
                 ))
                 .size(11)
@@ -402,9 +412,9 @@ impl App {
         let editor = text_editor(&state.input)
             .id("assistant-input")
             .placeholder(if state.messages.is_empty() {
-                "Describe a molecule, or paste an image…"
+                reshiki::i18n::t("Describe a molecule, or paste an image…")
             } else {
-                "Ask for changes or another drawing…"
+                reshiki::i18n::t("Ask for changes or another drawing…")
             })
             .on_action(|a| Message::Assistant(Action::Input(a)))
             .key_binding(|key| {
@@ -533,7 +543,7 @@ fn chat_message(message: &ChatMessage) -> Element<'_, Message> {
                     .on_press(Message::Assistant(Action::ViewImage(Some(source.clone())))),
                 )
                 .push(
-                    text("Sent image · Click to enlarge")
+                    text(reshiki::i18n::t("Sent image · Click to enlarge"))
                         .size(11)
                         .style(super::super::workspace::muted_text),
                 );
@@ -577,7 +587,7 @@ fn panel_header<'a>() -> Element<'a, Message> {
             "Back to inspector",
             tooltip::Position::Bottom
         ),
-        text("Assistant").size(16),
+        text(reshiki::i18n::t("Assistant")).size(16),
         Space::new().width(Length::Fill),
         super::super::workspace::hover_hint(
             action("＋", Action::Reset),

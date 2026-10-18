@@ -325,7 +325,7 @@ impl super::App {
                 } else {
                     self.fit();
                 }
-                self.status = "Document opened".into();
+                self.status = reshiki::i18n::t("Document opened").into();
                 self.error = false;
             }
         }
@@ -347,7 +347,7 @@ impl super::App {
             if self.file_io.saving_tab != Some(self.tab.id) {
                 self.pending = None;
             }
-            self.status = "A document save is already in progress".into();
+            self.status = reshiki::i18n::t("A document save is already in progress").into();
             return Task::none();
         }
         self.file_io.saving = true;

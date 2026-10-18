@@ -13,10 +13,14 @@ pub enum Action {
     RulerUnit(crate::canvas::guides::Unit),
     /// Shows or hides the View options bar (was `ToggleView`).
     Toggle,
+    /// Switches the interface language at runtime.
+    Language(reshiki::i18n::Language),
+    /// Confirms the language preference write; errors surface in the status bar.
+    LanguageSaved(Result<(), String>),
 }
 
 impl App {
-    pub(super) fn view_action(&mut self, action: Action) {
+    pub(super) fn view_action(&mut self, action: Action) -> iced::Task<super::Message> {
         match action {
             Action::Grid => self.grid = !self.grid,
             Action::SmartGuides(enabled) => self.set_smart_guides(enabled),
@@ -24,7 +28,26 @@ impl App {
             Action::Rulers(enabled) => self.set_rulers(enabled),
             Action::Crosshair(enabled) => self.guides.crosshair = enabled,
             Action::RulerUnit(unit) => self.guides.unit = unit,
+            Action::Language(language) => return self.set_language(language),
+            Action::LanguageSaved(result) => {
+                if let Err(error) = result {
+                    self.status =
+                        format!("Language changed, but could not save preference: {error}");
+                    self.error = true;
+                }
+            }
         }
+        iced::Task::none()
+    }
+    pub(super) fn set_language(
+        &mut self,
+        language: reshiki::i18n::Language,
+    ) -> iced::Task<super::Message> {
+        self.language = language;
+        reshiki::i18n::set_language(language);
+        iced::Task::perform(reshiki::i18n::save_language(language), |result| {
+            super::Message::View(Action::LanguageSaved(result))
+        })
     }
     pub(super) fn set_viewport(&mut self, size: iced::Size) {
         // Inspector width changes, such as docking NMR, do not request fitting

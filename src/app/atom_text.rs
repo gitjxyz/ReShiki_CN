@@ -215,7 +215,9 @@ impl App {
                     return Task::none();
                 }
                 let Some(id) = id.or_else(|| self.atom_text_target()) else {
-                    self.status = "Select one atom, then press Enter to edit its label".into();
+                    self.status =
+                        reshiki::i18n::t("Select one atom, then press Enter to edit its label")
+                            .into();
                     return Task::none();
                 };
                 let Some(atom) = self.tab.doc.atom(id) else {
@@ -515,7 +517,9 @@ impl App {
             }
             content = content.push(
                 column![
-                    text("Appearance").size(10).style(muted_text),
+                    text(reshiki::i18n::t("Appearance"))
+                        .size(10)
+                        .style(muted_text),
                     canvas(crate::canvas::OwnedDrawingPreview(preview))
                         .width(Length::Fill)
                         .height(52),

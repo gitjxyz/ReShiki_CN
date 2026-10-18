@@ -179,14 +179,14 @@ impl App {
             .recent_molecules
             .selection(&self.tab.doc, self.tab.file_epoch);
         if ids.is_empty() {
-            self.status = "No recently edited molecule in this drawing".into();
+            self.status = reshiki::i18n::t("No recently edited molecule in this drawing").into();
             self.error = false;
             return;
         }
         // Reuse normal selection synchronization without expanding a molecule
         // into unrelated captions or structures in its user-created group.
         self.edit(Edit::Select(ids));
-        self.status = "Selected the most recently edited molecule(s)".into();
+        self.status = reshiki::i18n::t("Selected the most recently edited molecule(s)").into();
         self.error = false;
     }
 

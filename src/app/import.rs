@@ -339,12 +339,14 @@ impl App {
                 Plan::Insert(paths) => {
                     if self.tab.busy {
                         self.error = true;
-                        self.status = "Wait for the current operation, then import again".into();
+                        self.status =
+                            reshiki::i18n::t("Wait for the current operation, then import again")
+                                .into();
                         return Task::none();
                     }
                     self.tab.busy = true;
                     self.error = false;
-                    self.status = "Importing…".into();
+                    self.status = reshiki::i18n::t("Importing…").into();
                     let ticket = Ticket {
                         epoch: self.tab.file_epoch,
                         revision: self.tab.revision,
@@ -500,7 +502,7 @@ impl App {
             reshiki::accessibility::button(
                 "import-kind-structure",
                 "Import structure",
-                text("Structure").size(12),
+                text(reshiki::i18n::t("Structure")).size(12),
             )
             .checked(kind == InputKind::Structure)
             .style(super::workspace::control(kind == InputKind::Structure))
@@ -508,7 +510,7 @@ impl App {
             reshiki::accessibility::button(
                 "import-kind-name",
                 "Import chemical name",
-                text("Name").size(12),
+                text(reshiki::i18n::t("Name")).size(12),
             )
             .checked(kind == InputKind::Name)
             .style(super::workspace::control(kind == InputKind::Name))
@@ -602,7 +604,11 @@ impl App {
             .width(Length::Fill),
             row![
                 hover_hint(
-                    split(text("Insert").size(12).into(), Message::InsertInput, true),
+                    split(
+                        text(reshiki::i18n::t("Insert")).size(12).into(),
+                        Message::InsertInput,
+                        true
+                    ),
                     format!(
                         "Insert into the drawing · {}",
                         super::shortcuts::keys(iced::keyboard::Modifiers::COMMAND, "Enter")
@@ -636,7 +642,9 @@ impl App {
             hover_hint(
                 field("import-choose-file", "Choose file…")
                     .on_press(Message::Imports(Action::Choose)),
-                "MOL, RXN, CDXML, CDX, SMILES or pictures · Several files go side by side",
+                reshiki::i18n::t(
+                    "MOL, RXN, CDXML, CDX, SMILES or pictures · Several files go side by side"
+                ),
                 tooltip::Position::Top,
             ),
             field("import-paste-picture", "Paste picture").on_press_maybe(
@@ -646,10 +654,11 @@ impl App {
             self.import_examples_menu(),
         ]
         .spacing(5);
-        let hint =
-            text("Or drop MOL, RXN, CDXML, CDX, SMILES or picture files anywhere on the drawing.")
-                .size(11)
-                .style(muted_text);
+        let hint = text(reshiki::i18n::t(
+            "Or drop MOL, RXN, CDXML, CDX, SMILES or picture files anywhere on the drawing.",
+        ))
+        .size(11)
+        .style(muted_text);
         column![editor, actions, files, hint].spacing(10).into()
     }
 
@@ -746,8 +755,8 @@ fn insert_menu(
         container(
             reshiki::accessibility::button(
                 "import-replace",
-                "Replace drawing",
-                text("Replace drawing").size(12),
+                reshiki::i18n::t("Replace drawing"),
+                text(reshiki::i18n::t("Replace drawing")).size(12),
             )
             .width(Length::Fill)
             .padding([6, 10])

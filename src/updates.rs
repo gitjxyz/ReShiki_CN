@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 pub const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const RELEASES: &str = "https://github.com/Ameyanagi/ReShiki/releases";
+pub const RELEASES: &str = "https://github.com/gitjxyz/ReShiki_CN/releases";
 pub const CHECK_INTERVAL: Duration = Duration::from_secs(24 * 60 * 60);
-const API: &str = "https://api.github.com/repos/Ameyanagi/ReShiki/releases";
+const API: &str = "https://api.github.com/repos/gitjxyz/ReShiki_CN/releases";
 const MAX_RESPONSE: usize = 8 * 1024 * 1024;
 
 #[derive(Debug, Default, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]

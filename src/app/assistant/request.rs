@@ -32,12 +32,13 @@ impl App {
         self.assistant.waiting_for_canvas_edit = false;
         if prompt.len() > 12_000 {
             self.assistant.error = true;
-            self.assistant.status = "Please shorten your request to 12,000 characters".into();
+            self.assistant.status =
+                reshiki::i18n::t("Please shorten your request to 12,000 characters").into();
             return Task::none();
         }
         if !improving && self.assistant.replace && self.tab.selected.is_empty() {
             self.assistant.error = true;
-            self.assistant.status = "Select the objects to replace first".into();
+            self.assistant.status = reshiki::i18n::t("Select the objects to replace first").into();
             return Task::none();
         }
         let context = if self.tab.selected.is_empty() {
@@ -72,7 +73,7 @@ impl App {
                 if draft.epoch != self.tab.file_epoch
                     || (!draft.replace.is_empty() && draft.revision != self.tab.revision)
                 {
-                    self.assistant.status = "Your drawing changed. Discard this draft, then review the current selection.".into();
+                    self.assistant.status = reshiki::i18n::t("Your drawing changed. Discard this draft, then review the current selection.").into();
                     self.assistant.error = true;
                     return Task::none();
                 }
@@ -101,7 +102,8 @@ impl App {
             .as_ref()
             .is_some_and(|s| s.document.all_ids().is_empty())
         {
-            self.assistant.status = "Draw or select a scheme to improve first".into();
+            self.assistant.status =
+                reshiki::i18n::t("Draw or select a scheme to improve first").into();
             return Task::none();
         }
         let replace = if improving {
@@ -132,7 +134,7 @@ impl App {
             self.assistant.guided_example || (improving && self.assistant.requires_apply);
         self.assistant.busy = true;
         self.assistant.error = false;
-        self.assistant.status = "Preparing your scheme…".into();
+        self.assistant.status = reshiki::i18n::t("Preparing your scheme…").into();
         self.assistant.completed = None;
         self.assistant.follow_chat = true;
         self.assistant.preview = seed.as_ref().map(|s| s.document.clone());
@@ -251,7 +253,8 @@ impl App {
                         epoch,
                         replace,
                     });
-                    self.assistant.status = "Ready for review · Nothing has been applied".into();
+                    self.assistant.status =
+                        reshiki::i18n::t("Ready for review · Nothing has been applied").into();
                     if self.assistant.preferences.auto_apply
                         && can_auto_apply
                         && !self.assistant.requires_apply
@@ -260,7 +263,7 @@ impl App {
                     }
                 } else {
                     self.assistant.draft = None;
-                    self.assistant.status = "Waiting for your reply".into();
+                    self.assistant.status = reshiki::i18n::t("Waiting for your reply").into();
                 }
             }
             Err(error) => {
@@ -295,7 +298,8 @@ impl App {
             self.assistant.error = false;
             return;
         }
-        self.assistant.status = "Stopped · Completed previews are retained".into();
+        self.assistant.status =
+            reshiki::i18n::t("Stopped · Completed previews are retained").into();
         self.assistant.record(
             "ReShiki",
             "Stopped. Completed previews remain available below.".into(),

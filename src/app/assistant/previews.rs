@@ -27,7 +27,7 @@ impl App {
                 Some(selected.cloned().unwrap_or_else(|| "Overview".into())),
                 |s| Message::Assistant(Action::PreviewTarget(s))
             )
-            .placeholder("Inspect or edit a panel…")
+            .placeholder(reshiki::i18n::t("Inspect or edit a panel…"))
             .text_size(11)
             .width(Length::Fill)
         ]

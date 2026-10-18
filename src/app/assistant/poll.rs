@@ -59,15 +59,15 @@ impl App {
                     if self.assistant.plan.is_empty() {
                         self.assistant.plan = plan;
                     }
-                    self.assistant.status = "Composition planned".into();
+                    self.assistant.status = reshiki::i18n::t("Composition planned").into();
                 }
                 codex::Progress::Structures { completed, total } => {
                     self.assistant.structures = Some((completed, total));
-                    self.assistant.status = "Preparing structures…".into();
+                    self.assistant.status = reshiki::i18n::t("Preparing structures…").into();
                 }
                 codex::Progress::Preview(doc) => {
                     self.assistant.preview = Some(*doc);
-                    self.assistant.status = "Layout assembled".into();
+                    self.assistant.status = reshiki::i18n::t("Layout assembled").into();
                 }
                 codex::Progress::Checking { pass } => {
                     self.assistant.checking = pass;

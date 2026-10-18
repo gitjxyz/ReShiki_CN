@@ -200,7 +200,7 @@ impl App {
                     .filter(|(_, summary)| !summary.closed)
                     .map(|(graphic, _)| graphic.id)
                 else {
-                    self.status = "Select one open continuous path".into();
+                    self.status = reshiki::i18n::t("Select one open continuous path").into();
                     self.error = true;
                     return;
                 };
@@ -214,7 +214,7 @@ impl App {
             _ => {}
         }
         let Some((graphic, summary)) = self.selected_path() else {
-            self.status = "Select one continuous path".into();
+            self.status = reshiki::i18n::t("Select one continuous path").into();
             self.error = true;
             return;
         };

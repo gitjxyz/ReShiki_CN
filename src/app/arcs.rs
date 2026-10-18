@@ -65,12 +65,13 @@ impl App {
             },
             Action::Apply => {
                 let Ok(start_degrees) = self.tab.arc_editor.start.trim().parse::<f32>() else {
-                    self.status = "Arc start must be a finite angle in degrees".into();
+                    self.status =
+                        reshiki::i18n::t("Arc start must be a finite angle in degrees").into();
                     self.error = true;
                     return;
                 };
                 let Ok(sweep_degrees) = self.tab.arc_editor.sweep.trim().parse::<f32>() else {
-                    self.status = "Arc sweep must be 0.1–360°".into();
+                    self.status = reshiki::i18n::t("Arc sweep must be 0.1–360°").into();
                     self.error = true;
                     return;
                 };
@@ -146,7 +147,7 @@ impl App {
                     ..Default::default()
                 }
             }),
-            "Arc sweep",
+            reshiki::i18n::t("Arc sweep"),
             tooltip::Position::Bottom,
         )
         .into()

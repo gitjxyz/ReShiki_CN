@@ -343,7 +343,7 @@ impl App {
             }
             Action::CopyText(format) => {
                 if self.tab.selected.is_empty() {
-                    self.status = "Select a structure to copy".into();
+                    self.status = reshiki::i18n::t("Select a structure to copy").into();
                     return Task::none();
                 }
                 if format == "smiles" {
@@ -355,7 +355,7 @@ impl App {
                 {
                     return self.copy_as(format);
                 }
-                self.status = "Unsupported copy format".into();
+                self.status = reshiki::i18n::t("Unsupported copy format").into();
                 self.error = true;
             }
         }
@@ -580,7 +580,9 @@ impl App {
                     .iter()
                     .any(|g| g.members.contains(&a) || g.members.contains(&b))
                 {
-                    self.status = "Expand the abbreviation before changing its bonds".into();
+                    self.status =
+                        reshiki::i18n::t("Expand the abbreviation before changing its bonds")
+                            .into();
                     self.error = true;
                     return Task::none();
                 }

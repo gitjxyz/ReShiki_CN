@@ -570,7 +570,7 @@ impl App {
                 }
                 state.editing = false;
                 state.draft = None;
-                self.status = "Template saved to your library".into();
+                self.status = reshiki::i18n::t("Template saved to your library").into();
                 self.error = false;
             }
             Effect::Updated { remove, replace } => {
@@ -583,7 +583,8 @@ impl App {
                 if replace {
                     state.anchor = Anchor::Auto;
                 }
-                self.status = "Library updated · Undo library change is available".into();
+                self.status =
+                    reshiki::i18n::t("Library updated · Undo library change is available").into();
                 self.error = false;
             }
             Effect::Restored | Effect::Reloaded => {
@@ -699,13 +700,13 @@ impl App {
                 self.cancel_close();
             }
         } else if self.templates.importing {
-            self.status = "A template collection is being opened".into();
+            self.status = reshiki::i18n::t("A template collection is being opened").into();
             return Some(Task::none());
         }
         if self.templates.pending.is_some() {
             // Serialize library transactions only; canvas editing and unrelated
             // commands remain available while a slow disk write is in flight.
-            self.status = "Template library update is in progress".into();
+            self.status = reshiki::i18n::t("Template library update is in progress").into();
             return Some(Task::none());
         }
         if self.templates.path.is_some() && Operation::handles(action) {

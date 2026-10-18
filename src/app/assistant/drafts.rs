@@ -14,7 +14,7 @@ impl App {
             "ReShiki",
             "Proposal rejected. The drawing was not changed.".into(),
         );
-        self.assistant.status = "Rejected · Your drawing is unchanged".into();
+        self.assistant.status = reshiki::i18n::t("Rejected · Your drawing is unchanged").into();
     }
     pub(super) fn assistant_apply(&mut self) -> Task<Message> {
         let scroll = self.assistant.follow_chat;
@@ -33,7 +33,7 @@ impl App {
         if draft.epoch != self.tab.file_epoch
             || (!draft.replace.is_empty() && draft.revision != self.tab.revision)
         {
-            self.assistant.status = "This proposal targets a drawing or selection that changed. Send a follow-up to refresh it.".into();
+            self.assistant.status = reshiki::i18n::t("This proposal targets a drawing or selection that changed. Send a follow-up to refresh it.").into();
             self.assistant.error = true;
             return Task::none();
         }
@@ -66,7 +66,7 @@ impl App {
                     "ReShiki",
                     "Applied to the drawing. Undo restores the previous drawing.".into(),
                 );
-                self.assistant.status = "Applied · Undo is available".into();
+                self.assistant.status = reshiki::i18n::t("Applied · Undo is available").into();
                 self.status =
                     "Assistant drawing applied · Undo restores the previous drawing".into();
             }
