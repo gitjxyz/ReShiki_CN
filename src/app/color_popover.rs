@@ -469,7 +469,7 @@ impl App {
                         canvas_theme,
                         SWATCH,
                         active,
-                        format!("Custom {} · stays exact", reshiki::palette::hex(rgb)),
+                        reshiki::i18n::tf("Custom {} · stays exact", &[reshiki::palette::hex(rgb)]),
                         message,
                     )
                 }
@@ -726,11 +726,17 @@ impl App {
         };
         let changed = !edit.hues.is_default();
         let note = if !changed {
-            format!("Default hues for {theme}.")
+            reshiki::i18n::tf("Default hues for {}.", std::slice::from_ref(&theme))
         } else if edit.theme.is_none() {
-            format!("Saved as “{theme} · custom hues”. The built-in theme stays unchanged.")
+            reshiki::i18n::tf(
+                "Saved as “{} · custom hues”. The built-in theme stays unchanged.",
+                std::slice::from_ref(&theme),
+            )
         } else {
-            format!("Saved with “{theme}” in this drawing.")
+            reshiki::i18n::tf(
+                "Saved with “{}” in this drawing.",
+                std::slice::from_ref(&theme),
+            )
         };
         let foot = row![
             button(text(reshiki::i18n::t("Restore default hues")).size(12))
@@ -848,7 +854,9 @@ fn paper_text(canvas_theme: CanvasTheme) -> Color {
 }
 
 fn paper_label(label: &str, canvas_theme: CanvasTheme) -> iced::widget::Text<'_> {
-    text(label).size(10).color(paper_text(canvas_theme))
+    text(reshiki::i18n::t(label))
+        .size(10)
+        .color(paper_text(canvas_theme))
 }
 
 /// A color square; None draws "no color" on the canvas color.

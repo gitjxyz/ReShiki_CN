@@ -185,11 +185,11 @@ impl App {
                 self.tab.arrows.attach_targets = value;
                 self.tab.arrows.cancel_source();
                 self.error = false;
-                self.status = if value {
+                self.status = reshiki::i18n::t(if value {
                     "Attached arrows · Click a source, then a destination"
                 } else {
                     "Free arrows · Click or drag"
-                }
+                })
                 .into();
                 return;
             }
@@ -215,8 +215,9 @@ impl App {
                 Action::Dipole(v) => s.dipole = v,
                 Action::ApplyColor => {
                     s.color = reshiki::palette::Color::Custom(
-                        graphics::parse_color(&self.tab.arrows.color)
-                            .ok_or("Use a six-digit hex color, for example #205091")?,
+                        graphics::parse_color(&self.tab.arrows.color).ok_or(reshiki::i18n::t(
+                            "Use a six-digit hex color, for example #205091",
+                        ))?,
                     )
                 }
                 Action::ApplyNumber(f) => f.set(
@@ -326,7 +327,7 @@ impl App {
                     .into()
             };
             row![
-                text(label).size(11).width(Length::Fill),
+                text(reshiki::i18n::t(label)).size(11).width(Length::Fill),
                 hover_hint(input, "Enter applies", tooltip::Position::Top),
             ]
             .spacing(6)
@@ -451,7 +452,7 @@ impl App {
         if self.tab.arrow_style.supports_attachments() {
             panel = panel.push(hover_hint(
                 checkbox(self.tab.arrows.attach_targets)
-                    .label(ATTACH_LABEL)
+                    .label(reshiki::i18n::t(ATTACH_LABEL))
                     .on_toggle(|value| Message::ArrowAction(Action::AttachTargets(value)))
                     .size(14)
                     .text_size(12),
@@ -523,7 +524,11 @@ impl App {
                 false,
                 geometry,
             ))
-            .push(text(GESTURE_HINT).size(11).style(muted_text))
+            .push(
+                text(reshiki::i18n::t(GESTURE_HINT))
+                    .size(11)
+                    .style(muted_text),
+            )
             .into()
     }
     pub(super) fn set_arrow_style(&mut self, style: Preset) {

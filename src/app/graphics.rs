@@ -89,7 +89,7 @@ impl App {
     pub(super) fn snap_orbitals_toggle(&self) -> Element<'_, Message> {
         hover_hint(
             checkbox(self.tab.snap_orbitals)
-                .label(SNAP_ORBITALS_LABEL)
+                .label(reshiki::i18n::t(SNAP_ORBITALS_LABEL))
                 .on_toggle(|snap| Message::Graphics(Action::SnapOrbitals(snap)))
                 .size(14)
                 .text_size(11),
@@ -334,10 +334,14 @@ impl App {
                 ("curve-edit-points", "Edit curve points")
             };
             panel = panel.push(
-                reshiki::accessibility::button(id, label, text(label).size(12))
-                    .padding([7, 9])
-                    .on_press(Message::Tool(Tool::EditPoints))
-                    .style(control(false)),
+                reshiki::accessibility::button(
+                    id,
+                    reshiki::i18n::t(label),
+                    text(reshiki::i18n::t(label)).size(12),
+                )
+                .padding([7, 9])
+                .on_press(Message::Tool(Tool::EditPoints))
+                .style(control(false)),
             );
         }
         panel
@@ -438,10 +442,10 @@ impl App {
             self.apply_graphic_style(change);
         } else {
             self.error = true;
-            self.status = match field {
+            self.status = reshiki::i18n::t(match field {
                 ColorField::Stroke => "Enter a six-digit hex color, such as #117E6C",
                 ColorField::Fill => "Enter a six-digit hex color, such as #DCEFE9",
-            }
+            })
             .into();
         }
     }

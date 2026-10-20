@@ -30,13 +30,13 @@ impl ColorScope {
 }
 impl std::fmt::Display for ColorScope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_str(match self {
+        f.write_str(reshiki::i18n::t(match self {
             Self::All => "All selected",
             Self::Text => "Text",
             Self::Bonds => "Bonds",
             Self::Rings => "Ring interiors",
             Self::Highlights => "Highlights",
-        })
+        }))
     }
 }
 
@@ -518,15 +518,19 @@ impl App {
         self.changed(before);
         self.sync_color_input();
         self.status = if count == 0 {
-            "Select every atom of a ring to change its interior color".into()
+            reshiki::i18n::t("Select every atom of a ring to change its interior color").into()
         } else {
-            format!(
-                "{} {count} ring interior(s)",
-                if color.is_some() {
-                    "Colored"
-                } else {
-                    "Cleared"
-                }
+            reshiki::i18n::tf(
+                "{} {} ring interior(s)",
+                &[
+                    reshiki::i18n::t(if color.is_some() {
+                        "Colored"
+                    } else {
+                        "Cleared"
+                    })
+                    .into(),
+                    count.to_string(),
+                ],
             )
         };
     }
@@ -537,11 +541,11 @@ impl App {
         self.changed(before);
         self.sync_color_input();
         self.status = if count == 0 {
-            "Select atoms or bonds to change their highlights".into()
+            reshiki::i18n::t("Select atoms or bonds to change their highlights").into()
         } else if color.is_some() {
-            "Highlights applied".into()
+            reshiki::i18n::t("Highlights applied").into()
         } else {
-            "Highlights cleared".into()
+            reshiki::i18n::t("Highlights cleared").into()
         };
     }
     /// Keep a custom color that was just used in the drawing for the picker.
@@ -670,18 +674,18 @@ impl App {
         self.sync_bonds();
         self.tab.text_color_input = reshiki::palette::hex(Palette::of(&self.tab.doc).rgb(color));
         self.status = if text_only {
-            "Text range recolored".into()
+            reshiki::i18n::t("Text range recolored").into()
         } else if changed {
-            format!(
+            reshiki::i18n::tf(
                 "Color applied to {}",
-                self.tab.color_scope.to_string().to_lowercase()
+                &[self.tab.color_scope.to_string().to_lowercase()],
             )
         } else if self.tab.selected.is_empty() && text {
-            "Text color set · Select drawing objects to recolor them".into()
+            reshiki::i18n::t("Text color set · Select drawing objects to recolor them").into()
         } else {
-            format!(
+            reshiki::i18n::tf(
                 "No color change · Apply to {}",
-                self.tab.color_scope.to_string().to_lowercase()
+                &[self.tab.color_scope.to_string().to_lowercase()],
             )
         };
     }

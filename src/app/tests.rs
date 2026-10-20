@@ -2725,3 +2725,5 @@ fn text_click_on_an_existing_label_selects_it_without_a_history_step() {
     assert_eq!(app.tool, Tool::Text);
     assert!(!app.tab.history.can_undo());
 }
+
+mod i18n_equivalence;

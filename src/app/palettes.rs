@@ -151,7 +151,7 @@ fn bond_tool(preset: BondPreset) -> Tool {
         _ => Tool::StyledBond(preset),
     }
 }
-fn graphic_options(family: Family) -> Vec<(String, GraphicOption)> {
+pub(super) fn graphic_options(family: Family) -> Vec<(String, GraphicOption)> {
     use GraphicKind as G;
     let mut options = Vec::new();
     let kinds: &[G] = match family {
@@ -165,7 +165,16 @@ fn graphic_options(family: Family) -> Vec<(String, GraphicOption)> {
             for sides in [BracketSides::Both, BracketSides::Left, BracketSides::Right] {
                 let mut option = GraphicOption::new(kind);
                 option.sides = sides;
-                options.push((format!("{kind} · {sides}"), option));
+                options.push((
+                    reshiki::i18n::tf(
+                        "{} · {}",
+                        &[
+                            reshiki::i18n::t(&kind.to_string()).into(),
+                            reshiki::i18n::t(&sides.to_string()).into(),
+                        ],
+                    ),
+                    option,
+                ));
             }
         } else {
             for (name, pattern, filled) in [
@@ -176,7 +185,16 @@ fn graphic_options(family: Family) -> Vec<(String, GraphicOption)> {
                 let mut option = GraphicOption::new(kind);
                 option.style.pattern = pattern;
                 option.style.fill = filled.then_some(reshiki::palette::Color::Ink);
-                options.push((format!("{name} {kind}"), option));
+                options.push((
+                    reshiki::i18n::tf(
+                        "{} {}",
+                        &[
+                            reshiki::i18n::t(name).into(),
+                            reshiki::i18n::t(&kind.to_string()).into(),
+                        ],
+                    ),
+                    option,
+                ));
             }
         }
     }
@@ -188,11 +206,11 @@ fn graphic_options(family: Family) -> Vec<(String, GraphicOption)> {
         });
         option.constrain = true;
         options.push((
-            if family == Family::Rectangles {
+            reshiki::i18n::t(if family == Family::Rectangles {
                 "Square"
             } else {
                 "Circle"
-            }
+            })
             .into(),
             option,
         ));

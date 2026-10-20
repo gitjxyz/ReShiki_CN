@@ -86,7 +86,12 @@ fn anchor_label(state: &State) -> String {
         Anchor::Atom(id) if state.is_coordination() => {
             state.prepared.fragment.atom(id).map_or_else(
                 || state.anchor.to_string(),
-                |atom| format!("Donor: {} (atom {id})", atom.element),
+                |atom| {
+                    reshiki::i18n::tf(
+                        "Donor: {} (atom {})",
+                        &[atom.element.clone(), id.to_string()],
+                    )
+                },
             )
         }
         anchor => anchor.to_string(),
@@ -230,7 +235,7 @@ impl App {
                 .tab
                 .doc
                 .atom(*id)
-                .ok_or("Select only atoms to merge.")?;
+                .ok_or(reshiki::i18n::t("Select only atoms to merge."))?;
             let (lo, hi) = reshiki::scene::atom_label_ink_bounds(atom, &self.tab.doc)
                 .unwrap_or((atom.position, atom.position));
             bounds = Some(bounds.map_or((lo, hi), |(a, b)| {
@@ -240,7 +245,9 @@ impl App {
                 )
             }));
         }
-        let (lo, hi) = bounds.ok_or("Select at least three distinct atoms to merge.")?;
+        let (lo, hi) = bounds.ok_or(reshiki::i18n::t(
+            "Select at least three distinct atoms to merge.",
+        ))?;
         let center = Point::new(
             ((f64::from(lo.x) + f64::from(hi.x)) / 2.) as f32,
             ((f64::from(lo.y) + f64::from(hi.y)) / 2.) as f32,
@@ -325,7 +332,7 @@ impl App {
                         } else {
                             "Pick an attachment point, then click a destination"
                         };
-                        self.status = status.into();
+                        self.status = reshiki::i18n::t(status).into();
                         self.error = false;
                     }
                     Err(error) => {
@@ -399,8 +406,10 @@ impl App {
         .into();
         // The pick list is the one mode control, Coordinate in place included.
         let mut panel = column![
-            text(texts.title).size(18),
-            text(texts.intro).size(12).style(muted_text),
+            text(reshiki::i18n::t(texts.title)).size(18),
+            text(reshiki::i18n::t(texts.intro))
+                .size(12)
+                .style(muted_text),
             crate::appearance::pick_list(
                 [
                     Connection::Connect,
@@ -418,10 +427,14 @@ impl App {
         ]
         .spacing(12);
         if let Some(instruction) = texts.instruction {
-            panel = panel.push(text(instruction).size(12));
+            panel = panel.push(text(reshiki::i18n::t(instruction)).size(12));
         }
         panel
-            .push(text(texts.footer).size(11).style(muted_text))
+            .push(
+                text(reshiki::i18n::t(texts.footer))
+                    .size(11)
+                    .style(muted_text),
+            )
             .push(
                 accessible_command("coordination.cancel", "Cancel attachment", "Cancel")
                     .on_press(Message::Join(Action::Cancel)),
@@ -443,8 +456,10 @@ impl App {
             Connection::Connect
         });
         row![
-            text(texts.title).size(12),
-            text(texts.bar_subtitle).size(11).style(muted_text),
+            text(reshiki::i18n::t(texts.title)).size(12),
+            text(reshiki::i18n::t(texts.bar_subtitle))
+                .size(11)
+                .style(muted_text),
             accessible_command("coordination.cancel-bar", "Cancel attachment", "Cancel")
                 .on_press(Message::Join(Action::Cancel)),
         ]

@@ -43,9 +43,12 @@ impl Field {
             Self::FontSize | Self::Spacing => return None,
         })
     }
-    fn label(self, unit: Unit) -> String {
+    pub(super) fn label(self, unit: Unit) -> String {
         if let Some(dimension) = self.dimension() {
-            format!("{} ({unit})", dimension.name())
+            reshiki::i18n::tf(
+                "{} ({})",
+                &[reshiki::i18n::t(dimension.name()).into(), unit.to_string()],
+            )
         } else {
             match self {
                 Self::FontSize => reshiki::i18n::t("Label size (pt)"),
@@ -75,7 +78,15 @@ impl Field {
                     unit
                 },
             )
-            .map_err(|error| format!("{}: {error}", self.label(unit)))?;
+            .map_err(|error| {
+                reshiki::i18n::tf(
+                    "{}: {}",
+                    &[
+                        self.label(unit),
+                        reshiki::i18n::t(&error.to_string()).into(),
+                    ],
+                )
+            })?;
             if self == Self::FontSize && parsed.unit != Unit::Points {
                 return Err(
                     reshiki::i18n::t("Label size uses pt; enter a bare number or add pt.").into(),
@@ -98,9 +109,14 @@ impl Field {
         if value.is_finite() && (min..=max).contains(&value) {
             Ok(())
         } else {
-            Err(format!(
-                "{} must be between {min} and {max} {suffix}.",
-                self.label(unit)
+            Err(reshiki::i18n::tf(
+                "{} must be between {} and {} {}.",
+                &[
+                    self.label(unit),
+                    min.to_string(),
+                    max.to_string(),
+                    suffix.into(),
+                ],
             ))
         }
     }
@@ -340,9 +356,9 @@ impl App {
         if let Some(editor) = &mut self.tab.styles.editor
             && editor.change_unit(preferred).is_err()
         {
-            editor.unit_notice = Some(format!(
-                "This draft still uses {}. Finish the dimension and press Enter to use {preferred}.",
-                editor.display_unit
+            editor.unit_notice = Some(reshiki::i18n::tf(
+                "This draft still uses {}. Finish the dimension and press Enter to use {}.",
+                &[editor.display_unit.to_string(), preferred.to_string()],
             ));
         }
     }
@@ -374,8 +390,9 @@ impl App {
                             self.inspector_tab = InspectorTab::Properties;
                         }
                         if !self.error {
-                            self.status = format!(
-                                "{preset} applied · Undo restores the previous style and layout"
+                            self.status = reshiki::i18n::tf(
+                                "{} applied · Undo restores the previous style and layout",
+                                &[preset.to_string()],
                             );
                         }
                     }
@@ -413,7 +430,10 @@ impl App {
                 if let Some(url) = preset.source_url()
                     && let Err(error) = open::that(url)
                 {
-                    self.status = format!("Could not open publisher instructions: {error}");
+                    self.status = reshiki::i18n::tf(
+                        "Could not open publisher instructions: {}",
+                        &[error.to_string()],
+                    );
                     self.error = true;
                 }
             }
@@ -490,12 +510,13 @@ impl App {
                     return Task::none();
                 };
                 if let Err(error) = editor.change_unit(unit) {
-                    editor.unit_notice = Some(format!("Units unchanged. {error}"));
+                    editor.unit_notice = Some(reshiki::i18n::tf("Units unchanged. {}", &[error]));
                     return Task::none();
                 }
                 self.appearance.drawing_style_unit = unit;
                 if let Err(error) = self.appearance.save() {
-                    self.status = format!("Could not save dimension unit preference: {error}");
+                    self.status =
+                        reshiki::i18n::tf("Could not save dimension unit preference: {}", &[error]);
                     self.error = true;
                 }
             }

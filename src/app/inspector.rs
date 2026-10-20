@@ -11,6 +11,15 @@ use reshiki::{
 };
 use std::collections::{HashMap, HashSet};
 
+/// Display-only wrapper; selection messages carry the unchanged model enum.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(super) struct LabeledBondPreset(pub(super) BondPreset);
+impl std::fmt::Display for LabeledBondPreset {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(reshiki::i18n::t(self.0.name()))
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Section {
     Bonds,
@@ -1100,11 +1109,15 @@ impl App {
             BondPreset::of(first).filter(|p| bonds.iter().all(|b| BondPreset::of(b) == Some(*p)));
         let mut controls = column![
             text(reshiki::i18n::t("Style")).size(11).style(muted_text),
-            crate::appearance::pick_list(BondPreset::ALL, preset, Message::ApplyBondPreset)
-                .placeholder(reshiki::i18n::t("Mixed bond styles"))
-                .text_size(12)
-                .padding(7)
-                .width(Length::Fill),
+            crate::appearance::pick_list(
+                BondPreset::ALL.map(LabeledBondPreset),
+                preset.map(LabeledBondPreset),
+                |preset| Message::ApplyBondPreset(preset.0)
+            )
+            .placeholder(reshiki::i18n::t("Mixed bond styles"))
+            .text_size(12)
+            .padding(7)
+            .width(Length::Fill),
         ]
         .spacing(7);
         if bonds.iter().any(|b| [2, 7].contains(&b.order)) {
