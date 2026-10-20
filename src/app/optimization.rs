@@ -37,14 +37,18 @@ fn preview_control(
         Action::Field(field) => Some(field.to_string()),
         _ => None,
     };
-    let mut control = reshiki::accessibility::button(id, name, text(label).size(12))
-        .on_press_maybe(enabled.then_some(Message::Optimization(action)))
-        .padding([7, 8])
-        .style(if primary {
-            crate::appearance::primary
-        } else {
-            crate::appearance::secondary
-        });
+    let mut control = reshiki::accessibility::button(
+        id,
+        reshiki::i18n::t(name),
+        text(reshiki::i18n::t(label)).size(12),
+    )
+    .on_press_maybe(enabled.then_some(Message::Optimization(action)))
+    .padding([7, 8])
+    .style(if primary {
+        crate::appearance::primary
+    } else {
+        crate::appearance::secondary
+    });
     if let Some(checked) = checked {
         control = control.checked(checked);
     }
@@ -111,12 +115,12 @@ enum RelaxationPause {
 impl RelaxationPause {
     fn phase(self) -> &'static str {
         match self {
-            Self::Stalled => "Paused · No progress",
-            Self::Limit => "Paused · Not converged",
+            Self::Stalled => reshiki::i18n::t("Paused · No progress"),
+            Self::Limit => reshiki::i18n::t("Paused · Not converged"),
         }
     }
 
-    fn status(self) -> &'static str {
+    fn status_key(self) -> &'static str {
         match self {
             Self::Stalled => {
                 "Relaxation paused: no further energy improvement · Preview retained · Edit targets or pins, or press Start to retry"
@@ -125,6 +129,10 @@ impl RelaxationPause {
                 "Relaxation paused before convergence · Preview retained · Edit targets or pins, or press Start to retry"
             }
         }
+    }
+
+    fn status(self) -> &'static str {
+        reshiki::i18n::t(self.status_key())
     }
 }
 
@@ -556,7 +564,7 @@ impl App {
         }
         if matches!(message, Message::Escape) {
             self.cancel_optimization();
-            self.status = reshiki::i18n::t("3D preview cancelled · Drawing unchanged").into();
+            self.set_status_key("3D preview cancelled · Drawing unchanged");
             self.error = false;
             return Some(Task::none());
         }
@@ -698,11 +706,11 @@ impl App {
                 session.running = false;
                 session.pending = false;
                 session.phase = Phase::Failed;
-                session.notice =
-                    Some("The optimizer moved a pinned atom; the result was discarded".into());
-                self.status =
+                session.notice = Some(
                     reshiki::i18n::t("The optimizer moved a pinned atom; the result was discarded")
-                        .into();
+                        .to_owned(),
+                );
+                self.set_status_key("The optimizer moved a pinned atom; the result was discarded");
                 self.error = true;
                 return Task::none();
             }
@@ -748,6 +756,7 @@ impl App {
                     }
                 });
             }
+
             // Successful initialization is context, not an error notice.
             session.notice = None;
             if let Some(drag) = session.drag
@@ -774,8 +783,9 @@ impl App {
                 self.tab.doc = document;
                 self.changed(before);
                 if !self.error {
-                    self.status =
-                        "3D projection applied · Undo restores the original drawing".into();
+                    self.set_status_key(
+                        "3D projection applied · Undo restores the original drawing",
+                    );
                 }
                 return Task::none();
             }
@@ -785,7 +795,8 @@ impl App {
                 && let Some(reason) = session.relaxation.completed(&result)
             {
                 session.pause_relaxation(reason);
-                self.status = reason.status().into();
+                self.status = reason.status().to_owned();
+                self.status_source = Some(crate::app::StatusSource::Key(reason.status_key()));
                 self.error = false;
                 return Task::none();
             }
@@ -794,12 +805,14 @@ impl App {
             } else {
                 Phase::Paused
             };
-            self.status = if result.converged {
+            // Direct field writes: a live session borrow covers self.tab.
+            let status_key = if result.converged {
                 "3D preview converged · Rotate, drag, then Apply or Cancel"
             } else {
                 "3D preview · Select atoms to pin or drag unpinned atoms"
-            }
-            .into();
+            };
+            self.status = reshiki::i18n::t(status_key).to_owned();
+            self.status_source = Some(crate::app::StatusSource::Key(status_key));
             self.error = false;
             return session.next_with_status(&mut self.status);
         }
@@ -1016,35 +1029,35 @@ impl App {
         let ready = session.conformer.is_some() && session.phase != Phase::Applying;
         let editable = session.phase != Phase::Applying;
         let phase = match session.phase {
-            Phase::Preparing => "Generating 3D…",
+            Phase::Preparing => reshiki::i18n::t("Generating 3D…"),
             Phase::Paused if session.relaxation.paused.is_some() => session
                 .relaxation
                 .paused
-                .map_or("Paused", RelaxationPause::phase),
-            Phase::Paused if session.pending => "Paused · Ready to relax",
-            Phase::Paused if session.converged => "Paused · Converged",
-            Phase::Paused => "Paused",
+                .map_or(reshiki::i18n::t("Paused"), RelaxationPause::phase),
+            Phase::Paused if session.pending => reshiki::i18n::t("Paused · Ready to relax"),
+            Phase::Paused if session.converged => reshiki::i18n::t("Paused · Converged"),
+            Phase::Paused => reshiki::i18n::t("Paused"),
             Phase::Running if session.converged && session.flight.is_none() => {
-                "Live relaxation ready"
+                reshiki::i18n::t("Live relaxation ready")
             }
-            Phase::Running => "Relaxing…",
-            Phase::Applying => "Checking projection…",
-            Phase::Failed => "3D needs attention",
+            Phase::Running => reshiki::i18n::t("Relaxing…"),
+            Phase::Applying => reshiki::i18n::t("Checking projection…"),
+            Phase::Failed => reshiki::i18n::t("3D needs attention"),
         };
         let energy = session
             .energy
             .map(|energy| format!("{energy:.3} kcal/mol"))
             .unwrap_or_else(|| {
                 if session.flight.is_some() {
-                    "Energy updating…"
+                    reshiki::i18n::t("Energy updating…")
                 } else {
-                    "Start to calculate energy"
+                    reshiki::i18n::t("Start to calculate energy")
                 }
-                .into()
+                .to_owned()
             });
         let phase = session.initialization.map_or_else(
             || phase.to_owned(),
-            |initialization| format!("{phase} · {initialization}"),
+            |initialization| format!("{phase} · {}", reshiki::i18n::t(initialization)),
         );
         let field = |id, name, label, field| {
             preview_control(
@@ -1062,7 +1075,9 @@ impl App {
             controls: Element<'a, Message>,
         ) -> Element<'a, Message> {
             column![
-                text(title).size(11).style(super::workspace::muted_text),
+                text(reshiki::i18n::t(title))
+                    .size(11)
+                    .style(super::workspace::muted_text),
                 controls
             ]
             .spacing(5)
@@ -1071,8 +1086,12 @@ impl App {
         let mut panel = column![
             text(reshiki::i18n::t("3D preview")).size(14),
             text(phase).size(12),
-            text(format!("{} pinned · {energy}", session.pins.len()))
-                .size(11).style(super::workspace::muted_text),
+            text(reshiki::i18n::tf(
+                "{} pinned · {}",
+                &[session.pins.len().to_string(), energy],
+            ))
+            .size(11)
+            .style(super::workspace::muted_text),
             section("Force field & relaxation", column![
                 row![
                     field("optimization.field.mmff94", "Use MMFF94 force field", "MMFF94", ForceField::Mmff94),

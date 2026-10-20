@@ -241,7 +241,7 @@ impl App {
             self.menu_anchor(
                 reshiki::accessibility::button(
                     format!("arrange-menu-{page:?}"),
-                    name,
+                    reshiki::i18n::t(name),
                     row![
                         canvas(Glyph(icon, enabled)).width(24).height(24),
                         workspace::caret(9.)
@@ -254,9 +254,13 @@ impl App {
                 .style(workspace::control(false))
                 .on_press_maybe(enabled.then(|| open(page, left + index * (MENU_BUTTON + GAP)))),
                 if enabled {
-                    name.to_owned()
+                    reshiki::i18n::t(name).to_owned()
                 } else {
-                    format!("{name} · {}", icon.requirement())
+                    format!(
+                        "{} · {}",
+                        reshiki::i18n::t(name),
+                        reshiki::i18n::t(icon.requirement())
+                    )
                 },
             )
         };
@@ -288,7 +292,7 @@ impl App {
                         Command::Reflect(false) => "arrange-flip-vertical",
                         _ => "arrange-rotate",
                     },
-                    command.name(),
+                    reshiki::i18n::t(command.name()),
                     canvas(Glyph(command, enabled)).width(24).height(24),
                 )
                 .width(ICON_BUTTON)
@@ -296,11 +300,17 @@ impl App {
                 .on_press_maybe(enabled.then(|| command.message()))
                 .style(workspace::control(false)),
                 &match (enabled, command) {
-                    (false, _) => format!("{} · {}", command.name(), command.requirement()),
-                    (true, Command::Reflect(_)) => {
-                        format!("{}\nPreserves stereochemistry", command.name())
-                    }
-                    _ => command.name().to_owned(),
+                    (false, _) => format!(
+                        "{} · {}",
+                        reshiki::i18n::t(command.name()),
+                        reshiki::i18n::t(command.requirement())
+                    ),
+                    (true, Command::Reflect(_)) => format!(
+                        "{}\n{}",
+                        reshiki::i18n::t(command.name()),
+                        reshiki::i18n::t("Preserves stereochemistry")
+                    ),
+                    _ => reshiki::i18n::t(command.name()).to_owned(),
                 },
                 keys,
                 tooltip::Position::Bottom,

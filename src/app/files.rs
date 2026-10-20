@@ -34,15 +34,18 @@ pub(super) fn save_backend(host: Option<Host>) -> SaveBackend {
 /// pending action; the answer arrives as Save, Discard or Cancel.
 pub(super) fn ask_to_save(name: String) -> Task<Message> {
     iced::window::latest().then(move |window| {
-        let question = format!("Do you want to save the changes you made to “{name}”?");
-        let consequence = "Your changes will be lost if you don’t save them.";
+        let question = reshiki::i18n::tf(
+            "Do you want to save the changes you made to “{}”?",
+            std::slice::from_ref(&name),
+        );
+        let consequence = reshiki::i18n::t("Your changes will be lost if you don’t save them.");
         // macOS alerts show the title in bold above the description; other
         // platforms use the title as the window caption.
         let (title, description) = if cfg!(target_os = "macos") {
             (question, consequence.to_owned())
         } else {
             (
-                "Save changes?".to_owned(),
+                reshiki::i18n::t("Save changes?").to_owned(),
                 format!("{question} {consequence}"),
             )
         };
@@ -51,8 +54,8 @@ pub(super) fn ask_to_save(name: String) -> Task<Message> {
             .set_title(title)
             .set_description(description)
             .set_buttons(rfd::MessageButtons::YesNoCancelCustom(
-                SAVE.into(),
-                DONT_SAVE.into(),
+                reshiki::i18n::t(SAVE).into(),
+                reshiki::i18n::t(DONT_SAVE).into(),
                 "Cancel".into(),
             ));
         match window {
@@ -69,8 +72,8 @@ fn save_answer(result: rfd::MessageDialogResult) -> Message {
     match result {
         Answer::Yes => Message::Save,
         Answer::No => Message::Discard,
-        Answer::Custom(label) if label == SAVE => Message::Save,
-        Answer::Custom(label) if label == DONT_SAVE => Message::Discard,
+        Answer::Custom(label) if label == reshiki::i18n::t(SAVE) => Message::Save,
+        Answer::Custom(label) if label == reshiki::i18n::t(DONT_SAVE) => Message::Discard,
         _ => Message::Cancel,
     }
 }

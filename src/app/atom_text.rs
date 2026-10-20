@@ -446,17 +446,21 @@ impl App {
                               key: &'static str,
                               script| {
             hover_keys(
-                reshiki::accessibility::button(id, name, text(label).size(13))
-                    .on_press_maybe(
-                        state
-                            .scripts_enabled()
-                            .then_some(Message::AtomText(Action::Script(script))),
-                    )
-                    .checked(state.scripts_enabled() && state.selected_script(script))
-                    .style(control(
-                        state.scripts_enabled() && state.selected_script(script),
-                    ))
-                    .padding([5, 9]),
+                reshiki::accessibility::button(
+                    id,
+                    reshiki::i18n::t(name),
+                    text(reshiki::i18n::t(label)).size(13),
+                )
+                .on_press_maybe(
+                    state
+                        .scripts_enabled()
+                        .then_some(Message::AtomText(Action::Script(script))),
+                )
+                .checked(state.scripts_enabled() && state.selected_script(script))
+                .style(control(
+                    state.scripts_enabled() && state.selected_script(script),
+                ))
+                .padding([5, 9]),
                 name,
                 Some(super::shortcuts::keys(
                     iced::keyboard::Modifiers::COMMAND,
@@ -567,15 +571,15 @@ impl App {
                     Space::new().width(Length::Fill),
                     reshiki::accessibility::button(
                         "atom-text-cancel",
-                        "Cancel atom label edit",
-                        "Cancel · Esc"
+                        reshiki::i18n::t("Cancel atom label edit"),
+                        reshiki::i18n::t("Cancel · Esc")
                     )
                     .on_press(Message::AtomText(Action::Cancel))
                     .style(control(false)),
                     reshiki::accessibility::button(
                         "atom-text-apply",
-                        "Apply atom label",
-                        "Apply · Enter"
+                        reshiki::i18n::t("Apply atom label"),
+                        reshiki::i18n::t("Apply · Enter")
                     )
                     .on_press(Message::AtomText(Action::Apply))
                     .style(crate::appearance::primary),

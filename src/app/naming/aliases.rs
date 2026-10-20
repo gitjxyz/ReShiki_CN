@@ -91,7 +91,7 @@ impl App {
                     row![
                         accessible_command(
                             format!("{prefix}-alias-copy-{index}"),
-                            format!("Copy alias {}", alias.name),
+                            reshiki::i18n::tf("Copy alias {}", std::slice::from_ref(&alias.name)),
                             "Copy"
                         )
                         .on_press_maybe(available.then_some(
@@ -101,11 +101,11 @@ impl App {
                             format!("{prefix}-alias-caption-{index}"),
                             format!(
                                 "{} {}",
-                                if target == AliasTarget::Import {
+                                reshiki::i18n::t(if target == AliasTarget::Import {
                                     "Use alias below"
                                 } else {
                                     "Insert alias caption"
-                                },
+                                }),
                                 alias.name
                             ),
                             if target == AliasTarget::Import {

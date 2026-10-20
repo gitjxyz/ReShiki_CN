@@ -30,8 +30,8 @@ pub enum Scope {
 impl std::fmt::Display for Scope {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Self::Connected => "Connected fragment",
-            Self::Selected => "Selected objects",
+            Self::Connected => reshiki::i18n::t("Connected fragment"),
+            Self::Selected => reshiki::i18n::t("Selected objects"),
         })
     }
 }
@@ -46,10 +46,10 @@ pub enum Pivot {
 impl std::fmt::Display for Pivot {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Self::Center => "Center of moved objects",
-            Self::Start => "Reference start",
-            Self::Middle => "Reference midpoint",
-            Self::Pinned => "Pinned point",
+            Self::Center => reshiki::i18n::t("Center of moved objects"),
+            Self::Start => reshiki::i18n::t("Reference start"),
+            Self::Middle => reshiki::i18n::t("Reference midpoint"),
+            Self::Pinned => reshiki::i18n::t("Pinned point"),
         })
     }
 }
@@ -141,15 +141,19 @@ fn reference_button<'a>(
     action: Action,
     enabled: bool,
 ) -> reshiki::accessibility::Button<'a, Message> {
-    reshiki::accessibility::button(id, label, text(label).size(12))
-        .padding([6, 9])
-        .style(control(false))
-        .on_press_maybe(enabled.then_some(message(action)))
+    reshiki::accessibility::button(
+        id,
+        reshiki::i18n::t(label),
+        text(reshiki::i18n::t(label)).size(12),
+    )
+    .padding([6, 9])
+    .style(control(false))
+    .on_press_maybe(enabled.then_some(message(action)))
 }
 fn label_width() -> f32 {
     LABELS
         .iter()
-        .map(|label| text_width(label, 12.))
+        .map(|label| text_width(reshiki::i18n::t(label), 12.))
         .fold(0., f32::max)
         + 2.
 }
@@ -159,10 +163,13 @@ fn labeled<'a>(
     width: f32,
     control: impl Into<Element<'a, Message>>,
 ) -> Row<'a, Message> {
-    row![container(text(label).size(12)).width(width), control.into()]
-        .spacing(4)
-        .align_y(Alignment::Center)
-        .width(Length::Fill)
+    row![
+        container(text(reshiki::i18n::t(label)).size(12)).width(width),
+        control.into()
+    ]
+    .spacing(4)
+    .align_y(Alignment::Center)
+    .width(Length::Fill)
 }
 /// Controls without a label start in the control column.
 fn indented<'a>(width: f32, control: impl Into<Element<'a, Message>>) -> Row<'a, Message> {
@@ -179,11 +186,15 @@ fn unit_field<'a>(
     input: fn(String) -> Action,
     submit: Option<Action>,
 ) -> Element<'a, Message> {
-    let field =
-        reshiki::accessibility::text_input(id, format!("{name} ({unit})"), placeholder, value)
-            .style(crate::appearance::input_style)
-            .on_input(move |s| message(input(s)))
-            .on_submit_maybe(submit.map(message));
+    let field = reshiki::accessibility::text_input(
+        id,
+        format!("{} ({unit})", reshiki::i18n::t(name)),
+        placeholder,
+        value,
+    )
+    .style(crate::appearance::input_style)
+    .on_input(move |s| message(input(s)))
+    .on_submit_maybe(submit.map(message));
     accessible_unit_field(field, unit)
 }
 fn number(input: &str, label: &str) -> Result<f32, String> {
@@ -192,7 +203,7 @@ fn number(input: &str, label: &str) -> Result<f32, String> {
         .parse::<f32>()
         .ok()
         .filter(|v| v.is_finite())
-        .ok_or_else(|| format!("Enter a finite {label}"))
+        .ok_or_else(|| reshiki::i18n::tf("Enter a finite {}", &[label.to_owned()]))
 }
 
 impl App {
@@ -224,17 +235,20 @@ impl App {
                         .iter()
                         .position(|a| a.id == id)
                         .and_then(|i| doc.atoms.get(i).map(|a| format!("{} {}", a.element, i + 1)))
-                        .unwrap_or_else(|| "Atom".into())
+                        .unwrap_or_else(|| reshiki::i18n::t("Atom").to_owned())
                 };
                 let label = match edge {
                     Edge::Bond(a, b) => format!("{} → {}", atom_name(a), atom_name(b)),
-                    Edge::Graphic(id, index) => format!(
+                    Edge::Graphic(id, index) => reshiki::i18n::tf(
                         "Shape {} · edge {}",
-                        doc.graphics
-                            .iter()
-                            .position(|g| g.id == id)
-                            .map_or(1, |i| i + 1),
-                        index
+                        &[
+                            doc.graphics
+                                .iter()
+                                .position(|g| g.id == id)
+                                .map_or(1, |i| i + 1)
+                                .to_string(),
+                            index.to_string(),
+                        ],
                     ),
                 };
                 Choice { edge, label }
@@ -266,9 +280,8 @@ impl App {
         let state = &self.tab.numeric_transforms.reference;
         let (a, b) = edge.endpoints(&self.tab.doc)?;
         Ok(match state.pivot {
-            Pivot::Center => {
-                editing::rotation_center(&self.tab.doc, ids).ok_or("Select objects to rotate")?
-            }
+            Pivot::Center => editing::rotation_center(&self.tab.doc, ids)
+                .ok_or(reshiki::i18n::t("Select objects to rotate"))?,
             Pivot::Start => a,
             Pivot::Middle => Point::new(
                 ((f64::from(a.x) + f64::from(b.x)) * 0.5) as f32,
@@ -290,9 +303,11 @@ impl App {
         self.stretch_for_reference(self.chosen_reference().as_ref())
     }
     fn stretch_for_reference(&self, chosen: Option<&Choice>) -> Result<Stretch, String> {
-        let edge = chosen.ok_or("Select a bond to stretch")?.edge;
+        let edge = chosen
+            .ok_or(reshiki::i18n::t("Select a bond to stretch"))?
+            .edge;
         let Edge::Bond(a, b) = edge else {
-            return Err("Choose a molecular bond to stretch".into());
+            return Err(reshiki::i18n::t("Choose a molecular bond to stretch").to_owned());
         };
         if self.tab.numeric_transforms.reference.swap_fixed {
             Stretch::new(&self.tab.doc, b, a)
@@ -310,8 +325,10 @@ impl App {
     }
     pub(super) fn reference_transform_action(&mut self, action: Action) {
         if self.tab.drawing_edit_active() {
-            self.status =
-                "Finish the active drawing edit before changing reference geometry".into();
+            self.status = reshiki::i18n::t(
+                "Finish the active drawing edit before changing reference geometry",
+            )
+            .to_owned();
             self.error = true;
             return;
         }
@@ -346,8 +363,9 @@ impl App {
                 state.length.clear();
             }
             Action::PinCenter => {
-                let p = editing::rotation_center(&self.tab.doc, &self.tab.selected)
-                    .ok_or("Select atoms or objects whose center you want to pin")?;
+                let p = editing::rotation_center(&self.tab.doc, &self.tab.selected).ok_or(
+                    reshiki::i18n::t("Select atoms or objects whose center you want to pin"),
+                )?;
                 let scale = self.tab.doc.drawing_style.points_per_world();
                 let state = &mut self.tab.numeric_transforms.reference;
                 state.pivot = Pivot::Pinned;
@@ -375,7 +393,7 @@ impl App {
                     "rotation angle",
                 )?;
                 self.rotate_about_reference(
-                    "Select a reference bond or edge",
+                    reshiki::i18n::t("Select a reference bond or edge"),
                     |_, _| Ok(angle),
                     duplicate,
                 )?;
@@ -423,7 +441,7 @@ impl App {
         };
         self.select_tool(tool);
         self.tab.numeric_transforms.reference.drag_epoch = Some(self.tab.file_epoch);
-        self.status = tool.hint().into();
+        self.status = reshiki::i18n::t(tool.hint()).to_owned();
         self.error = false;
     }
     pub(super) fn reference_transform_panel(&self) -> Element<'_, Message> {
@@ -431,11 +449,11 @@ impl App {
         let body = column![
             reshiki::accessibility::button(
                 "reference-controls",
-                "Reference bond and edge controls",
+                reshiki::i18n::t("Reference bond and edge controls"),
                 text(if state.open {
-                    "▾ Reference: align / stretch"
+                    reshiki::i18n::t("▾ Reference: align / stretch")
                 } else {
-                    "▸ Reference: align / stretch"
+                    reshiki::i18n::t("▸ Reference: align / stretch")
                 })
                 .size(12)
             )
@@ -465,7 +483,11 @@ impl App {
         let enabled = chosen.is_some();
         let width = label_width();
         body = body
-            .push(text(REFERENCE_HINT).size(11).style(muted_text))
+            .push(
+                text(reshiki::i18n::t(REFERENCE_HINT))
+                    .size(11)
+                    .style(muted_text),
+            )
             .push(labeled(
                 "Reference",
                 width,
@@ -628,13 +650,18 @@ impl App {
             "{:.2}",
             plan.length * self.tab.doc.drawing_style.points_per_world()
         );
-        let end = if state.swap_fixed { "end" } else { "start" };
+        let end = if state.swap_fixed {
+            reshiki::i18n::t("end")
+        } else {
+            reshiki::i18n::t("start")
+        };
         body.push(
             row![
                 // No-break spaces keep the value and the fixed atom whole
                 // when the line wraps beside the button.
-                text(format!(
-                    "Length {length}\u{a0}pt · {fixed}\u{a0}({end}) stays fixed"
+                text(reshiki::i18n::tf(
+                    "Length {}\u{a0}pt · {}\u{a0}({}) stays fixed",
+                    &[length.clone(), fixed.to_owned(), end.to_owned()],
                 ))
                 .size(11)
                 .style(muted_text)

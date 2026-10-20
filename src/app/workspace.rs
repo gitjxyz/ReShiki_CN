@@ -69,24 +69,26 @@ impl App {
             .count();
         let objects = self.tab.selected.len().saturating_sub(atoms);
         let mut parts = Vec::new();
-        let mut add = |count: usize, label: &str| {
+        // English pluralizes; other languages do not, so each count picks a
+        // template of its own instead of appending an English plural suffix.
+        let mut add = |count: usize, singular: &str, plural: &str| {
             if count > 0 {
-                parts.push(format!(
-                    "{count} {label}{}",
-                    if count == 1 { "" } else { "s" }
+                parts.push(reshiki::i18n::tf(
+                    if count == 1 { singular } else { plural },
+                    &[count.to_string()],
                 ));
             }
         };
         if !groups.is_empty() && self.tab.selected.iter().all(|id| covered.contains(id)) {
-            add(groups.len(), "group");
+            add(groups.len(), "1 group", "{} groups");
         } else {
-            add(atoms.saturating_sub(points), "atom");
-            add(points, "point");
-            add(objects, "object");
+            add(atoms.saturating_sub(points), "1 atom", "{} atoms");
+            add(points, "1 point", "{} points");
+            add(objects, "1 object", "{} objects");
         }
-        add(bonds, "bond");
+        add(bonds, "1 bond", "{} bonds");
         if parts.is_empty() {
-            "No selection".into()
+            reshiki::i18n::t("No selection").to_owned()
         } else {
             parts.join(" · ")
         }
@@ -111,7 +113,7 @@ impl App {
                       change: StyleChange|
          -> Element<'_, Message> {
             hover_hint(
-                button(text(label).size(14))
+                button(text(reshiki::i18n::t(label)).size(14))
                     .padding([5, 8])
                     .style(control(active))
                     .on_press(Message::TextStyle(change)),
@@ -389,7 +391,7 @@ impl App {
             hover_hint(
                 reshiki::accessibility::button(
                     "header-about",
-                    "About ReShiki; check for updates",
+                    reshiki::i18n::t("About ReShiki; check for updates"),
                     crate::branding::wordmark(21.0)
                 )
                 .padding(0)
@@ -512,13 +514,13 @@ impl App {
                 &super::palettes::Action::Ring(self.ring_size, false),
             )
         };
-        let chain = format!(
+        let chain = reshiki::i18n::tf(
             "Straight chain · {} · Drag a regular zigzag toward the pointer",
-            keys(Modifiers::SHIFT, "X")
+            &[keys(Modifiers::SHIFT, "X")],
         );
-        let atom = format!(
+        let atom = reshiki::i18n::tf(
             "Atom label · {}",
-            super::palettes::element_hint(&self.element)
+            &[super::palettes::element_hint(&self.element)],
         );
         let single = super::palettes::bond_hint(BondPreset::Single, "Single bond");
         let double = super::palettes::bond_hint(BondPreset::Double, "Double bond");
@@ -527,7 +529,10 @@ impl App {
             || "Other bonds".into(),
             |preset| super::palettes::bond_hint(preset, preset.name()),
         );
-        let arrow = format!("{} · e", self.tab.arrow_style);
+        let arrow = format!(
+            "{} · e",
+            reshiki::i18n::t(&self.tab.arrow_style.to_string())
+        );
         let rectangle = self.toolbar.rectangle.kind.to_string();
         let ellipse = self.toolbar.ellipse.kind.to_string();
         let brackets = super::palettes::graphic_hint(
@@ -650,17 +655,21 @@ impl App {
         })
         .width(36)
         .height(36);
-        let item = reshiki::accessibility::button(format!("tool-{tool:?}"), hint.to_owned(), item)
-            .padding(0)
-            .width(36)
-            .height(36)
-            .checked(self.tool == tool)
-            .style(|_, _| iced::widget::button::Style::default())
-            .on_press(if family == Some(super::palettes::Family::Bonds) {
-                Message::Palette(super::palettes::Action::Open(tool))
-            } else {
-                Message::Tool(tool)
-            });
+        let item = reshiki::accessibility::button(
+            format!("tool-{tool:?}"),
+            reshiki::i18n::t(hint).to_owned(),
+            item,
+        )
+        .padding(0)
+        .width(36)
+        .height(36)
+        .checked(self.tool == tool)
+        .style(|_, _| iced::widget::button::Style::default())
+        .on_press(if family == Some(super::palettes::Family::Bonds) {
+            Message::Palette(super::palettes::Action::Open(tool))
+        } else {
+            Message::Tool(tool)
+        });
         if self.palette.is_some() {
             item.into()
         } else {
@@ -693,7 +702,7 @@ impl App {
         hover_hint(
             reshiki::accessibility::button(
                 "help-open",
-                "Help and keyboard shortcuts",
+                reshiki::i18n::t("Help and keyboard shortcuts"),
                 column![
                     iced::widget::canvas(Glyph(Icon::Keyboard, true))
                         .width(24)
@@ -722,7 +731,11 @@ impl App {
     /// Width of `bond_constraints`: two checkboxes (13 px box, 8 px gap), the
     /// Length field, 6 px gaps and the measured labels.
     fn constraints_width() -> f32 {
-        2. * 21. + UNIT_FIELD + 12. + text_width("Length", 11.) + text_width("Angles", 11.)
+        2. * 21.
+            + UNIT_FIELD
+            + 12.
+            + text_width(reshiki::i18n::t("Length"), 11.)
+            + text_width(reshiki::i18n::t("Angles"), 11.)
     }
 
     /// Length and Angles for drawing and bonded movement; their Reset is a
@@ -730,7 +743,7 @@ impl App {
     fn bond_constraints(&self) -> Element<'_, Message> {
         row![
             checkbox(self.tab.bond_drawing.fixed_length)
-                .label("Length")
+                .label(reshiki::i18n::t("Length"))
                 .on_toggle(Message::FixedLength)
                 .size(13)
                 .text_size(11),
@@ -741,7 +754,7 @@ impl App {
             ))
             .width(UNIT_FIELD),
             checkbox(self.tab.bond_drawing.fixed_angles)
-                .label("Angles")
+                .label(reshiki::i18n::t("Angles"))
                 .on_toggle(Message::FixedAngles)
                 .size(13)
                 .text_size(11),
@@ -973,9 +986,9 @@ impl App {
                 row![
                     text(tool_name(self.tool).0).size(12),
                     text(if self.tool == Tool::Tilt {
-                        "Drag to rotate the preview"
+                        reshiki::i18n::t("Drag to rotate the preview")
                     } else {
-                        "Drag unpinned atoms · Shift-click selects"
+                        reshiki::i18n::t("Drag unpinned atoms · Shift-click selects")
                     })
                     .size(11)
                     .style(muted_text),
@@ -983,7 +996,7 @@ impl App {
                     hover_hint(
                         reshiki::accessibility::button(
                             "context-3d-properties",
-                            "Open 3D preview controls in Properties",
+                            reshiki::i18n::t("Open 3D preview controls in Properties"),
                             text(reshiki::i18n::t("3D preview →")).size(12),
                         )
                         .on_press(Message::Inspector(InspectorTab::Properties))
@@ -1017,7 +1030,7 @@ impl App {
         let commands = self.context_commands();
         let widths: Vec<f32> = commands
             .iter()
-            .map(|c| text_width(c.label, 12.) + 18.)
+            .map(|c| text_width(reshiki::i18n::t(c.label), 12.) + 18.)
             .collect();
         let select = matches!(self.tool, Tool::Select | Tool::Lasso);
         let arrange = (select && self.appearance.arrange_controls).then_some((
@@ -1080,8 +1093,10 @@ impl App {
                     super::keyboard_drawing::Action::Leave,
                 )),
                 format!(
-                    "Keyboard drawing · {active}{marked}\n{}\nClick to turn off · F8",
-                    reshiki::keyboard_drawing::State::hint()
+                    "{} · {active}{marked}\n{}\n{}",
+                    reshiki::i18n::t("Keyboard drawing"),
+                    reshiki::keyboard_drawing::State::hint(),
+                    reshiki::i18n::t("Click to turn off · F8")
                 ),
                 tooltip::Position::Bottom,
             )
@@ -1110,8 +1125,8 @@ impl App {
                 reshiki::accessibility::button(
                     keyboard_control_id(&c.message)
                         .map_or_else(|| format!("context-command-{index}"), str::to_owned),
-                    c.hint,
-                    text(c.label).size(12),
+                    reshiki::i18n::t(c.hint),
+                    text(reshiki::i18n::t(c.label)).size(12),
                 )
                 .padding([7, 9])
                 .style(control(false))
@@ -1123,13 +1138,18 @@ impl App {
             x += CONTEXT_GAP + w;
         }
         if folded > 0 {
-            let labels: Vec<_> = commands.iter().take(folded).map(|c| c.menu).collect();
+            let labels: Vec<_> = commands
+                .iter()
+                .take(folded)
+                .map(|c| reshiki::i18n::t(c.menu))
+                .collect();
+            let more = reshiki::i18n::tf("More: {}", &[labels.join(", ")]);
             let page = super::context_menu::Page::More(folded);
             row = row.push(
                 self.menu_anchor(
                     reshiki::accessibility::button(
                         "context-overflow",
-                        format!("More: {}", labels.join(", ")),
+                        more.clone(),
                         iced::widget::canvas(Glyph(Icon::More, true))
                             .width(24)
                             .height(24),
@@ -1140,7 +1160,7 @@ impl App {
                     .on_press(Message::ContextMenu(
                         super::context_menu::Action::Open(page, x + CONTEXT_GAP),
                     )),
-                    format!("More: {}", labels.join(", ")),
+                    more,
                 ),
             );
         }
@@ -1198,7 +1218,7 @@ impl App {
                 vec![
                     reshiki::accessibility::button(
                         "stretch-done",
-                        "Finish stretching bonds",
+                        reshiki::i18n::t("Finish stretching bonds"),
                         text(reshiki::i18n::t("Done")).size(12),
                     )
                     .padding([7, 9])
@@ -1213,7 +1233,7 @@ impl App {
                     hover_hint(
                         reshiki::accessibility::button(
                             "edit-points-done",
-                            "Finish editing points",
+                            reshiki::i18n::t("Finish editing points"),
                             text(reshiki::i18n::t("Done")).size(12),
                         )
                         .padding([7, 9])
@@ -1274,10 +1294,12 @@ impl App {
             self.tool,
             Tool::Ring | Tool::RingPreset(reshiki::rings::Preset::Regular)
         ) {
-            format!(
+            reshiki::i18n::tf(
                 "{} · {} keeps ring size",
-                self.tool.hint(),
-                keys(Modifiers::SHIFT, "R")
+                &[
+                    reshiki::i18n::t(self.tool.hint()).to_owned(),
+                    keys(Modifiers::SHIFT, "R"),
+                ],
             )
             .into()
         } else {
@@ -1620,16 +1642,26 @@ impl App {
                     "EDIT TEMPLATE"
                 }))
                 .push(
-                    crate::appearance::text_input("Template name", &state.name)
-                        .on_input(|s| Message::Templates(A::Name(s)))
-                        .size(12)
-                        .padding(7),
+                    reshiki::accessibility::text_input(
+                        "template.name",
+                        reshiki::i18n::t("Template name"),
+                        reshiki::i18n::t("Template name"),
+                        &state.name,
+                    )
+                    .on_input(|s| Message::Templates(A::Name(s)))
+                    .size(12)
+                    .padding(7),
                 )
                 .push(
-                    crate::appearance::text_input("Collection", &state.category)
-                        .on_input(|s| Message::Templates(A::Category(s)))
-                        .size(12)
-                        .padding(7),
+                    reshiki::accessibility::text_input(
+                        "template.collection",
+                        reshiki::i18n::t("Collection"),
+                        reshiki::i18n::t("Collection"),
+                        &state.category,
+                    )
+                    .on_input(|s| Message::Templates(A::Category(s)))
+                    .size(12)
+                    .padding(7),
                 )
                 .push(
                     row![
@@ -1663,10 +1695,15 @@ impl App {
         if !state.active {
             body = body.push(
                 column![
-                    crate::appearance::text_input("Search names, collections…", &state.query)
-                        .on_input(|s| Message::Templates(A::Search(s)))
-                        .size(12)
-                        .padding(8),
+                    reshiki::accessibility::text_input(
+                        "template.search",
+                        reshiki::i18n::t("Search templates"),
+                        reshiki::i18n::t("Search names, collections…"),
+                        &state.query,
+                    )
+                    .on_input(|s| Message::Templates(A::Search(s)))
+                    .size(12)
+                    .padding(8),
                     crate::appearance::pick_list(
                         [Filter::All, Filter::Mine, Filter::Favorites],
                         Some(state.filter),
@@ -1962,11 +1999,11 @@ impl App {
                 "Contracts recognized common groups into labels",
                 if self.tab.busy { wait } else { "Draw or import a molecule first" },
             ),
-            text(if self.tab.selected.is_empty() { "Searches the whole drawing." } else { "Complete groups in the selection only." }).size(11).style(muted_text),
+            text(if self.tab.selected.is_empty() { reshiki::i18n::t("Searches the whole drawing.") } else { reshiki::i18n::t("Complete groups in the selection only.") }).size(11).style(muted_text),
             horizontal_line(),
             text(reshiki::i18n::t("NAME A SELECTED FRAGMENT")).size(11).style(muted_text),
-            crate::appearance::text_input("Label, e.g. Ar", &self.abbreviations.label).on_input(move |s| action(A::Label(s))).on_submit(action(A::Contract)).size(13),
-            crate::appearance::text_input("From the right (optional)", &self.abbreviations.reverse_label).on_input(move |s| action(A::ReverseLabel(s))).on_submit(action(A::Contract)).size(13),
+            crate::appearance::text_input(reshiki::i18n::t("Label, e.g. Ar"), &self.abbreviations.label).on_input(move |s| action(A::Label(s))).on_submit(action(A::Contract)).size(13),
+            crate::appearance::text_input(reshiki::i18n::t("From the right (optional)"), &self.abbreviations.reverse_label).on_input(move |s| action(A::ReverseLabel(s))).on_submit(action(A::Contract)).size(13),
             item(
                 "Contract selection",
                 action(A::Contract),
@@ -2581,9 +2618,9 @@ fn fit(width: f32, row: &Fold<'_>) -> Fit {
 
 fn chain_atoms_label(mode: reshiki::chains::ChainMode) -> &'static str {
     if mode == reshiki::chains::ChainMode::Snaking {
-        "Max atoms"
+        reshiki::i18n::t("Max atoms")
     } else {
-        "Atoms"
+        reshiki::i18n::t("Atoms")
     }
 }
 
@@ -2670,7 +2707,7 @@ pub(super) fn keyed_text<'a>(
         spans.extend(super::shortcuts::spans(&keys));
     }
     if !detail.is_empty() {
-        spans.push(span(format!("\n{detail}")));
+        spans.push(span(format!("\n{}", reshiki::i18n::t(detail))));
     }
     rich_text(spans).size(12).into()
 }
@@ -2756,14 +2793,21 @@ pub(super) fn command(label: &str, message: Message) -> button::Button<'_, Messa
 }
 /// A `command` with an accessibility id and name, for controls that
 /// assistive technology and tests activate by id. The caller sets its action.
+/// `name` and `label` are interface text: both pass through the dictionary,
+/// so dynamic names must be pre-translated by their caller.
 pub(super) fn accessible_command<'a>(
     id: impl Into<String>,
     name: impl Into<String>,
-    label: impl text::IntoFragment<'a>,
+    label: &str,
 ) -> reshiki::accessibility::Button<'a, Message> {
-    reshiki::accessibility::button(id, name, text(label).size(12))
-        .padding([7, 9])
-        .style(control(false))
+    let name: String = name.into();
+    reshiki::accessibility::button(
+        id,
+        reshiki::i18n::t(&name).to_owned(),
+        text(reshiki::i18n::t(label).to_owned()).size(12),
+    )
+    .padding([7, 9])
+    .style(control(false))
 }
 /// A checkbox that publishes its id, name and checked state; `message` is
 /// the toggle, or `None` while it is unavailable.
@@ -2774,6 +2818,7 @@ pub(super) fn accessible_checkbox<'a>(
     message: Option<Message>,
 ) -> reshiki::accessibility::Button<'a, Message> {
     let toggle = message.clone();
+    let label = reshiki::i18n::t(label);
     reshiki::accessibility::button(
         id,
         label,
@@ -2823,6 +2868,7 @@ fn icon_button_at(
     position: tooltip::Position,
 ) -> Element<'static, Message> {
     let hint = hint.into();
+    let hint: std::borrow::Cow<'static, str> = reshiki::i18n::t(&hint).to_owned().into();
     let id = match icon {
         Icon::New => "header-new",
         Icon::Open => "header-open",

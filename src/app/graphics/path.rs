@@ -38,11 +38,11 @@ fn path_button(
 /// A row label, as wide as the widest one so that the controls line up.
 fn path_label(label: &'static str) -> Element<'static, Message> {
     let width = [SELECTED_NODE, NEXT_SEGMENT]
-        .map(|label| text_width(label, 11.))
+        .map(|label| text_width(reshiki::i18n::t(label), 11.))
         .into_iter()
         .fold(0., f32::max)
         + 2.;
-    text(label).size(11).width(width).into()
+    text(reshiki::i18n::t(label)).size(11).width(width).into()
 }
 const SELECTED_NODE: &str = "Selected node";
 const NEXT_SEGMENT: &str = "Next segment";

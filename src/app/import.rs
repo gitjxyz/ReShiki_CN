@@ -501,7 +501,7 @@ impl App {
         let modes = row![
             reshiki::accessibility::button(
                 "import-kind-structure",
-                "Import structure",
+                reshiki::i18n::t("Import structure"),
                 text(reshiki::i18n::t("Structure")).size(12),
             )
             .checked(kind == InputKind::Structure)
@@ -509,7 +509,7 @@ impl App {
             .on_press(Message::Imports(Action::InputKind(InputKind::Structure))),
             reshiki::accessibility::button(
                 "import-kind-name",
-                "Import chemical name",
+                reshiki::i18n::t("Import chemical name"),
                 text(reshiki::i18n::t("Name")).size(12),
             )
             .checked(kind == InputKind::Name)
@@ -559,7 +559,7 @@ impl App {
             .style(crate::appearance::editor_style);
         let editor = reshiki::accessibility::editor(
             INPUT,
-            "Structure or reaction to import",
+            reshiki::i18n::t("Structure or reaction to import"),
             state.input.text(),
             editor,
             |value| Message::Imports(Action::ReplaceText(value)),
@@ -572,9 +572,9 @@ impl App {
                     "import-insert-menu"
                 },
                 if left {
-                    "Insert into drawing"
+                    reshiki::i18n::t("Insert into drawing")
                 } else {
-                    "More ways to insert"
+                    reshiki::i18n::t("More ways to insert")
                 },
                 content,
             )
@@ -595,7 +595,7 @@ impl App {
                 text(
                     state
                         .format
-                        .map(|f| format!("Detected: {}", format_name(f)))
+                        .map(|f| reshiki::i18n::tf("Detected: {}", &[format_name(f).to_owned()]))
                         .unwrap_or_default()
                 )
                 .size(11)
@@ -609,9 +609,12 @@ impl App {
                         Message::InsertInput,
                         true
                     ),
-                    format!(
+                    reshiki::i18n::tf(
                         "Insert into the drawing · {}",
-                        super::shortcuts::keys(iced::keyboard::Modifiers::COMMAND, "Enter")
+                        &[super::shortcuts::keys(
+                            iced::keyboard::Modifiers::COMMAND,
+                            "Enter"
+                        )],
                     ),
                     tooltip::Position::Top,
                 ),
@@ -634,9 +637,13 @@ impl App {
         .align_y(Alignment::Center);
         // 11 px keeps the three controls on one line in the 300 px inspector.
         let field = |id, label| {
-            reshiki::accessibility::button(id, label, text(label).size(11))
-                .padding([6, 7])
-                .style(crate::appearance::secondary)
+            reshiki::accessibility::button(
+                id,
+                reshiki::i18n::t(label),
+                text(reshiki::i18n::t(label)).size(11),
+            )
+            .padding([6, 7])
+            .style(crate::appearance::secondary)
         };
         let files = row![
             hover_hint(
@@ -667,8 +674,8 @@ impl App {
         let open = self.imports.examples_menu;
         let anchor = super::popover::choice_anchor(
             "import-examples",
-            "Import examples".into(),
-            "Examples".into(),
+            reshiki::i18n::t("Import examples").to_owned(),
+            reshiki::i18n::t("Examples").to_owned(),
             11.,
             [6, 7],
             open,
@@ -678,8 +685,8 @@ impl App {
             let items = EXAMPLES.into_iter().enumerate().map(|(index, example)| {
                 reshiki::accessibility::button(
                     format!("import-example-{index}"),
-                    example.0,
-                    text(example.0).size(12),
+                    reshiki::i18n::t(example.0),
+                    text(reshiki::i18n::t(example.0)).size(12),
                 )
                 .padding([6, 10])
                 .width(Length::Fill)

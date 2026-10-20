@@ -125,7 +125,9 @@ impl App {
                     ]
                     .spacing(6)
                     .align_y(Alignment::Center),
-                    text(REAR_OPACITY_HINT).size(11).style(muted_text),
+                    text(reshiki::i18n::t(REAR_OPACITY_HINT))
+                        .size(11)
+                        .style(muted_text),
                 ]
                 .spacing(6)
             },

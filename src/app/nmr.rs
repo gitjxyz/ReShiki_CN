@@ -50,9 +50,13 @@ const COPIED_STATUS: &str =
 
 /// The status summary of an accepted report, e.g. `¹H NMR · 3 of 3 atoms predicted`.
 fn summary(nucleus: Nucleus, supported: usize, total: usize) -> String {
-    format!(
-        "{} NMR · {supported} of {total} atoms predicted",
-        nucleus.label()
+    reshiki::i18n::tf(
+        "{} NMR · {} of {} atoms predicted",
+        &[
+            nucleus.label().to_owned(),
+            supported.to_string(),
+            total.to_string(),
+        ],
     )
 }
 

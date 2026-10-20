@@ -39,9 +39,9 @@ impl App {
                 self.assistant.connection = Connection::from_account(&account);
                 self.assistant.error = !account.connected;
                 self.assistant.status = if account.connected {
-                    "Connected to Codex".into()
+                    reshiki::i18n::t("Connected to Codex").to_owned()
                 } else {
-                    super::setup::SIGN_IN_STATUS.into()
+                    reshiki::i18n::t(super::setup::SIGN_IN_STATUS).to_owned()
                 };
                 self.assistant.account = Some(account);
             }

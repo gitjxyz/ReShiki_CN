@@ -165,14 +165,14 @@ impl App {
             }
             Menu::Effort => {
                 options = options.push(
-                    text("Reasoning")
+                    text(reshiki::i18n::t("Reasoning"))
                         .size(12)
                         .style(super::super::workspace::muted_text),
                 );
                 if let Some(model) = state.model() {
                     for effort in &model.efforts {
                         let label = if effort.id == model.initial_effort() {
-                            format!("{}  ·  Default", effort.label())
+                            reshiki::i18n::tf("{}  ·  Default", &[effort.label().to_owned()])
                         } else {
                             effort.label().into()
                         };

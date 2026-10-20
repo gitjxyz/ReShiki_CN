@@ -53,15 +53,29 @@ fn row_presentation_preserves_proton_and_carbon_text_bytes() {
         let presentation = Presentation::new(&report, &ethyl_acetate_doc());
         assert_eq!(presentation.rows[0].label, supported_label);
         assert_eq!(presentation.rows[1].label, unsupported_label);
-        assert_eq!(presentation.rows[0].description, description);
-        assert_eq!(presentation.rows[1].description, unsupported);
-        assert_eq!(presentation.rows[0].shift, "1.250");
-        assert_eq!(presentation.rows[1].shift, "—");
+        // Descriptions, shifts and details render from the rows each frame,
+        // so a language switch updates them without a new Presentation.
+        let describe = |row: &reshiki::nmr::Row, label: &str| {
+            crate::app::nmr::view::site_description(report.nucleus, row, label)
+        };
         assert_eq!(
-            presentation.rows[0].details,
+            describe(&report.rows[0], &presentation.rows[0].label),
+            description
+        );
+        assert_eq!(
+            describe(&report.rows[1], &presentation.rows[1].label),
+            unsupported
+        );
+        assert_eq!(super::row_shift(&report.rows[0]), "1.250");
+        assert_eq!(super::row_shift(&report.rows[1]), "—");
+        assert_eq!(
+            super::row_details(&report.rows[0]),
             "Shell 2 · 7 references · SD 0.125 ppm",
         );
-        assert_eq!(presentation.rows[1].details, "Shell — · no references",);
+        assert_eq!(
+            super::row_details(&report.rows[1]),
+            "Shell — · no references",
+        );
         assert_eq!(presentation.value, "local-data-v1. CDCl₃; 298 K");
         assert_eq!(presentation.supported_count, 1);
         assert_eq!(presentation.sorted_ids, [9]);
@@ -87,11 +101,14 @@ fn presentation_distinguishes_supported_rows_from_finite_unique_owners() {
     let presentation = Presentation::new(&report, &ethyl_acetate_doc());
     assert_eq!(presentation.supported_count, 4);
     assert_eq!(presentation.sorted_ids, [30, 50]);
-    assert_eq!(presentation.rows[1].shift, "NaN");
+    assert_eq!(super::row_shift(&report.rows[1]), "NaN");
     assert!(
-        presentation.rows[1]
-            .description
-            .contains("Predicted NaN ppm")
+        crate::app::nmr::view::site_description(
+            report.nucleus,
+            &report.rows[1],
+            &presentation.rows[1].label
+        )
+        .contains("Predicted NaN ppm")
     );
 }
 

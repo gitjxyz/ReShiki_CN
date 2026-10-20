@@ -291,7 +291,9 @@ impl App {
         let name = OPTIONS
             .iter()
             .find(|(_, align)| Some(*align) == current)
-            .map_or("Mixed or automatic", |(name, _)| name);
+            .map_or(reshiki::i18n::t("Mixed or automatic"), |(name, _)| {
+                reshiki::i18n::t(name)
+            });
         let anchor = hover_hint(
             button(
                 row![
@@ -310,7 +312,7 @@ impl App {
             .padding([6, 3])
             .style(control(open))
             .on_press(Message::StyleMenu(Action::Align)),
-            format!("Text alignment · {name}"),
+            format!("{} · {}", reshiki::i18n::t("Text alignment"), name),
             tooltip::Position::Bottom,
         );
         let popup = open.then(|| {
@@ -323,7 +325,7 @@ impl App {
                             canvas(Glyph(Icon::TextAlign(align), true))
                                 .width(24)
                                 .height(24),
-                            text(label).size(12)
+                            text(reshiki::i18n::t(label)).size(12)
                         ]
                         .spacing(8)
                         .align_y(Alignment::Center),
@@ -353,7 +355,7 @@ impl App {
         let anchor = hover_hint(
             reshiki::accessibility::button(
                 "style-color-menu",
-                "Text and object color",
+                reshiki::i18n::t("Text and object color"),
                 row![
                     container(Space::new().width(16).height(16)).style(move |_| {
                         container::Style {
@@ -504,7 +506,7 @@ impl App {
             text(reshiki::i18n::t("Color")).size(12).style(muted_text),
             reshiki::accessibility::text_input(
                 INPUT,
-                "Custom color: hexadecimal, RGB or OKLCH",
+                reshiki::i18n::t("Custom color: hexadecimal, RGB or OKLCH"),
                 "#1F4E79 · 31, 78, 121 · oklch(…)",
                 &self.tab.text_color_input
             )
@@ -516,7 +518,7 @@ impl App {
             .width(Length::Fill),
             reshiki::accessibility::button(
                 "style-color-apply",
-                "Apply custom color",
+                reshiki::i18n::t("Apply custom color"),
                 text(reshiki::i18n::t("Apply")).size(12)
             )
             .padding([6, 10])

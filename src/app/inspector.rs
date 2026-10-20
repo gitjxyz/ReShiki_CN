@@ -406,16 +406,16 @@ impl App {
 
     fn property_summary(&self) -> String {
         let scope = if self.tab.selected.is_empty() {
-            "Whole drawing"
+            reshiki::i18n::t("Whole drawing")
         } else {
-            "Selection"
+            reshiki::i18n::t("Selection")
         };
         if let Some(a) = self.property_analysis() {
             format!("{scope} · {}", a.formula)
         } else if self.property_key().is_some_and(|key| key.atoms.is_empty()) {
-            "No atoms selected".into()
+            reshiki::i18n::t("No atoms selected").to_owned()
         } else {
-            scope.into()
+            scope.to_owned()
         }
     }
 
@@ -467,8 +467,13 @@ impl App {
             reshiki::accessibility::button(
                 format!("inspector-section-{section:?}"),
                 format!(
-                    "{title}: {}",
-                    if expanded { "expanded" } else { "collapsed" }
+                    "{}: {}",
+                    reshiki::i18n::t(title),
+                    if expanded {
+                        reshiki::i18n::t("expanded")
+                    } else {
+                        reshiki::i18n::t("collapsed")
+                    }
                 ),
                 heading
             )
@@ -537,21 +542,27 @@ impl App {
         }
         if let Tool::RingPreset(preset) = self.tool {
             use reshiki::rings::Preset;
-            let details = format!(
+            let details = reshiki::i18n::tf(
                 "{} Alt/Option on an atom connects the ring with a new bond. Each placement is one Undo step. {}",
-                if preset == Preset::Benzene {
-                    "Click an aromatic carbon to attach a phenyl group, or a bond to fuse. Terminal carbons become part of the ring. Drag to choose the direction."
-                } else {
-                    "Click to place. Drag to rotate or choose an attachment side. Click an atom to share it, or a bond to fuse."
-                },
-                match preset {
-                    Preset::Benzene | Preset::Cyclopentadiene =>
-                        "Hold Shift to move the double bonds.",
-                    Preset::HaworthFive | Preset::HaworthSix =>
-                        "Haworth outlines have a bold front edge. Templates → Carbohydrates contains oxygen scaffolds and defined α/β sugars. These blank outlines do not assign stereochemistry.",
-                    _ =>
-                        "Chair projections do not assign stereochemistry. Cleanup may redraw them as regular hexagons.",
-                }
+                &[
+                    reshiki::i18n::t(
+                        if preset == Preset::Benzene {
+                            "Click an aromatic carbon to attach a phenyl group, or a bond to fuse. Terminal carbons become part of the ring. Drag to choose the direction."
+                        } else {
+                            "Click to place. Drag to rotate or choose an attachment side. Click an atom to share it, or a bond to fuse."
+                        },
+                    )
+                    .to_owned(),
+                    reshiki::i18n::t(match preset {
+                        Preset::Benzene | Preset::Cyclopentadiene =>
+                            "Hold Shift to move the double bonds.",
+                        Preset::HaworthFive | Preset::HaworthSix =>
+                            "Haworth outlines have a bold front edge. Templates → Carbohydrates contains oxygen scaffolds and defined α/β sugars. These blank outlines do not assign stereochemistry.",
+                        _ =>
+                            "Chair projections do not assign stereochemistry. Cleanup may redraw them as regular hexagons.",
+                    })
+                    .to_owned(),
+                ],
             );
             body = body.push(card(
                 container(
@@ -784,7 +795,10 @@ impl App {
             ] {
                 body = body.push(
                     row![
-                        text(label).size(11).style(muted_text).width(Length::Fill),
+                        text(reshiki::i18n::t(label))
+                            .size(11)
+                            .style(muted_text)
+                            .width(Length::Fill),
                         text(value).size(12)
                     ]
                     .align_y(Alignment::Center),
@@ -833,7 +847,7 @@ impl App {
         body = body.push(
             reshiki::accessibility::button(
                 "nmr.open",
-                "Predict NMR shifts for the selected molecule",
+                reshiki::i18n::t("Predict NMR shifts for the selected molecule"),
                 text(reshiki::i18n::t("Predict NMR…")).size(12),
             )
             .padding([7, 9])
@@ -1305,9 +1319,9 @@ impl App {
         let open = self.tab.inspector_ui.figure_menu;
         let anchor = reshiki::accessibility::button(
             "export-figure-format",
-            format!("Figure format: {figure}"),
+            reshiki::i18n::tf("Figure format: {}", &[figure.to_string()]),
             row![
-                text(format!("{} · {figure}", figure.kind()))
+                text(format!("{} · {figure}", reshiki::i18n::t(figure.kind())))
                     .size(12)
                     .width(Length::Fill),
                 super::workspace::caret(9.)
@@ -1322,8 +1336,10 @@ impl App {
         let popup = open.then(|| {
             let mut items = column![].spacing(1);
             for kind in ["Vector", "Raster"] {
-                items =
-                    items.push(container(text(kind).size(11).style(muted_text)).padding([5, 10]));
+                items = items.push(
+                    container(text(reshiki::i18n::t(kind)).size(11).style(muted_text))
+                        .padding([5, 10]),
+                );
                 for &format in FigureFormat::ALL.iter().filter(|f| f.kind() == kind) {
                     items = items.push(
                         reshiki::accessibility::button(
@@ -1359,7 +1375,7 @@ impl App {
         let open = self.tab.inspector_ui.chemical_menu;
         let anchor = super::popover::choice_anchor(
             "export-chemical-format",
-            format!("Structure format: {chemical}"),
+            reshiki::i18n::tf("Structure format: {}", &[chemical.to_string()]),
             chemical.to_string(),
             12.,
             8,
@@ -1401,14 +1417,16 @@ impl App {
         let chemical = self.tab.inspector_ui.chemical;
         let mut figures = column![
             self.figure_menu(figure),
-            text(figure.description()).size(12).style(muted_text),
+            text(reshiki::i18n::t(figure.description()))
+                .size(12)
+                .style(muted_text),
             reshiki::accessibility::button(
                 "export-figure",
-                format!("Export {figure} figure"),
+                reshiki::i18n::tf("Export {} figure", &[figure.to_string()]),
                 text(if self.figure_exporting {
-                    reshiki::i18n::t("Exporting……").into()
+                    reshiki::i18n::t("Exporting…").into()
                 } else {
-                    format!("Export {figure}…")
+                    reshiki::i18n::tf("Export {}…", &[figure.to_string()])
                 })
                 .size(13)
             )
@@ -1425,7 +1443,7 @@ impl App {
                 .push(
                     reshiki::accessibility::button(
                         "export-copy-image",
-                        "Copy image",
+                        reshiki::i18n::t("Copy image"),
                         text(super::workspace::keyed("Copy image", &Message::CopyImage)).size(12),
                     )
                     .padding([7, 9])
@@ -1462,11 +1480,17 @@ impl App {
                 false,
                 column![
                     self.chemical_menu(chemical),
-                    text(chemical.description()).size(12).style(muted_text),
+                    text(reshiki::i18n::t(chemical.description()))
+                        .size(12)
+                        .style(muted_text),
                     reshiki::accessibility::button(
                         "export-chemical",
-                        format!("Export {} structure", chemical.code().to_uppercase()),
-                        text(format!("Export {}…", chemical.code().to_uppercase())).size(13)
+                        reshiki::i18n::tf("Export {} structure", &[chemical.code().to_uppercase()]),
+                        text(reshiki::i18n::tf(
+                            "Export {}…",
+                            &[chemical.code().to_uppercase()]
+                        ))
+                        .size(13)
                     )
                     .padding(10)
                     .width(Length::Fill)

@@ -56,7 +56,7 @@ impl Connection {
     /// Whether `status` only repeats the problem this card already shows.
     pub(super) fn repeats(self, status: &str) -> bool {
         match self {
-            Self::SignInRequired => status == SIGN_IN_STATUS,
+            Self::SignInRequired => status == reshiki::i18n::t(SIGN_IN_STATUS),
             Self::Failed(error) => status == error.to_string(),
             _ => false,
         }
@@ -213,7 +213,10 @@ impl App {
     pub(super) fn assistant_setup_help_opened(&mut self, help: Help, result: Result<(), String>) {
         if result.is_err() {
             self.assistant.error = true;
-            self.assistant.status = format!("Could not open the browser. Visit {}", help.url());
+            self.assistant.status = reshiki::i18n::tf(
+                "Could not open the browser. Visit {}",
+                &[help.url().to_owned()],
+            );
         }
     }
 
@@ -245,10 +248,13 @@ impl App {
     pub(super) fn assistant_setup_card(&self) -> Element<'_, Message> {
         let copy = self.assistant.connection.copy();
         let actions = self.setup_actions(&copy);
-        let content = column![text(copy.title).size(16), detail_text(&copy.detail)]
-            .spacing(9)
-            .width(Length::Fill)
-            .push(actions);
+        let content = column![
+            text(reshiki::i18n::t(copy.title)).size(16),
+            detail_text(reshiki::i18n::t(&copy.detail))
+        ]
+        .spacing(9)
+        .width(Length::Fill)
+        .push(actions);
         let content = self.setup_footer(content);
         container(content)
             .padding(12)
@@ -283,7 +289,12 @@ impl App {
         } else {
             let title = copy.title;
             let detail = &copy.detail;
-            let value = format!("{title}. {detail}. {TRANSFER}");
+            let value = format!(
+                "{}. {}. {}",
+                reshiki::i18n::t(title),
+                reshiki::i18n::t(detail),
+                reshiki::i18n::t(TRANSFER)
+            );
             let next = !instructions && state.connection != Connection::Ready;
             actions = actions.push(
                 setup_action(
@@ -303,7 +314,11 @@ impl App {
     /// note below the input says what Send shares.
     fn setup_footer<'a>(&self, mut content: Column<'a, Message>) -> Column<'a, Message> {
         let state = &self.assistant;
-        content = content.push(text(CREDENTIALS).size(11).style(muted_text));
+        content = content.push(
+            text(reshiki::i18n::t(CREDENTIALS))
+                .size(11)
+                .style(muted_text),
+        );
         if state.connection == Connection::Ready && !state.guided_example {
             content = content.push(
                 setup_action(
@@ -312,9 +327,9 @@ impl App {
                     Action::ImageExample,
                     true,
                 )
-                .value(
+                .value(reshiki::i18n::t(
                     "Attach original ethanol image locally; Send and Apply require your actions.",
-                )
+                ))
                 .on_press_maybe(
                     (!state.busy && !state.reading_image && state.draft.is_none())
                         .then_some(Message::Assistant(Action::ImageExample)),
@@ -326,8 +341,8 @@ impl App {
 
     pub(super) fn assistant_example_card(&self) -> Element<'_, Message> {
         let mut content = column![
-            text(EXAMPLE_TITLE).size(14),
-            text(EXAMPLE_INSTRUCTIONS).size(12),
+            text(reshiki::i18n::t(EXAMPLE_TITLE)).size(14),
+            text(reshiki::i18n::t(EXAMPLE_INSTRUCTIONS)).size(12),
         ]
         .spacing(8);
         if let Some(source) = &self.assistant.source_image
@@ -350,7 +365,11 @@ impl App {
                         .height(100),
                 );
         }
-        content = content.push(text(EXAMPLE_CAUTION).size(11).style(muted_text));
+        content = content.push(
+            text(reshiki::i18n::t(EXAMPLE_CAUTION))
+                .size(11)
+                .style(muted_text),
+        );
         container(content)
             .padding(12)
             .width(Length::Fill)
@@ -364,7 +383,10 @@ impl App {
         } else {
             DRAWING_TRANSFER
         };
-        text(note).size(10).style(muted_text).into()
+        text(reshiki::i18n::t(note))
+            .size(10)
+            .style(muted_text)
+            .into()
     }
 }
 

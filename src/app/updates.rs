@@ -135,7 +135,7 @@ impl App {
                 };
                 self.updates.error = None;
                 self.updates.installing = true;
-                self.updates.progress = "Downloading update…".into();
+                self.updates.progress = reshiki::i18n::t("Downloading update…").into();
                 let (sender, receiver) = tokio::sync::mpsc::channel(16);
                 self.updates.receiver = Some(receiver);
                 return Task::perform(updates::install::prepare(release, sender), |result| {
@@ -197,8 +197,12 @@ impl App {
                         self.updates.latest = Some(release)
                     }
                     Ok(_) => {
-                        self.updates.error =
-                            Some("The release did not match the selected update channel.".into())
+                        self.updates.error = Some(
+                            reshiki::i18n::t(
+                                "The release did not match the selected update channel.",
+                            )
+                            .into(),
+                        )
                     }
                     Err(error) => self.updates.error = Some(error),
                 }
@@ -241,8 +245,10 @@ impl App {
             Action::Saved(result) => {
                 self.updates.saving = false;
                 if let Err(error) = result {
-                    self.updates.error =
-                        Some(format!("Could not save update preferences: {error}"));
+                    self.updates.error = Some(reshiki::i18n::tf(
+                        "Could not save update preferences: {}",
+                        &[error],
+                    ));
                 }
             }
             Action::Download => {
@@ -274,17 +280,25 @@ impl App {
     fn update_restart_blocker(&self) -> Option<&'static str> {
         #[cfg(any(windows, target_os = "linux"))]
         if self.desktop.opening {
-            return Some("Wait for the requested drawings to finish opening.");
+            return Some(reshiki::i18n::t(
+                "Wait for the requested drawings to finish opening.",
+            ));
         }
         if self
             .strip()
             .any(|tab| self.edited(tab) || (tab.path.is_none() && !tab.doc.all_ids().is_empty()))
         {
-            Some("Save your drawings, then click Update and restart.")
+            Some(reshiki::i18n::t(
+                "Save your drawings, then click Update and restart.",
+            ))
         } else if self.assistant.has_unfinished_work() {
-            Some("Finish or clear the assistant draft and input before restarting.")
+            Some(reshiki::i18n::t(
+                "Finish or clear the assistant draft and input before restarting.",
+            ))
         } else if self.file_io.saving || self.templates.pending() {
-            Some("Wait for the current file or library save before restarting.")
+            Some(reshiki::i18n::t(
+                "Wait for the current file or library save before restarting.",
+            ))
         } else if self.strip().any(|tab| {
             tab.busy
                 || tab.clipboard_busy
@@ -292,7 +306,9 @@ impl App {
                 || tab.joining.is_some()
                 || tab.atom_text.is_some()
         }) {
-            Some("Finish the current editing operation before restarting.")
+            Some(reshiki::i18n::t(
+                "Finish the current editing operation before restarting.",
+            ))
         } else {
             None
         }
@@ -306,7 +322,7 @@ impl App {
 
     fn restart_for_update(&mut self) -> Task<Message> {
         if let Some(reason) = self.update_restart_blocker() {
-            self.updates.error = Some(format!("Update ready. {reason}"));
+            self.updates.error = Some(reshiki::i18n::tf("Update ready. {}", &[reason.to_owned()]));
             self.updates.open = true;
             return Task::none();
         }
@@ -357,11 +373,11 @@ impl App {
         let content = reshiki::accessibility::inert(content);
         let state = &self.updates;
         let status = if state.restarting {
-            "Installing and restarting ReShiki…".into()
+            reshiki::i18n::t("Installing and restarting ReShiki…").into()
         } else if state.installing {
             state.progress.clone()
         } else if state.checking {
-            "Checking for updates…".into()
+            reshiki::i18n::t("Checking for updates…").into()
         } else if let Some(error) = &state.error {
             error.clone()
         } else if let Some(latest) = &state.latest {
@@ -373,7 +389,10 @@ impl App {
                     .channel()
                         == Some(Channel::Nightly)
                 {
-                    format!("Switch from Nightly to stable ReShiki {}.", latest.version)
+                    reshiki::i18n::tf(
+                        "Switch from Nightly to stable ReShiki {}.",
+                        std::slice::from_ref(&latest.version),
+                    )
                 } else {
                     format!("{} ReShiki {} is available.", state.channel, latest.version)
                 }
@@ -394,7 +413,10 @@ impl App {
                     .style(button::text)
             ]
             .align_y(Alignment::Center),
-            text(format!("Version {}", updates::CURRENT_VERSION))
+            text(reshiki::i18n::tf(
+                "Version {}",
+                &[updates::CURRENT_VERSION.to_owned()],
+            ))
                 .size(13)
                 .style(super::workspace::muted_text),
             row![

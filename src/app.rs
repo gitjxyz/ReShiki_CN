@@ -105,6 +105,15 @@ pub(crate) use workspace::text_width;
 /// The status bar's idle message.
 const READY: &str = "Ready · Choose a tool to start drawing";
 
+/// How a known UI status message was produced. Kept beside the rendered
+/// `status` string so a runtime language switch can re-render it without
+/// reverse-translating arbitrary (possibly user-provided) status text.
+#[derive(Clone)]
+pub(crate) enum StatusSource {
+    Key(&'static str),
+    Template(&'static str, Vec<String>),
+}
+
 // App::fit_bounds: screen pixels kept free around the fitted drawing, the
 // smallest usable viewport side (pixels) and the smallest fitted extent (world
 // units), so a tiny drawing is not zoomed in without bound.
@@ -382,6 +391,9 @@ pub struct App {
     native_copy_busy: bool,
     // The current tab's status; parked with its document when it leaves the front.
     status: String,
+    /// How the status was produced when it is a known UI message, so a runtime
+    /// language switch can re-render it instead of showing a cached language.
+    status_source: Option<StatusSource>,
     error: bool,
     bond_text_hint: Option<(String, bool, String)>,
     file_io: files::State,
@@ -464,7 +476,12 @@ impl App {
             copy_as_busy: false,
             native_copy_busy: false,
             // A recovery offer in the status bar is the launch message.
-            status: if recovered.is_empty() { READY } else { "" }.into(),
+            status: if recovered.is_empty() {
+                reshiki::i18n::t(READY).to_owned()
+            } else {
+                String::new()
+            },
+            status_source: recovered.is_empty().then_some(StatusSource::Key(READY)),
             error: false,
             bond_text_hint: None,
             file_io: files::State::default(),

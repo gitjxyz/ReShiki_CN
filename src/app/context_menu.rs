@@ -915,7 +915,9 @@ impl App {
                             .map(|command| command.hint),
                         _ => None,
                     };
-                    let accessible_name = keyboard_hint.unwrap_or(reshiki::i18n::t(label));
+                    let accessible_name = keyboard_hint
+                        .map(reshiki::i18n::t)
+                        .unwrap_or(reshiki::i18n::t(label));
                     let label = text(reshiki::i18n::t(label)).size(12).width(Length::Fill);
                     let label = if destructive {
                         label.style(crate::appearance::text_color(Color::from_rgb8(167, 59, 51)))

@@ -120,7 +120,7 @@ impl App {
                     "arc-preset-{}-{degrees:.0}",
                     if fill { "inspector" } else { "context" }
                 ),
-                format!("Arc sweep {degrees:.0} degrees"),
+                reshiki::i18n::tf("Arc sweep {} degrees", &[format!("{degrees:.0}")]),
                 text(format!("{degrees:.0}°")).size(12).center(),
             )
             .checked(sweep == degrees)
@@ -156,12 +156,15 @@ impl App {
     pub(super) fn arc_controls(&self) -> Element<'_, Message> {
         let field = |id, label, value, hint, input: fn(String) -> Message| {
             row![
-                text(label).size(12),
+                text(reshiki::i18n::t(label)).size(12),
                 workspace::hover_hint(
                     workspace::accessible_unit_field(
                         reshiki::accessibility::text_input(
                             id,
-                            format!("Arc {label} (degrees)"),
+                            reshiki::i18n::tf(
+                                "Arc {} (degrees)",
+                                &[reshiki::i18n::t(label).to_owned()]
+                            ),
                             "180",
                             value
                         )

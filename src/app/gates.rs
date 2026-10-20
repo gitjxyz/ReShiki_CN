@@ -420,6 +420,10 @@ pub(super) fn preview_passthrough(message: &Message) -> bool {
                     | view_settings::Action::Crosshair(_)
                     | view_settings::Action::RulerUnit(_)
                     | view_settings::Action::Toggle
+                    // Pure view actions: switching language neither commits
+                    // nor discards a preview draft.
+                    | view_settings::Action::Language(_)
+                    | view_settings::Action::LanguageSaved(_)
             )
             | Message::ObjectToolbar(object_toolbar::Action::Visible(_))
             | Message::Tick

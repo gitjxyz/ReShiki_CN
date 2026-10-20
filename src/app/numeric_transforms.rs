@@ -575,7 +575,7 @@ impl App {
             };
             let input = reshiki::accessibility::text_input(
                 field.id(),
-                format!("{} ({})", field.name(), field.unit()),
+                format!("{} ({})", reshiki::i18n::t(field.name()), field.unit()),
                 "",
                 state.value(field),
             )
@@ -602,11 +602,11 @@ impl App {
             .align_y(Alignment::Center)
             .width(Length::Fill)
         };
-        let label = |field: Field| text(field.label()).size(12);
+        let label = |field: Field| text(reshiki::i18n::t(field.label())).size(12);
         let lock = hover_hint(
             reshiki::accessibility::button(
                 "transform-proportions",
-                "Lock width and height proportions",
+                reshiki::i18n::t("Lock width and height proportions"),
                 canvas(Glyph(Icon::Lock(state.proportional), true))
                     .width(LOCK)
                     .height(LOCK),
@@ -664,11 +664,11 @@ impl App {
             row![
                 reshiki::accessibility::button(
                     "transform-more",
-                    "More transform controls: tilt X and Y",
+                    reshiki::i18n::t("More transform controls: tilt X and Y"),
                     text(match (state.more, hidden_tilt) {
-                        (true, _) => "▾ More: tilt X / Y",
-                        (false, false) => "▸ More: tilt X / Y",
-                        (false, true) => "▸ More: tilt X / Y · edited",
+                        (true, _) => reshiki::i18n::t("▾ More: tilt X / Y"),
+                        (false, false) => reshiki::i18n::t("▸ More: tilt X / Y"),
+                        (false, true) => reshiki::i18n::t("▸ More: tilt X / Y · edited"),
                     })
                     .size(12)
                 )
@@ -680,7 +680,7 @@ impl App {
                 hover_hint(
                     reshiki::accessibility::button(
                         "transform-apply",
-                        "Apply numeric transforms",
+                        reshiki::i18n::t("Apply numeric transforms"),
                         text(reshiki::i18n::t("Apply")).size(12)
                     )
                     .padding([6, 14])

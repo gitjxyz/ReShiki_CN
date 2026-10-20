@@ -639,7 +639,9 @@ impl App {
             ]
             .align_y(iced::Alignment::Center),
             text(reshiki::i18n::t("Chemical names")).size(20),
-            text(PANEL_INTRO).size(11).style(muted_text),
+            text(reshiki::i18n::t(PANEL_INTRO))
+                .size(11)
+                .style(muted_text),
         ]
         .spacing(8);
         column![
@@ -665,14 +667,14 @@ impl App {
             text_input(
                 "naming.name",
                 "Chemical name",
-                "Chemical name, e.g. ethanol",
+                reshiki::i18n::t("Chemical name, e.g. ethanol"),
                 &state.name
             )
             .on_input(|s| Message::Naming(Action::Name(s)))
             .on_submit(Message::Naming(Action::Resolve))
             .size(13)
             .padding(8),
-            text(NAME_HINT).size(11).style(muted_text),
+            text(reshiki::i18n::t(NAME_HINT)).size(11).style(muted_text),
             accessible_command("naming.resolve", "Parse name locally", "Parse name")
                 .on_press_maybe(
                     (idle && !state.name.trim().is_empty())
@@ -704,7 +706,9 @@ impl App {
         }
         let structure = column![
             section("STRUCTURE → NAME"),
-            text(STRUCTURE_HINT).size(11).style(muted_text),
+            text(reshiki::i18n::t(STRUCTURE_HINT))
+                .size(11)
+                .style(muted_text),
             accessible_command(
                 "naming.generate",
                 "Generate selected structure name locally",
@@ -728,11 +732,13 @@ impl App {
                 .style(muted_text),
             text(&preview.record.title).size(14),
             self.name_preview_canvas(preview, 180.),
-            text(PREVIEW_HINT).size(11).style(muted_text),
+            text(reshiki::i18n::t(PREVIEW_HINT))
+                .size(11)
+                .style(muted_text),
             text_input(
                 "naming.smiles",
                 "Editable preview SMILES",
-                "Preview SMILES",
+                reshiki::i18n::t("Preview SMILES"),
                 &state.smiles,
             )
             .on_input(|s| Message::Naming(Action::Smiles(s)))
@@ -761,10 +767,12 @@ impl App {
             );
         }
         content = content.push(
-            text(format!(
+            text(reshiki::i18n::tf(
                 "{} atoms · {} bonds",
-                preview.document.atoms.len(),
-                preview.document.bonds.len()
+                &[
+                    preview.document.atoms.len().to_string(),
+                    preview.document.bonds.len().to_string(),
+                ],
             ))
             .size(11)
             .style(muted_text),

@@ -429,7 +429,9 @@ impl App {
                 .on_press(Message::Mapping(Action::ResetPositions)),
             ]
             .spacing(4),
-            text(EDITOR_HINT).size(11).style(muted_text),
+            text(reshiki::i18n::t(EDITOR_HINT))
+                .size(11)
+                .style(muted_text),
         ]
         .spacing(6)
     }
@@ -441,22 +443,24 @@ impl App {
         // A test may install a proposal without updating; no preview means stale.
         let current = self.tab.mapping.preview.as_ref().is_some_and(|p| p.current);
         let certainty = if !proposal.complete {
-            "Budget reached · optimality and uniqueness unknown"
+            reshiki::i18n::t("Budget reached · optimality and uniqueness unknown")
         } else if proposal.multiple_best {
-            "Several mappings tie under the graph score"
+            reshiki::i18n::t("Several mappings tie under the graph score")
         } else {
-            "One best mapping under the graph score"
+            reshiki::i18n::t("One best mapping under the graph score")
         };
         body = body
             .push(horizontal_line())
             .push(text(reshiki::i18n::t("Review atom maps")).size(13))
             .push(text(certainty).size(11).style(muted_text))
             .push(
-                text(format!(
+                text(reshiki::i18n::tf(
                     "{} pairs · {} reactant / {} product atoms unmatched",
-                    proposal.pairs.len(),
-                    proposal.unmatched_reactants,
-                    proposal.unmatched_products,
+                    &[
+                        proposal.pairs.len().to_string(),
+                        proposal.unmatched_reactants.to_string(),
+                        proposal.unmatched_products.to_string(),
+                    ],
                 ))
                 .size(11),
             );
@@ -479,9 +483,12 @@ impl App {
         };
         for (index, (a, b)) in proposal.pairs.iter().enumerate() {
             let number = proposal.number(*a).unwrap_or_default();
-            let label = format!("Map {number} · {} → {}", atom(*a), atom(*b));
+            let label = reshiki::i18n::tf(
+                "Map {} · {} → {}",
+                &[number.to_string(), atom(*a), atom(*b)],
+            );
             body = body.push(
-                accessible_command(format!("mapping.review.{index}"), label.clone(), label)
+                accessible_command(format!("mapping.review.{index}"), label.clone(), &label)
                     .on_press_maybe(current.then_some(Message::Mapping(Action::ReviewPair(index)))),
             );
         }

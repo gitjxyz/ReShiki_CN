@@ -474,7 +474,7 @@ impl App {
                 iced::widget::tooltip(
                     reshiki::accessibility::button(
                         "inline-caption-done",
-                        "Apply caption text",
+                        reshiki::i18n::t("Apply caption text"),
                         text(reshiki::i18n::t("Done ↵")).size(11)
                     )
                     .on_press(Message::InlineText(Action::Finish(true)))

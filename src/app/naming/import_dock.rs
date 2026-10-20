@@ -142,8 +142,8 @@ impl App {
         let mut content = column![
             text_input(
                 "import-name",
-                "Chemical name",
-                "Chemical name, e.g. ethanol",
+                reshiki::i18n::t("Chemical name"),
+                reshiki::i18n::t("Chemical name, e.g. ethanol"),
                 &state.name
             )
             .size(13)
@@ -160,11 +160,11 @@ impl App {
             row![
                 button(
                     "import-name-preview",
-                    "Optional editable preview",
+                    reshiki::i18n::t("Optional editable preview"),
                     text(if state.preview_open {
-                        "Hide preview"
+                        reshiki::i18n::t("Hide preview")
                     } else {
-                        "Preview"
+                        reshiki::i18n::t("Preview")
                     })
                     .size(12)
                 )
@@ -179,8 +179,8 @@ impl App {
                 // Right-aligned, as Insert is in Structure mode.
                 button(
                     "import-name-insert",
-                    "Insert chemical name as structure",
-                    text("Insert").size(12)
+                    reshiki::i18n::t("Insert chemical name as structure"),
+                    text(reshiki::i18n::t("Insert")).size(12)
                 )
                 .padding([6, 12])
                 .style(crate::appearance::primary)
@@ -197,9 +197,12 @@ impl App {
                 .and_then(|p| p.record.synonyms.get(index))
         {
             content = content.push(
-                text(format!("Name below: {}", alias.name))
-                    .size(11)
-                    .style(muted_text),
+                text(reshiki::i18n::tf(
+                    "Name below: {}",
+                    std::slice::from_ref(&alias.name),
+                ))
+                .size(11)
+                .style(muted_text),
             );
         }
         if let Some(notice) = &state.notice {
@@ -212,7 +215,7 @@ impl App {
         if !idle {
             content = content.push(
                 row![
-                    text("Working…").size(12),
+                    text(reshiki::i18n::t("Working…")).size(12),
                     accessible_command("import-name-cancel", "Cancel name import", "Cancel")
                         .on_press(Message::Naming(Action::Cancel)),
                 ]
@@ -249,7 +252,8 @@ impl App {
     fn name_import_details(&self, can_resolve: bool) -> Element<'_, Message> {
         let state = &self.tab.naming;
         let idle = state.pending.is_none();
-        let mut content = column![text(DETAILS).size(11).style(muted_text)].spacing(10);
+        let mut content =
+            column![text(reshiki::i18n::t(DETAILS)).size(11).style(muted_text)].spacing(10);
         if state.preview.is_none() {
             content = content.push(
                 accessible_command(

@@ -159,12 +159,11 @@ fn marker_name_with_presentation(
     let mut description = rows
         .take(3)
         .map(|(index, row)| {
-            let mut text = presentation
+            let label = presentation
                 .and_then(|presentation| presentation.rows.get(index))
-                .map_or_else(
-                    || site_description(report.nucleus, row, &row_label(report.nucleus, row, None)),
-                    |site| site.description.clone(),
-                );
+                .map(|site| site.label.clone())
+                .unwrap_or_else(|| row_label(report.nucleus, row, None));
+            let mut text = site_description(report.nucleus, row, &label);
             if text.len() > MAX_SITE_NAME {
                 text.truncate(text.floor_char_boundary(MAX_SITE_NAME));
                 text.push('…');
@@ -174,17 +173,20 @@ fn marker_name_with_presentation(
         .collect::<Vec<_>>()
         .join("; ");
     if count > 3 {
-        description.push_str(&format!(
+        description.push_str(&reshiki::i18n::tf(
             "; {} additional sites. Full predictions are in the results table",
-            count - 3
+            &[(count - 3).to_string()],
         ));
     }
     let help = if count > 1 {
-        " Repeated activation cycles nearby sites."
+        reshiki::i18n::t(" Repeated activation cycles nearby sites.")
     } else {
         ""
     };
-    format!("Predicted shift marker. {description}.{help}")
+    reshiki::i18n::tf(
+        "Predicted shift marker. {}.{}",
+        &[description, help.to_owned()],
+    )
 }
 
 #[cfg(test)]

@@ -339,9 +339,9 @@ fn context_shortcuts() -> iced::widget::Column<'static, Message> {
             &format!("g / ? / {}", keys(Modifiers::empty(), "Enter")),
             "Select / Properties / Edit atom label"
         ),
-        text(
+        text(reshiki::i18n::t(
             "Uppercase means Shift-letter. Repeat 2 on a double bond to cycle its line placement."
-        )
+        ))
         .size(12)
         .style(muted_text),
     ]

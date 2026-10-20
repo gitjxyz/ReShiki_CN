@@ -47,7 +47,7 @@ impl App {
                 .padding([4, 8])
             };
             let mut buttons = row![
-                text("Move").size(11),
+                text(reshiki::i18n::t("Move")).size(11),
                 moving("←", -6., 0.),
                 moving("→", 6., 0.),
                 moving("↑", 0., -6.),

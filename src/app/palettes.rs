@@ -231,7 +231,7 @@ pub(super) fn bond_hint(preset: BondPreset, label: &str) -> String {
         BondPreset::Quadruple => "4",
         _ => return label.into(),
     };
-    format!("{label} · {key}")
+    format!("{} · {key}", reshiki::i18n::t(label))
 }
 
 pub(super) fn ring_hint(label: &str, action: &Action) -> String {
@@ -250,7 +250,7 @@ pub(super) fn ring_hint(label: &str, action: &Action) -> String {
         }
         _ => return label.into(),
     };
-    format!("{label} · {key}")
+    format!("{} · {key}", reshiki::i18n::t(label))
 }
 
 pub(super) fn graphic_hint(kind: GraphicKind, label: &str) -> String {
@@ -262,7 +262,8 @@ pub(super) fn graphic_hint(kind: GraphicKind, label: &str) -> String {
         _ => return label.into(),
     };
     format!(
-        "{label} · {}",
+        "{} · {}",
+        reshiki::i18n::t(label),
         super::shortcuts::keys(Modifiers::SHIFT, key)
     )
 }

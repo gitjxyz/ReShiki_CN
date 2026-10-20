@@ -714,9 +714,9 @@ impl App {
         if self.tool == Tool::Text {
             return column![
                 section("TEXT LABELS"),
-                text(
+                text(reshiki::i18n::t(
                     "Click the canvas to type a new label, or click an existing label to edit it."
-                )
+                ))
                 .size(12)
                 .style(muted_text),
                 text(reshiki::i18n::t(

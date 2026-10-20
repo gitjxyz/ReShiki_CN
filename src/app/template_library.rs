@@ -22,9 +22,9 @@ pub enum Filter {
 impl std::fmt::Display for Filter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Self::All => "All",
-            Self::Mine => "My templates",
-            Self::Favorites => "Favorites",
+            Self::All => reshiki::i18n::t("All"),
+            Self::Mine => reshiki::i18n::t("My templates"),
+            Self::Favorites => reshiki::i18n::t("Favorites"),
         })
     }
 }
@@ -345,8 +345,10 @@ impl Operation {
             app.template_index
                 .checked_sub(LIBRARY.len())
                 .ok_or_else(|| {
-                    "This is a built-in template. Save a selection to make your own copy."
-                        .to_string()
+                    reshiki::i18n::t(
+                        "This is a built-in template. Save a selection to make your own copy.",
+                    )
+                    .to_string()
                 })
         };
         let edit = match action {
@@ -373,7 +375,7 @@ impl Operation {
                 state
                     .library
                     .get(index)
-                    .ok_or("Choose a template")?
+                    .ok_or(reshiki::i18n::t("Choose a template"))?
                     .id
                     .clone(),
             ),
@@ -413,12 +415,10 @@ impl Operation {
                 } else {
                     let template = library
                         .templates
-                        .get_mut(
-                            index
-                                .checked_sub(LIBRARY.len())
-                                .ok_or("Save a copy of a built-in template to edit it")?,
-                        )
-                        .ok_or("Choose a custom template")?;
+                        .get_mut(index.checked_sub(LIBRARY.len()).ok_or(reshiki::i18n::t(
+                            "Save a copy of a built-in template to edit it",
+                        ))?)
+                        .ok_or(reshiki::i18n::t("Choose a custom template"))?;
                     template.name = name.trim().into();
                     template.group = category.trim().into();
                     None
@@ -432,7 +432,7 @@ impl Operation {
                 let template = library
                     .templates
                     .get_mut(index)
-                    .ok_or("Choose a custom template")?;
+                    .ok_or(reshiki::i18n::t("Choose a custom template"))?;
                 template.document = drawing;
                 template.smiles.clear();
                 template.anchor = Anchor::Auto;
@@ -446,7 +446,7 @@ impl Operation {
                 library
                     .templates
                     .get_mut(index)
-                    .ok_or("Choose a custom template")?
+                    .ok_or(reshiki::i18n::t("Choose a custom template"))?
                     .anchor = anchor;
                 undo = Some(self.previous.clone());
                 Effect::Updated {
@@ -458,7 +458,7 @@ impl Operation {
                 let id = library
                     .templates
                     .get(index)
-                    .ok_or("Choose a custom template")?
+                    .ok_or(reshiki::i18n::t("Choose a custom template"))?
                     .id
                     .clone();
                 library.templates.remove(index);
@@ -890,7 +890,7 @@ impl App {
                 let t = state
                     .library
                     .get(self.template_index)
-                    .ok_or("Choose a template")?;
+                    .ok_or(reshiki::i18n::t("Choose a template"))?;
                 state.name = t.name.clone();
                 state.category = t.group.clone();
                 state.draft = None;

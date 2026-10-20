@@ -420,20 +420,14 @@ fn site_row<'a>(
         },
         |site| Cow::Borrowed(site.label.as_str()),
     );
-    let shift = site.map_or_else(
-        || Cow::Owned(presentation::row_shift(item)),
-        |site| Cow::Borrowed(site.shift.as_str()),
-    );
-    let mut description = site.map_or_else(
-        || site_description(report.nucleus, item, &label),
-        |site| site.description.clone(),
-    );
+    let shift = presentation::row_shift(item);
+    let mut description = site_description(report.nucleus, item, &label);
     if !document.atom_visible(item.atom_id)
         && let Some(group) = document.abbreviation_containing(item.atom_id)
     {
-        description.push_str(&format!(
+        description.push_str(&reshiki::i18n::tf(
             ". Shown at abbreviation {} anchored on atom #{}",
-            group.label, group.anchor
+            &[group.label.clone(), group.anchor.to_string()],
         ));
     }
     let mut values = column![
@@ -450,12 +444,9 @@ fn site_row<'a>(
     }
     if state.details {
         values = values.push(
-            text(site.map_or_else(
-                || Cow::Owned(presentation::row_details(item)),
-                |site| Cow::Borrowed(site.details.as_str()),
-            ))
-            .size(10)
-            .style(muted_text),
+            text(presentation::row_details(item))
+                .size(10)
+                .style(muted_text),
         );
     }
     reshiki::accessibility::button(
@@ -585,7 +576,7 @@ fn footer(state: &State, placement: Placement) -> Column<'_, Message> {
     if reported {
         // Proton shifts are medians per parent atom's H group, not averages.
         let grouping = if state.job.nucleus == Nucleus::H1 {
-            " · grouped per atom"
+            reshiki::i18n::t(" · grouped per atom")
         } else {
             ""
         };
@@ -607,10 +598,14 @@ fn named_command<'a>(
     enabled: bool,
 ) -> reshiki::accessibility::Button<'a, Message> {
     let message = Message::Nmr(action);
-    reshiki::accessibility::button(id, name, text(reshiki::i18n::t(label)).size(12))
-        .padding([5, 7])
-        .on_press_maybe(enabled.then_some(message))
-        .style(quiet)
+    reshiki::accessibility::button(
+        id,
+        reshiki::i18n::t(name),
+        text(reshiki::i18n::t(label)).size(12),
+    )
+    .padding([5, 7])
+    .on_press_maybe(enabled.then_some(message))
+    .style(quiet)
 }
 
 /// The accessible name of a result row or plot marker, built from the same
@@ -618,25 +613,32 @@ fn named_command<'a>(
 pub(super) fn site_description(nucleus: Nucleus, row: &engine::Row, label: &str) -> String {
     let prediction = row.statistics.as_ref().map_or_else(
         || {
-            format!(
+            reshiki::i18n::tf(
                 "Not predicted: {}",
-                row.limitation
+                &[row
+                    .limitation
                     .as_deref()
                     .unwrap_or(engine::NO_REFERENCE_DATA)
+                    .to_owned()],
             )
         },
         |s| {
-            format!(
-                "Predicted {:.3} ppm; shell {}; {} references; SD {:.3} ppm",
-                s.median,
-                row.radius
-                    .map_or_else(|| "—".into(), |radius| radius.to_string()),
-                s.support,
-                s.standard_deviation
+            reshiki::i18n::tf(
+                "Predicted {} ppm; shell {}; {} references; SD {} ppm",
+                &[
+                    format!("{:.3}", s.median),
+                    row.radius
+                        .map_or_else(|| "—".into(), |radius| radius.to_string()),
+                    s.support.to_string(),
+                    format!("{:.3}", s.standard_deviation),
+                ],
             )
         },
     );
-    format!("Select {} NMR row {label}. {prediction}", nucleus.label())
+    reshiki::i18n::tf(
+        "Select {} NMR row {}. {}",
+        &[nucleus.label().to_owned(), label.to_owned(), prediction],
+    )
 }
 
 fn label_mode_name(mode: LabelMode) -> &'static str {
@@ -675,7 +677,10 @@ fn provenance(report: Option<&Report>) -> Provenance<'_> {
 
 pub(super) fn panel_description(state: &State) -> String {
     let status = if state.job.pending.is_some() {
-        format!("Calculating {} shifts", state.job.nucleus.label())
+        reshiki::i18n::tf(
+            "Calculating {} shifts",
+            &[state.job.nucleus.label().to_owned()],
+        )
     } else if let Some(notice) = &state.job.notice {
         notice.clone()
     } else if let Some(report) = &state.job.result {

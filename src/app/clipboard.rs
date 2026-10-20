@@ -78,7 +78,10 @@ impl App {
         self.copy_as_busy = true;
         self.tab.clipboard_busy = true;
         self.error = false;
-        self.status = format!("Preparing {} for the clipboard…", format.label());
+        self.status = reshiki::i18n::tf(
+            "Preparing {} for the clipboard…",
+            &[format.label().to_owned()],
+        );
         let engine = self.engine.clone();
         Task::perform(
             async move {
@@ -118,9 +121,9 @@ impl App {
             Ok(copy) => copy,
             Err(error) => {
                 self.finish_copy_as();
-                self.status = format!(
-                    "Could not copy {}: {error} · Clipboard unchanged",
-                    key.format.label()
+                self.status = reshiki::i18n::tf(
+                    "Could not copy {}: {} · Clipboard unchanged",
+                    &[key.format.label().to_owned(), error],
                 );
                 self.error = true;
                 return Task::none();
@@ -155,14 +158,18 @@ impl App {
                     !key.selected.is_empty(),
                     key.revision == self.tab.revision && key.selected == self.tab.selected,
                 ) {
-                    (true, true) => "Selection",
-                    (false, true) => "Drawing",
-                    (true, false) => "Previous selection",
-                    (false, false) => "Previous drawing snapshot",
+                    (true, true) => reshiki::i18n::t("Selection"),
+                    (false, true) => reshiki::i18n::t("Drawing"),
+                    (true, false) => reshiki::i18n::t("Previous selection"),
+                    (false, false) => reshiki::i18n::t("Previous drawing snapshot"),
                 };
-                self.status = format!("{scope} copied as {}", key.format.label());
+                self.status = reshiki::i18n::tf(
+                    "{} copied as {}",
+                    &[scope.to_owned(), key.format.label().to_owned()],
+                );
                 if !notices.is_empty() {
-                    self.status.push_str(" · Review details\n");
+                    self.status
+                        .push_str(reshiki::i18n::t(" · Review details\n"));
                     self.status.push_str(&notices.join("\n"));
                 }
                 self.error = false;

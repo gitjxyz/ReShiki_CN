@@ -1,5 +1,5 @@
 //! Text and owner IDs derived once from an accepted, immutable report.
-use super::{Nucleus, Report, plot, view};
+use super::{Nucleus, Report, plot};
 use reshiki::document::Document;
 use reshiki::nmr::Row;
 use std::sync::Arc;
@@ -13,11 +13,11 @@ pub(super) struct Presentation {
     pub(super) plot_labels: plot::Labels,
 }
 
+/// Only the chemical site label is cached; the description, shift and
+/// details render from the report row on each frame so a language switch
+/// updates them without recomputing the prediction.
 pub(super) struct Site {
     pub(super) label: String,
-    pub(super) description: String,
-    pub(super) shift: String,
-    pub(super) details: String,
 }
 
 impl Presentation {
@@ -25,14 +25,8 @@ impl Presentation {
         let rows = report
             .rows
             .iter()
-            .map(|row| {
-                let label = row_label(report.nucleus, row, element(document, row));
-                Site {
-                    description: view::site_description(report.nucleus, row, &label),
-                    label,
-                    shift: row_shift(row),
-                    details: row_details(row),
-                }
+            .map(|row| Site {
+                label: row_label(report.nucleus, row, element(document, row)),
             })
             .collect();
         let mut sorted_ids: Vec<_> = report
@@ -88,11 +82,15 @@ pub(super) fn row_details(row: &Row) -> String {
         .radius
         .map_or_else(|| "—".into(), |radius| radius.to_string());
     match &row.statistics {
-        Some(statistics) => format!(
-            "Shell {shell} · {} references · SD {:.3} ppm",
-            statistics.support, statistics.standard_deviation
+        Some(statistics) => reshiki::i18n::tf(
+            "Shell {} · {} references · SD {} ppm",
+            &[
+                shell,
+                statistics.support.to_string(),
+                format!("{:.3}", statistics.standard_deviation),
+            ],
         ),
-        None => format!("Shell {shell} · no references"),
+        None => reshiki::i18n::tf("Shell {} · no references", &[shell]),
     }
 }
 

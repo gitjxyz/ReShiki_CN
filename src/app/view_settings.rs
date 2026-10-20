@@ -1,5 +1,5 @@
 //! Window, camera and view-aid preferences.
-use super::App;
+use super::{App, StatusSource};
 
 /// View-aid commands, nested under `Message::View`.
 /// Every View action passes both previews through `gates::preview_passthrough`, and none commits a draft.
@@ -31,8 +31,10 @@ impl App {
             Action::Language(language) => return self.set_language(language),
             Action::LanguageSaved(result) => {
                 if let Err(error) = result {
-                    self.status =
-                        format!("Language changed, but could not save preference: {error}");
+                    self.set_status_template(
+                        "Language changed, but could not save preference: {}",
+                        vec![error],
+                    );
                     self.error = true;
                 }
             }
@@ -43,11 +45,37 @@ impl App {
         &mut self,
         language: reshiki::i18n::Language,
     ) -> iced::Task<super::Message> {
+        // A cached UI message keeps its previous language unless the bar
+        // still shows exactly what its source produced; raw statuses (user
+        // content, external errors) are never reverse-translated.
+        let still_shows_source = self
+            .status_source
+            .as_ref()
+            .is_some_and(|source| match source {
+                StatusSource::Key(key) => self.status == reshiki::i18n::t(key),
+                StatusSource::Template(key, args) => self.status == reshiki::i18n::tf(key, args),
+            });
         self.language = language;
         reshiki::i18n::set_language(language);
+        if still_shows_source && let Some(source) = self.status_source.clone() {
+            self.status = match &source {
+                StatusSource::Key(key) => reshiki::i18n::t(key).to_owned(),
+                StatusSource::Template(key, args) => reshiki::i18n::tf(key, args),
+            };
+        }
         iced::Task::perform(reshiki::i18n::save_language(language), |result| {
             super::Message::View(Action::LanguageSaved(result))
         })
+    }
+    /// Sets the status bar from a translatable key and remembers its source.
+    pub(super) fn set_status_key(&mut self, key: &'static str) {
+        self.status = reshiki::i18n::t(key).to_owned();
+        self.status_source = Some(StatusSource::Key(key));
+    }
+    /// Sets the status bar from a translatable template and its arguments.
+    pub(super) fn set_status_template(&mut self, key: &'static str, arguments: Vec<String>) {
+        self.status = reshiki::i18n::tf(key, &arguments);
+        self.status_source = Some(StatusSource::Template(key, arguments));
     }
     pub(super) fn set_viewport(&mut self, size: iced::Size) {
         // Inspector width changes, such as docking NMR, do not request fitting
