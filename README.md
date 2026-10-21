@@ -1,3 +1,16 @@
+# ReShiki 中文社区版（ReShiki_CN）
+
+> [!NOTE]
+> 本仓库是 [Ameyanagi/ReShiki](https://github.com/Ameyanagi/ReShiki) 的社区维护分支，在其基础上提供**简体中文界面**：
+>
+> - **[下载安装包](https://github.com/gitjxyz/ReShiki_CN/releases/latest)**（Windows / macOS / Linux，未签名社区构建）
+> - 语言切换：View 面板 → **Language**（English / 简体中文），默认跟随系统语言
+> - 化学内容（元素符号、单位、IUPAC 名称、文件格式名）保持原样不翻译；未收录词条自动回退英文
+> - Windows 安装时若弹出 SmartScreen，选择"更多信息 → 仍要运行"；macOS 首次启动请右键点击应用选择"打开"
+> - 上游功能与文件格式完全兼容，感谢原作者 [Ameyanagi](https://github.com/Ameyanagi) 的出色工作
+
+---
+
 # ReShiki
 
 <picture>
