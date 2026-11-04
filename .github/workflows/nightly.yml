@@ -1,9 +1,6 @@
 name: Nightly builds
 
 on:
-  schedule:
-    # 03:37 Japan time. Scheduled workflows run from the default branch, main.
-    - cron: "37 18 * * *"
   workflow_dispatch:
 
 permissions:
